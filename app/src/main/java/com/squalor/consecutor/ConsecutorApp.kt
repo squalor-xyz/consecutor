@@ -13,7 +13,6 @@ class ConsecutorApp : Application() {
     }
 
     // Lazy initialization ensures the database is created only when needed
-    val database by lazy { AppDatabase.getDatabase(this, "mysecretpassphrase") }
-    // TODO: in a production app, use Android Keystore to generate and store it securely.
+    val database by lazy { AppDatabase.getDatabase(this) }
     val repository by lazy { EventRepository(database.eventDao()) }
 }
