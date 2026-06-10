@@ -1,17 +1,17 @@
 package com.squalor.consecutor
 
 import androidx.room.TypeConverter
-import java.time.LocalDate
 
-/**
- * Converts LocalDate to and from String for Room database storage.
- */
 object Converters {
     @TypeConverter
-    @JvmStatic
-    fun fromLocalDate(date: LocalDate?): String? = date?.toString()
+    fun fromTrackerType(value: TrackerType): String = value.name
 
     @TypeConverter
-    @JvmStatic
-    fun toLocalDate(dateString: String?): LocalDate? = dateString?.let { LocalDate.parse(it) }
+    fun toTrackerType(value: String): TrackerType = TrackerType.valueOf(value)
+
+    @TypeConverter
+    fun fromTargetPeriod(value: TargetPeriod): String = value.name
+
+    @TypeConverter
+    fun toTargetPeriod(value: String): TargetPeriod = TargetPeriod.valueOf(value)
 }

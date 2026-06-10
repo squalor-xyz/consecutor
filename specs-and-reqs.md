@@ -1,215 +1,165 @@
-# Consecutor: Specifications and Requirements Document
+# Consecutor MVP Specification
 
 **Project Name**: Consecutor  
-**Version**: 1.0  
-**Date**: October 2024  
+**Version**: 1.0 MVP
+**Date**: April 2026
 **Author**: Squalor, LLC
 
----
+## 1. Product Goal
 
-## 1. Project Overview
+Consecutor helps users build better habits by tracking actions and measurements over time, deriving consecutive streaks from history, and keeping the resulting data local and portable.
 
-Consecutor is an Android application designed to assist users in tracking consecutive events and building habits. Users can create events, increment counters to log occurrences, and monitor their progress through a clean, modern interface. The app ensures data privacy by storing all information locally in an encrypted database.
+The v1 MVP is intentionally lean:
 
-Built with contemporary Android development practices, Consecutor leverages Jetpack Compose for its user interface, Room with SQLCipher for encrypted local storage, and the MVVM (Model-View-ViewModel) architecture to maintain a clear separation of concerns.
+- Android only
+- local-first
+- no accounts
+- no cloud sync
+- editable history
+- explicit export/import
+- local reminders
 
----
+## 2. Core Domain Model
 
-## 2. Features and Requirements
+### 2.1 Tracker
 
-### 2.1 Event Creation
+A tracker is the thing the user wants to monitor.
 
-- **Goal**: Enable users to create new events with a name and an optional emoji for personalization.
-- **Requirements**:
-    - Users must provide a name for each event.
-    - An optional emoji can be added to visually distinguish events.
-    - New events must be saved to the local database upon creation.
-- **Implementation**:
-    - **User Interface**: Implemented in `AddEventDialog.kt` as a Jetpack Compose dialog featuring text fields for the event name and emoji.
-    - **Logic**: Upon confirmation, the `onAdd` callback triggers the `insert` method in `EventViewModel.kt`.
-    - **Data Layer**: `EventViewModel.kt` delegates the insertion to `EventRepository.kt`, which uses `EventDao.kt` to store the event in the database.
-- **Files**:
-    - `AddEventDialog.kt`
-    - `EventViewModel.kt`
-    - `EventRepository.kt`
-    - `EventDao.kt`
+Supported tracker types:
 
----
+- `YES_NO`
+- `COUNT`
+- `MEASURE`
 
-### 2.2 Event Listing
+Trackers can have:
 
-- **Goal**: Display a comprehensive list of all created events with their details.
-- **Requirements**:
-    - The list must display each event’s name, emoji (if provided), consecutive count, total count, and last incremented date.
-    - The list must dynamically update as events are added, modified, or removed.
-- **Implementation**:
-    - **User Interface**: Rendered in `EventListScreen.kt` using a `LazyColumn` in Jetpack Compose.
-    - **Data Binding**: Observes the `allEvents` Flow from `EventViewModel.kt`, collected as state within the composable.
-    - **Event Display**: Each event is shown via the `EventItem` composable (defined within `EventListScreen.kt`), presenting all relevant details.
-- **Files**:
-    - `EventListScreen.kt`
-    - `EventViewModel.kt`
+- name
+- emoji
+- description
+- unit
+- optional streak target
+- optional reminder
+- archived state
 
----
+### 2.2 Entry
 
-### 2.3 Incrementing Event Counters
+An entry is a dated record attached to a tracker.
 
-- **Goal**: Allow users to increment event counters with a single tap, updating both consecutive and total counts.
-- **Requirements**:
-    - Tapping an event increments its total count.
-    - The consecutive count increments only if the event was last incremented on the previous day; otherwise, it resets to 1.
-    - The last incremented date updates to the current date.
-- **Implementation**:
-    - **User Interface**: In `EventListScreen.kt`, each `EventItem` is clickable, triggering the `onIncrement` callback to call `incrementEvent` in `EventViewModel.kt`.
-    - **Logic**: `EventViewModel.kt` invokes `incrementEvent` in `EventRepository.kt`, which calculates the new consecutive count based on the last incremented date and updates the counters.
-    - **Data Layer**: `EventRepository.kt` uses `EventDao.kt` to save the updated event.
-- **Files**:
-    - `EventListScreen.kt`
-    - `EventViewModel.kt`
-    - `EventRepository.kt`
-    - `EventDao.kt`
+Entries support:
 
----
+- effective date
+- optional numeric value
+- optional note
+- edit and soft delete
 
-### 2.4 Deleting Events
+Entries are the source of truth. Streaks and totals are derived from them.
 
-- **Goal**: Permit users to delete events using a swipe gesture.
-- **Requirements**:
-    - Users can swipe an event to initiate deletion.
-    - A confirmation mechanism ensures accidental deletions are avoided.
-- **Implementation**:
-    - **User Interface**: In `EventListScreen.kt`, events are wrapped in a `SwipeToDismiss` composable.
-    - **Logic**: Swiping triggers the `confirmStateChange` callback, which checks the dismiss direction and, if confirmed, calls `delete` on `EventViewModel.kt`.
-    - **Data Layer**: `EventViewModel.kt` delegates to `EventRepository.kt`, which uses `EventDao.kt` to remove the event.
-- **Files**:
-    - `EventListScreen.kt`
-    - `EventViewModel.kt`
-    - `EventRepository.kt`
-    - `EventDao.kt`
+### 2.3 Target
 
----
+Targets define what counts as success for streak calculations.
 
-### 2.5 Exporting Data
+Supported periods:
 
-- **Goal**: Enable users to export all events as a CSV file for sharing or backup purposes.
-- **Requirements**:
-    - An export option must be accessible from the UI.
-    - The CSV must include all event details (ID, name, emoji, consecutive count, total count, last incremented date).
-    - The file must be shareable via Android’s sharing system.
-- **Implementation**:
-    - **User Interface**: An `IconButton` with a share icon in `EventListScreen.kt`’s top app bar triggers `exportData` in `EventViewModel.kt`.
-    - **Logic**: `EventViewModel.kt` retrieves events, generates a CSV string with `exportEventsToCsv`, writes it to a file, and shares it using `FileProvider` and an `Intent`.
-- **Files**:
-    - `EventListScreen.kt`
-    - `EventViewModel.kt`
+- `DAILY`
+- `WEEKLY`
 
----
+### 2.4 Reminder
 
-### 2.6 Encrypted Storage
+Reminders are per-tracker local notifications with:
 
-- **Goal**: Securely store all user data in an encrypted local database.
-- **Requirements**:
-    - The database must use strong encryption.
-    - The encryption passphrase should be securely managed (e.g., via Android Keystore in production).
-- **Implementation**:
-    - **Database Setup**: Defined in `AppDatabase.kt` with Room and SQLCipher via `SupportFactory`.
-    - **Passphrase Management**: Initialized in `ConsecutorApp.kt` with a hardcoded passphrase (to be replaced with a secure key in production).
-    - **Data Access**: `EventDao.kt` provides the interface for database operations, utilized by `EventRepository.kt`.
-- **Files**:
-    - `AppDatabase.kt`
-    - `ConsecutorApp.kt`
-    - `EventDao.kt`
-    - `EventRepository.kt`
+- enabled state
+- time of day
+- optional selected weekdays
 
----
+## 3. MVP Features
 
-### 2.7 Theme Support
+### 3.1 Dashboard
 
-- **Goal**: Ensure a consistent and appealing visual style across the app.
-- **Requirements**:
-    - Support a light theme (dark theme planned).
-    - Apply the theme uniformly to all UI elements.
-- **Implementation**:
-    - **Theme Definition**: Defined in `ConsecutorTheme.kt` with a light color scheme and typography.
-    - **Usage**: Applied in `MainActivity.kt` by wrapping `EventListScreen` with `ConsecutorTheme`.
-- **Files**:
-    - `ConsecutorTheme.kt`
-    - `MainActivity.kt`
+- list active trackers
+- show current streak, longest streak, total value, and recent completion rate
+- quick-log a tracker
+- open tracker detail
 
----
+### 3.2 Tracker Detail
 
-## 3. Architecture and File Structure
+- show tracker metadata
+- show current and longest streak
+- show recent trend
+- show editable history
+- add, edit, and delete entries
+- archive tracker
 
-Consecutor employs the MVVM architecture, separating the UI, business logic, and data layers for maintainability and scalability.
+### 3.3 Tracker Editor
 
-### 3.1 Key Files and Their Roles
+- create or edit trackers
+- select tracker type
+- configure optional target
+- configure optional reminder
 
-- **MainActivity.kt**:
-    - **Role**: App entry point, sets up Jetpack Compose UI, and provides `EventViewModel` to `EventListScreen`.
-    - **Location**: `app/src/main/java/com/squalor/consecutor/MainActivity.kt`
+### 3.4 Export / Import
 
-- **EventListScreen.kt**:
-    - **Role**: Main screen composable, includes event list, add event trigger, and export functionality. Contains `EventItem` composable.
-    - **Location**: `app/src/main/java/com/squalor/consecutor/EventListScreen.kt`
+- export CSV snapshot
+- export full JSON backup
+- import full JSON backup
 
-- **AddEventDialog.kt**:
-    - **Role**: Composable dialog for adding new events.
-    - **Location**: `app/src/main/java/com/squalor/consecutor/ui/AddEventDialog.kt`
+Import replaces the current local state.
 
-- **EventViewModel.kt**:
-    - **Role**: Manages UI data and operations (insert, update, delete, increment, export).
-    - **Location**: `app/src/main/java/com/squalor/consecutor/EventViewModel.kt`
+### 3.5 Reminders
 
-- **EventRepository.kt**:
-    - **Role**: Handles data operations and business logic, including counter increment rules.
-    - **Location**: `app/src/main/java/com/squalor/consecutor/EventRepository.kt`
+- local-only notifications
+- no remote services
+- notification permission required on Android 13+
 
-- **EventDao.kt**:
-    - **Role**: Data Access Object for CRUD operations on the events table.
-    - **Location**: `app/src/main/java/com/squalor/consecutor/EventDao.kt`
+## 4. Architecture
 
-- **AppDatabase.kt**:
-    - **Role**: Defines the Room database with SQLCipher encryption.
-    - **Location**: `app/src/main/java/com/squalor/consecutor/AppDatabase.kt`
+### 4.1 Storage
 
-- **Converters.kt**:
-    - **Role**: Type converters for `LocalDate` in Room.
-    - **Location**: `app/src/main/java/com/squalor/consecutor/Converters.kt`
+- `Room` over SQLite
+- entities:
+  - `TrackerEntity`
+  - `EntryEntity`
+  - `TargetEntity`
+  - `ReminderEntity`
 
-- **ConsecutorApp.kt**:
-    - **Role**: Application class initializing the database and repository.
-    - **Location**: `app/src/main/java/com/squalor/consecutor/ConsecutorApp.kt`
+### 4.2 App Layers
 
-- **Event.kt**:
-    - **Role**: Defines the `Event` data class, the database entity.
-    - **Location**: `app/src/main/java/com/squalor/consecutor/Event.kt`
+- `TrackerRepository`
+  - persistence
+  - import/export
+  - tracker and entry mutations
+- `TrackerAnalytics`
+  - streak and summary calculations
+- `TrackerViewModel`
+  - screen state
+  - user actions
+- Compose UI
+  - dashboard
+  - detail
+  - forms
+  - settings
 
-- **EventViewModelFactory.kt**:
-    - **Role**: Factory for creating `EventViewModel` instances with repository dependency.
-    - **Location**: `app/src/main/java/com/squalor/consecutor/EventViewModelFactory.kt`
+### 4.3 Dependency Strategy
 
-- **ConsecutorTheme.kt**:
-    - **Role**: Defines the app’s theme (colors and typography).
-    - **Location**: `app/src/main/java/com/squalor/consecutor/ui/theme/ConsecutorTheme.kt`
+- manual DI via `ConsecutorApp`
+- `TrackerViewModelFactory`
+- no Hilt in MVP
 
----
+## 5. Privacy Requirements
 
-## 4. Non-Functional Requirements
+- all app data stays local unless explicitly exported
+- automatic Android backup disabled
+- no analytics SDKs
+- no ad SDKs
+- no account system
+- exported files are user-managed copies
 
-- **Security**: Data must be encrypted locally to protect user privacy.
-- **Performance**: The app should efficiently handle up to 100 events without UI lag.
-- **Usability**: The interface must be intuitive, with clear actions for all features.
-- **Maintainability**: Code must be well-organized with documentation for future enhancements.
+## 6. Non-Goals For MVP
 
----
+- cross-platform runtime sharing
+- cloud sync
+- collaboration
+- widgets
+- advanced analytics suite
+- password-encrypted backup files
 
-## 5. Future Enhancements
-
-- **Dark Theme**: Add dark theme support with user or system-based toggling.
-- **Filtering/Sorting**: Enable event filtering by folders or sorting by criteria.
-- **Reminders**: Add notifications to prompt daily event increments.
-- **Backup/Restore**: Implement data backup and restore functionality.
-
----
-
-This document outlines Consecutor’s features, goals, and implementation details, mapping each to specific files for clarity. It serves as a foundation for understanding, maintaining, and extending the app. For additional details, please refer to the codebase or contact the development team.
+Cross-platform support remains on the roadmap, but the current repository and implementation are Android-first. Future plans are tracked in `ROADMAP.md`.

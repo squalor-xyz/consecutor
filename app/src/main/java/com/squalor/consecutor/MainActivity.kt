@@ -8,12 +8,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import com.squalor.consecutor.ui.theme.ConsecutorTheme
 
-/**
- * Main entry point of the app, hosting the Jetpack Compose UI.
- */
 class MainActivity : ComponentActivity() {
-    private val viewModel: EventViewModel by viewModels {
-        EventViewModelFactory((application as ConsecutorApp).repository)
+    private val viewModel: TrackerViewModel by viewModels {
+        val app = application as ConsecutorApp
+        TrackerViewModelFactory(app.repository, app.reminderScheduler)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,7 +19,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             ConsecutorTheme {
                 Surface(color = MaterialTheme.colorScheme.background) {
-                    EventListScreen(viewModel)
+                    MainScreen(viewModel)
                 }
             }
         }
