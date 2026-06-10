@@ -1,18 +1,14 @@
 package com.squalor.consecutor
 
 import android.app.Application
-import net.sqlcipher.database.SQLiteDatabase
 
-/**
- * Application class to provide singleton access to the encrypted database and repository.
- */
 class ConsecutorApp : Application() {
     override fun onCreate() {
         super.onCreate()
-        SQLiteDatabase.loadLibs(this) // Load SQLCipher native libraries
+        reminderScheduler.ensureNotificationChannel()
     }
 
-    // Lazy initialization ensures the database is created only when needed
     val database by lazy { AppDatabase.getDatabase(this) }
-    val repository by lazy { EventRepository(database.eventDao()) }
+    val repository by lazy { TrackerRepository(database, database.trackerDao()) }
+    val reminderScheduler by lazy { ReminderScheduler(this) }
 }

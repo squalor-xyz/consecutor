@@ -1,81 +1,78 @@
-# Building and Deploying Consecutor
+# Building Consecutor
 
-## Prerequisites
+This file is the short entry point for building the app.
 
-- **Android Studio**: Latest stable version (e.g., Koala | 2024.1.1 or later).
-- **JDK**: Version 11 or higher.
-- **Git**: For cloning and managing the repository.
+For the full developer workflow, including:
 
-## Setting Up the Development Environment
+- macOS and Linux setup
+- command-line build and test commands
+- manual QA
+- signing
+- generating APKs and AABs
+- Google Play deployment
+- F-Droid submission
 
-1. **Install Android Studio**: Download from [developer.android.com/studio](https://developer.android.com/studio).
-2. **Install JDK 11**: Ensure it’s available in your PATH or configured in Android Studio.
-3. **Clone the Repository**: Run `git clone https://github.com/squalor-xyz/consecutor.git`.
-4. **Open the Project**: Launch Android Studio, select “Open an existing project,” and choose the cloned directory.
+see [DEVELOPERS.md](DEVELOPERS.md).
 
-## Building the App
+## Quick Start
 
-1. **Sync Gradle**: In Android Studio, go to `File > Sync Project with Gradle Files`.
-2. **Build the App**:
-   - **UI**: Click `Build > Make Project`.
-   - **Terminal**: Run `./gradlew build` in the project root.
-3. **Run the App**:
-   - Select a device/emulator in Android Studio and click the `Run` button.
-   - Alternatively, use `./gradlew installDebug` to install on a connected device.
+Requirements:
 
-## Building Different Variants
+- Android Studio Koala or newer
+- JDK 17
+- Android SDK 34
 
-- **Debug**: `./gradlew assembleDebug` (outputs to `app/build/outputs/apk/debug/`).
-- **Release**: `./gradlew assembleRelease` (requires signing; see below).
+Basic local flow:
 
-## Signing the APK
+1. Clone the repository.
+2. Open it in Android Studio.
+3. Confirm Gradle is using JDK 17.
+4. Let the project sync.
+5. Run the `app` configuration on a device or emulator running Android 8.0+.
 
-1. **Generate a Signing Key**:
-   - In Android Studio: `Build > Generate Signed Bundle/APK > APK > Create New`.
-   - Fill in the key details (e.g., alias, password, keystore path).
-2. **Configure Signing**:
-   - Edit `app/build.gradle`:
-     android {
-     signingConfigs {
-     release {
-     storeFile file('path/to/keystore.jks')
-     storePassword 'your_store_password'
-     keyAlias 'your_key_alias'
-     keyPassword 'your_key_password'
-     }
-     }
-     buildTypes {
-     release {
-     signingConfig signingConfigs.release
-     }
-     }
-     }
-3. **Build Signed APK**: Run `./gradlew assembleRelease`.
+Useful commands:
 
-## Deploying to Google Play Store
+- `./gradlew assembleDebug`
+- `./gradlew test`
+- `./gradlew installDebug`
 
-1. **Prepare the App**:
-   - Update `versionCode` and `versionName` in `app/build.gradle`.
-   - Ensure the APK is signed (see above).
-2. **Upload to Play Console**:
-   - Sign up for a Google Play Developer account at [play.google.com/console](https://play.google.com/console).
-   - Create a new app, upload the signed APK, and complete the store listing.
-3. **Publish**: Submit for review and publish once approved.
+## Fire It Up For MVP Testing
 
-## Automated Builds with GitHub Actions
+From a machine with Android Studio, JDK 17, and Android SDK 34 installed:
 
-A workflow is included in `.github/workflows/build.yml`:
-- **Triggers**: Runs on push or pull request to the main branch.
-- **Steps**: Sets up JDK 11, builds the APK, and runs unit tests.
-- **Releasing**: Tag a commit (e.g., `git tag v1.0.0`), push it (`git push origin v1.0.0`), and create a GitHub Release with the APK.
+1. Open the repository in Android Studio.
+2. Let Gradle sync finish.
+3. Start an emulator from Device Manager, or connect an Android device with USB debugging enabled.
+4. Run the `app` configuration from Android Studio.
 
-## Manual Deployment (Alternative)
+Command-line flow:
 
-- **Copy APK**: Find the APK in `app/build/outputs/apk/debug/app-debug.apk`.
-- **Install via ADB**: Connect a device and run `adb install app-debug.apk`.
+1. Verify Java: `java -version`
+2. Verify Gradle: `./gradlew -version`
+3. Run unit tests: `./gradlew test`
+4. Build a debug APK: `./gradlew assembleDebug`
+5. Install to a connected emulator/device: `./gradlew installDebug`
+6. Launch from the device launcher, or run `adb shell monkey -p com.squalor.consecutor -c android.intent.category.LAUNCHER 1`
 
-## Troubleshooting
+Debug APK output:
 
-- **Gradle Sync Fails**: Ensure JDK 11 is set in `File > Project Structure > SDK Location`.
-- **SQLCipher Errors**: Verify native libraries load correctly (check `ConsecutorApp.onCreate`).
-- **Emulator Issues**: Use a device with API 21+ and sufficient storage.
+- `app/build/outputs/apk/debug/app-debug.apk`
+
+MVP smoke test:
+
+1. Create a `YES_NO` tracker with a daily target, then quick-log it from the dashboard.
+2. Create a `COUNT` tracker with a weekly target, add entries for current and past dates, and confirm streaks update.
+3. Create a `MEASURE` tracker, open its detail screen, and log a numeric value.
+4. Edit and delete at least one entry.
+5. Archive a tracker and confirm it leaves the active dashboard.
+6. Export CSV from Settings and confirm Android opens the share sheet.
+7. Export a JSON backup, clear app data or reinstall, import that backup, and confirm trackers return.
+8. On Android 13+, enable notifications and create a reminder to verify the permission prompt and local notification behavior.
+
+## Build Notes
+
+- The app is Android-first in the current repository.
+- The persistence layer is Room over SQLite.
+- Automatic Android backup is disabled intentionally.
+- Portability is handled through explicit CSV export and JSON backup import/export.
+- Reminder notifications require notification permission on Android 13+.
