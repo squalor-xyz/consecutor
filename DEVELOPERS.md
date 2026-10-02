@@ -36,7 +36,11 @@ Typical package-manager path:
 - `brew install --cask android-studio`
 - `brew install openjdk@17`
 
-After installing a JDK through Homebrew, ensure Android Studio or your shell can see it. Verify with:
+Homebrew's `openjdk@17` is keg-only and is not on `PATH` by default (macOS `/usr/bin/java` then reports "Unable to locate a Java Runtime"). Point Gradle at it with `JAVA_HOME` in your shell profile rather than in `gradle.properties`:
+
+- `export JAVA_HOME="$(brew --prefix openjdk@17)"`
+
+Do not commit `org.gradle.java.home`; it is machine-specific and breaks CI. Verify with:
 
 - `java -version`
 - `./gradlew -version`

@@ -10,10 +10,12 @@
       "id": "S01",
       "title": "Build green: remove machine-specific JDK path and fix compile errors",
       "short_title": "Build green: remove machine-specific JDK path and fix compile errors",
-      "status": "open",
+      "status": "done",
       "has_slice": true,
       "depends_on": [],
-      "notes": [],
+      "notes": [
+        "**2026-10-02** — AGP 8.13.2 + Gradle 8.13 + Kotlin 1.9.20 + Compose compiler 1.5.4 build fine with JDK 17 (Homebrew openjdk@17); no version change needed. Compile fixes: elvis precedence at TrackerAnalytics.kt:80 (confirmed error: 'floating-point literal does not conform to expected type Nothing') and missing @OptIn(ExperimentalLayoutApi) on TrackerEditorDialog (FlowRow)."
+      ],
       "claim": null,
       "fields": {
         "size": "S",
@@ -29,7 +31,7 @@
         "importance": 3,
         "urgency": 3,
         "effort": 1,
-        "attempts": 0
+        "attempts": 1
       }
     },
     {

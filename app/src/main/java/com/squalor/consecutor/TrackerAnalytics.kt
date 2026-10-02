@@ -77,7 +77,7 @@ object TrackerAnalytics {
             TrendPoint(
                 date = date,
                 value = value,
-                metTarget = target?.let { targetMet(value, it) } ?: value > 0.0
+                metTarget = target?.let { targetMet(value, it) } ?: (value > 0.0)
             )
         }
     }

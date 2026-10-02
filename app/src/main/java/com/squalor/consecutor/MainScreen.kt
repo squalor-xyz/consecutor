@@ -520,6 +520,7 @@ private fun maybeRequestNotifications(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun TrackerEditorDialog(
     initial: TrackerDetail?,

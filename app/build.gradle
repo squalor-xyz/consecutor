@@ -1,4 +1,8 @@
 // app/build.gradle
+// NOTE: Dependency versions are currently pinned directly in this file.
+// The root project uses a version catalog (gradle/libs.versions.toml + settings.gradle.kts + build.gradle.kts)
+// primarily for plugins so far. We avoided a larger migration during the MVP implementation pass.
+// When adding/updating deps, try to keep versions in sync here and consider a follow-up catalog alignment.
 plugins {
     id 'com.android.application'
     id 'kotlin-android'

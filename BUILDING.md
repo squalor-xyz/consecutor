@@ -26,7 +26,7 @@ Basic local flow:
 
 1. Clone the repository.
 2. Open it in Android Studio.
-3. Confirm Gradle is using JDK 17.
+3. Confirm Gradle is using JDK 17. From a shell, set `JAVA_HOME` to a JDK 17 (for Homebrew: `export JAVA_HOME="$(brew --prefix openjdk@17)"`); do not commit `org.gradle.java.home`.
 4. Let the project sync.
 5. Run the `app` configuration on a device or emulator running Android 8.0+.
 
