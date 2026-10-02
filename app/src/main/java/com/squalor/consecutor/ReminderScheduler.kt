@@ -17,8 +17,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
-import java.time.LocalDateTime
-import java.time.ZoneId
+import java.time.LocalTime
+import java.time.ZonedDateTime
 
 class ReminderScheduler(private val context: Context) {
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
@@ -85,29 +85,8 @@ class ReminderScheduler(private val context: Context) {
         NotificationManagerCompat.from(context).notify(trackerId.toInt(), notification)
     }
 
-    private fun nextTrigger(reminder: ReminderEntity): Long {
-        val zoneId = ZoneId.systemDefault()
-        var next = LocalDateTime.now(zoneId)
-            .withHour(reminder.hourOfDay)
-            .withMinute(reminder.minuteOfHour)
-            .withSecond(0)
-            .withNano(0)
-
-        if (!next.isAfter(LocalDateTime.now(zoneId))) {
-            next = next.plusDays(1)
-        }
-
-        val allowedDays = reminder.daysOfWeekCsv
-            ?.split(",")
-            ?.mapNotNull { it.toIntOrNull()?.let(DayOfWeek::of) }
-            ?.toSet()
-            ?: emptySet()
-
-        while (allowedDays.isNotEmpty() && next.dayOfWeek !in allowedDays) {
-            next = next.plusDays(1)
-        }
-        return next.atZone(zoneId).toInstant().toEpochMilli()
-    }
+    private fun nextTrigger(reminder: ReminderEntity): Long =
+        nextReminderTrigger(reminder, ZonedDateTime.now())
 
     private fun pendingIntent(trackerId: Long, intent: Intent): PendingIntent {
         return PendingIntent.getBroadcast(
@@ -127,6 +106,27 @@ class ReminderScheduler(private val context: Context) {
 
     private fun canScheduleExactAlarms(): Boolean {
         return Build.VERSION.SDK_INT < Build.VERSION_CODES.S || alarmManager.canScheduleExactAlarms()
+    }
+}
+
+/**
+ * Next reminder time strictly after [now], in [now]'s zone. Empty weekday set means every day.
+ * Pure date math so it can be unit tested without Android.
+ */
+internal fun nextReminderTrigger(reminder: ReminderEntity, now: ZonedDateTime): Long {
+    val allowedDays = reminder.daysOfWeekCsv
+        ?.split(",")
+        ?.mapNotNull { it.toIntOrNull()?.let(DayOfWeek::of) }
+        ?.toSet()
+        ?: emptySet()
+
+    var date = now.toLocalDate()
+    while (true) {
+        val candidate = ZonedDateTime.of(date, LocalTime.of(reminder.hourOfDay, reminder.minuteOfHour), now.zone)
+        if (candidate.isAfter(now) && (allowedDays.isEmpty() || date.dayOfWeek in allowedDays)) {
+            return candidate.toInstant().toEpochMilli()
+        }
+        date = date.plusDays(1)
     }
 }
 
