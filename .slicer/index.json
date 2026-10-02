@@ -38,7 +38,7 @@
       "id": "S02",
       "title": "Test real reminder scheduling logic instead of a copy",
       "short_title": "Test real reminder scheduling logic instead of a copy",
-      "status": "open",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S01"
@@ -59,7 +59,7 @@
         "importance": 3,
         "urgency": 3,
         "effort": 1,
-        "attempts": 0
+        "attempts": 1
       }
     },
     {

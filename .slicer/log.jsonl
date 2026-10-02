@@ -37,3 +37,5 @@
 {"when": "2026-10-02T16:31:47Z", "item": "S01", "action": "status", "from": "open", "to": "started", "note": "", "by": "Jon R"}
 {"when": "2026-10-02T16:32:55Z", "item": "S01", "action": "note", "from": "", "to": "", "note": "AGP 8.13.2 + Gradle 8.13 + Kotlin 1.9.20 + Compose compiler "}
 {"when": "2026-10-02T16:32:55Z", "item": "S01", "action": "status", "from": "started", "to": "done", "note": "assembleDebug succeeds with JAVA_HOME=openjdk@17 and no org.gradle.java.home; app-debug.apk produced.", "by": "Jon R"}
+{"when": "2026-10-02T16:33:03Z", "item": "S02", "action": "status", "from": "open", "to": "started", "note": "", "by": "Jon R"}
+{"when": "2026-10-02T16:33:45Z", "item": "S02", "action": "status", "from": "started", "to": "done", "note": "nextReminderTrigger(reminder, ZonedDateTime) extracted as a pure top-level fn; test-side ReminderScheduler object removed. ReminderSchedulerTest 9/9 (adds DST gap, explicit-zone, full-week wait cases) and TrackerAnalyticsTest 6/6 pass. Fixed wrong expectation in earlier 'deleted entries' test (total is 2.0: two non-deleted YES_NO entries).", "by": "Jon R"}

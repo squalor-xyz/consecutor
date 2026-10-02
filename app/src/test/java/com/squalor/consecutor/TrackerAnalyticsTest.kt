@@ -87,4 +87,53 @@ class TrackerAnalyticsTest {
             updatedAtEpochMs = 0
         )
     }
+
+    @Test
+    fun `deleted entries are ignored for streaks totals and trends`() {
+        val tracker = TrackerEntity(id = 1, name = "Meditate", type = TrackerType.YES_NO, createdAtEpochMs = 0, updatedAtEpochMs = 0)
+        val bundle = TrackerBundle(
+            tracker = tracker,
+            entries = listOf(
+                entry(1, "2026-04-20"),
+                entry(1, "2026-04-21").copy(isDeleted = true),
+                entry(1, "2026-04-22")
+            ),
+            target = listOf(TargetEntity(trackerId = 1, period = TargetPeriod.DAILY, targetValue = 1.0)),
+            reminder = emptyList()
+        )
+        val summary = TrackerAnalytics.toSummary(bundle, LocalDate.parse("2026-04-22"))
+        assertEquals(1, summary.currentStreak) // 21 deleted, so 20 and 22 are not contiguous
+        assertEquals(2.0, summary.totalValue, 0.0) // 20 and 22 count as 1.0 each for YES_NO; 21 is deleted
+    }
+
+    @Test
+    fun `multiple entries on same day are aggregated for target and total`() {
+        val tracker = TrackerEntity(id = 1, name = "Water", type = TrackerType.COUNT, createdAtEpochMs = 0, updatedAtEpochMs = 0)
+        val bundle = TrackerBundle(
+            tracker = tracker,
+            entries = listOf(
+                entry(1, "2026-04-21", 4.0),
+                entry(1, "2026-04-21", 3.0)  // same day, should sum to 7
+            ),
+            target = listOf(TargetEntity(trackerId = 1, period = TargetPeriod.DAILY, targetValue = 6.0)),
+            reminder = emptyList()
+        )
+        val summary = TrackerAnalytics.toSummary(bundle, LocalDate.parse("2026-04-21"))
+        assertEquals(1, summary.currentStreak)
+        assertEquals(7.0, summary.totalValue, 0.0)
+    }
+
+    @Test
+    fun `streak is zero when no recent satisfied periods`() {
+        val tracker = TrackerEntity(id = 1, name = "Run", type = TrackerType.YES_NO, createdAtEpochMs = 0, updatedAtEpochMs = 0)
+        val bundle = TrackerBundle(
+            tracker = tracker,
+            entries = listOf(entry(1, "2026-04-01")),
+            target = listOf(TargetEntity(trackerId = 1, period = TargetPeriod.DAILY, targetValue = 1.0)),
+            reminder = emptyList()
+        )
+        val summary = TrackerAnalytics.toSummary(bundle, LocalDate.parse("2026-04-21"))
+        assertEquals(0, summary.currentStreak)
+        assertEquals(1, summary.longestStreak)
+    }
 }
