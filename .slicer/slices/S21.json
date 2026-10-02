@@ -1,0 +1,39 @@
+{
+  "id": "S21",
+  "title": "Tagged release workflow publishing signed APK to GitHub releases",
+  "lead": [],
+  "depends_note": null,
+  "findings_note": "",
+  "size": "S",
+  "flags": [],
+  "trees_note": "release",
+  "trees_plural": false,
+  "boundary": "**Not in this slice:**",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "GitHub releases are a chosen distribution channel. Builds should be reproducible from a tag rather than a laptop."
+    },
+    {
+      "heading": "Files",
+      "body": "- .github/workflows/release.yml (new)"
+    },
+    {
+      "heading": "Failing tests",
+      "body": "- None."
+    },
+    {
+      "heading": "Implement",
+      "body": "1. Trigger on `push: tags: ['v*']`. Run `./gradlew testDebugUnitTest assembleRelease`, signing from repository secrets: a base64 keystore plus passwords. The owner creates these secrets; the slice only documents the names.\n2. Attach `app-release.apk` and its SHA-256 to the release via `softprops/action-gh-release` (MIT) or the `gh release create` CLI. Prefer `gh`, since it's preinstalled on the runners.\n3. Fail the workflow if the tag's version doesn't match `versionName`."
+    },
+    {
+      "heading": "Check",
+      "body": "- Push a `v0.9.0-rc1` tag to a fork or test repo → the release appears with a signed APK that installs over a previous one."
+    },
+    {
+      "heading": "Git",
+      "body": "Commit on `first`, message `S21: <summary>`."
+    }
+  ],
+  "notes": []
+}

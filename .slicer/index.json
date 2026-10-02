@@ -1,0 +1,872 @@
+{
+  "version": 3,
+  "id_prefix": "S",
+  "id_width": 2,
+  "next_id": 32,
+  "preamble": "",
+  "passes": [],
+  "items": [
+    {
+      "id": "S01",
+      "title": "Build green: remove machine-specific JDK path and fix compile errors",
+      "short_title": "Build green: remove machine-specific JDK path and fix compile errors",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "S",
+        "flags": [],
+        "trees": [
+          "build"
+        ],
+        "trees_literal": false,
+        "findings": "gradle.properties:25, TrackerAnalytics.kt:80, no JDK in prior agent env",
+        "pass": "",
+        "group": "P0 Build green",
+        "reason": "",
+        "importance": 3,
+        "urgency": 3,
+        "effort": 1,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S02",
+      "title": "Test real reminder scheduling logic instead of a copy",
+      "short_title": "Test real reminder scheduling logic instead of a copy",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [
+        "S01"
+      ],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "S",
+        "flags": [],
+        "trees": [
+          "reminders"
+        ],
+        "trees_literal": false,
+        "findings": "ReminderSchedulerTest.kt:106",
+        "pass": "",
+        "group": "P0 Build green",
+        "reason": "",
+        "importance": 3,
+        "urgency": 3,
+        "effort": 1,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S03",
+      "title": "Run BackupCodec tests on the JVM and validate imported data",
+      "short_title": "Run BackupCodec tests on the JVM and validate imported data",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [
+        "S01"
+      ],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "M",
+        "flags": [],
+        "trees": [
+          "data"
+        ],
+        "trees_literal": false,
+        "findings": "BackupCodecTest.kt, BackupCodec.kt:62-118",
+        "pass": "",
+        "group": "P0 Build green",
+        "reason": "",
+        "importance": 3,
+        "urgency": 3,
+        "effort": 2,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S04",
+      "title": "CI: build; unit test and lint on every push and PR",
+      "short_title": "CI: build; unit test and lint on every push and PR",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [
+        "S01"
+      ],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "S",
+        "flags": [],
+        "trees": [
+          "build"
+        ],
+        "trees_literal": false,
+        "findings": ".github/workflows/build.yml",
+        "pass": "",
+        "group": "P0 Build green",
+        "reason": "",
+        "importance": 2,
+        "urgency": 3,
+        "effort": 1,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S05",
+      "title": "Freeze schema v1 baseline with foreign keys and 0..1 constraints",
+      "short_title": "Freeze schema v1 baseline with foreign keys and 0..1 constraints",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [
+        "S01"
+      ],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "M",
+        "flags": [],
+        "trees": [
+          "data"
+        ],
+        "trees_literal": false,
+        "findings": "AppDatabase.kt:12,29; TrackerModels.kt; TrackerRepository.kt:49,69,218",
+        "pass": "",
+        "group": "P1 Correctness",
+        "reason": "",
+        "importance": 3,
+        "urgency": 2,
+        "effort": 2,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S06",
+      "title": "Move IO off the main thread and handle every ViewModel failure",
+      "short_title": "Move IO off the main thread and handle every ViewModel failure",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [
+        "S01"
+      ],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "S",
+        "flags": [],
+        "trees": [
+          "data"
+        ],
+        "trees_literal": false,
+        "findings": "TrackerViewModel.kt:39-63,86; TrackerRepository.kt:127,134",
+        "pass": "",
+        "group": "P1 Correctness",
+        "reason": "",
+        "importance": 2,
+        "urgency": 2,
+        "effort": 1,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S07",
+      "title": "Fix detail-screen flow resubscription and midnight rollover",
+      "short_title": "Fix detail-screen flow resubscription and midnight rollover",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [
+        "S01"
+      ],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "S",
+        "flags": [],
+        "trees": [
+          "ui"
+        ],
+        "trees_literal": false,
+        "findings": "MainScreen.kt:85; TrackerAnalytics.kt:11,38; TrackerRepository.kt:117",
+        "pass": "",
+        "group": "P1 Correctness",
+        "reason": "",
+        "importance": 3,
+        "urgency": 2,
+        "effort": 1,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S08",
+      "title": "Reminder reliability: inexact alarms; stale-alarm cleanup; time changes; tap-to-open",
+      "short_title": "Reminder reliability: inexact alarms; stale-alarm cleanup; time changes; tap-to-open",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [
+        "S02",
+        "S05"
+      ],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "M",
+        "flags": [],
+        "trees": [
+          "reminders"
+        ],
+        "trees_literal": false,
+        "findings": "ReminderScheduler.kt:39; AndroidManifest.xml SCHEDULE_EXACT_ALARM; TrackerRepository.importBackup",
+        "pass": "",
+        "group": "P1 Correctness",
+        "reason": "",
+        "importance": 3,
+        "urgency": 2,
+        "effort": 2,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S09",
+      "title": "Notification permission UX that reflects real state",
+      "short_title": "Notification permission UX that reflects real state",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [
+        "S08"
+      ],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "S",
+        "flags": [],
+        "trees": [
+          "ui"
+        ],
+        "trees_literal": false,
+        "findings": "MainScreen.kt:111,123,247-251,514-521",
+        "pass": "",
+        "group": "P1 Correctness",
+        "reason": "",
+        "importance": 2,
+        "urgency": 2,
+        "effort": 1,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S10",
+      "title": "System back navigation and state that survives rotation",
+      "short_title": "System back navigation and state that survives rotation",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [
+        "S07"
+      ],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "S",
+        "flags": [],
+        "trees": [
+          "ui"
+        ],
+        "trees_literal": false,
+        "findings": "MainScreen.kt:67-255 (no BackHandler); editor dialogs use remember",
+        "pass": "",
+        "group": "P2 MVP UX",
+        "reason": "",
+        "importance": 3,
+        "urgency": 3,
+        "effort": 1,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S11",
+      "title": "Brand theme: light and dark palettes following the system",
+      "short_title": "Brand theme: light and dark palettes following the system",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [
+        "S01"
+      ],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "S",
+        "flags": [],
+        "trees": [
+          "ui"
+        ],
+        "trees_literal": false,
+        "findings": "ConsecutorTheme.kt (template #6200EE light-only); res/values/themes.xml DarkActionBar",
+        "pass": "",
+        "group": "P2 MVP UX",
+        "reason": "",
+        "importance": 2,
+        "urgency": 2,
+        "effort": 1,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S12",
+      "title": "Consecutor app icon (adaptive and themed; FLOSS-licensed)",
+      "short_title": "Consecutor app icon (adaptive and themed; FLOSS-licensed)",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "M",
+        "flags": [],
+        "trees": [
+          "release"
+        ],
+        "trees_literal": false,
+        "findings": "res/drawable/ic_launcher_foreground.xml (template); branding/LICENSE reserves all marks",
+        "pass": "",
+        "group": "P2 MVP UX",
+        "reason": "",
+        "importance": 2,
+        "urgency": 1,
+        "effort": 2,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S13",
+      "title": "Today-first dashboard with one-tap logging and undo",
+      "short_title": "Today-first dashboard with one-tap logging and undo",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [
+        "S05",
+        "S07"
+      ],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "L",
+        "flags": [],
+        "trees": [
+          "ui"
+        ],
+        "trees_literal": false,
+        "findings": "TrackerDao.kt:14; MainScreen.kt:277-343; TrackerRepository.kt:111",
+        "pass": "",
+        "group": "P2 MVP UX",
+        "reason": "",
+        "importance": 3,
+        "urgency": 2,
+        "effort": 3,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S14",
+      "title": "Date and time pickers with inline validation in editors",
+      "short_title": "Date and time pickers with inline validation in editors",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [
+        "S10"
+      ],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "M",
+        "flags": [],
+        "trees": [
+          "ui"
+        ],
+        "trees_literal": false,
+        "findings": "MainScreen.kt:523-790 (text fields for date/hour/minute; Save no-ops at :650,:656,:760,:764)",
+        "pass": "",
+        "group": "P2 MVP UX",
+        "reason": "",
+        "importance": 3,
+        "urgency": 2,
+        "effort": 2,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S15",
+      "title": "Archive; restore and permanently delete trackers",
+      "short_title": "Archive; restore and permanently delete trackers",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [
+        "S05",
+        "S08"
+      ],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "M",
+        "flags": [],
+        "trees": [
+          "ui"
+        ],
+        "trees_literal": false,
+        "findings": "TrackerRepository.kt:16,68; MainScreen.kt:233-237,388",
+        "pass": "",
+        "group": "P2 MVP UX",
+        "reason": "",
+        "importance": 3,
+        "urgency": 2,
+        "effort": 2,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S16",
+      "title": "Detail charts and calendar heatmap without a chart library",
+      "short_title": "Detail charts and calendar heatmap without a chart library",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [
+        "S07"
+      ],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "L",
+        "flags": [],
+        "trees": [
+          "ui"
+        ],
+        "trees_literal": false,
+        "findings": "MainScreen.kt:395-416 (14 rows of LinearProgressIndicator with ISO dates); TrackerAnalytics.buildTrend",
+        "pass": "",
+        "group": "P2 MVP UX",
+        "reason": "",
+        "importance": 2,
+        "urgency": 2,
+        "effort": 3,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S17",
+      "title": "Export and import UX: save to file; confirm before replace; flat CSV",
+      "short_title": "Export and import UX: save to file; confirm before replace; flat CSV",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [
+        "S03",
+        "S06"
+      ],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "M",
+        "flags": [],
+        "trees": [
+          "data"
+        ],
+        "trees_literal": false,
+        "findings": "TrackerRepository.kt:124-136,227-282; MainScreen.kt:242-252,462-478",
+        "pass": "",
+        "group": "P2 MVP UX",
+        "reason": "",
+        "importance": 2,
+        "urgency": 2,
+        "effort": 2,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S18",
+      "title": "Accessibility and string resources pass",
+      "short_title": "Accessibility and string resources pass",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [
+        "S13",
+        "S14",
+        "S15",
+        "S16"
+      ],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "M",
+        "flags": [],
+        "trees": [
+          "ui"
+        ],
+        "trees_literal": false,
+        "findings": "all UI strings hardcoded in MainScreen.kt; Icon(…, null) on reminder chip",
+        "pass": "",
+        "group": "P2 MVP UX",
+        "reason": "",
+        "importance": 2,
+        "urgency": 1,
+        "effort": 2,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S19",
+      "title": "Release build hardening: R8; signing; target SDK; dependency trim",
+      "short_title": "Release build hardening: R8; signing; target SDK; dependency trim",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [
+        "S04"
+      ],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "M",
+        "flags": [],
+        "trees": [
+          "release"
+        ],
+        "trees_literal": false,
+        "findings": "app/build.gradle:14,19,27; dependencies block",
+        "pass": "",
+        "group": "P3 Release",
+        "reason": "",
+        "importance": 3,
+        "urgency": 1,
+        "effort": 2,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S20",
+      "title": "Store metadata, privacy policy and user docs",
+      "short_title": "Store metadata, privacy policy and user docs",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [
+        "S19",
+        "S12"
+      ],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "M",
+        "flags": [],
+        "trees": [
+          "docs"
+        ],
+        "trees_literal": false,
+        "findings": "",
+        "pass": "",
+        "group": "P3 Release",
+        "reason": "",
+        "importance": 2,
+        "urgency": 1,
+        "effort": 2,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S21",
+      "title": "Tagged release workflow publishing signed APK to GitHub releases",
+      "short_title": "Tagged release workflow publishing signed APK to GitHub releases",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [
+        "S19"
+      ],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "S",
+        "flags": [],
+        "trees": [
+          "release"
+        ],
+        "trees_literal": false,
+        "findings": "",
+        "pass": "",
+        "group": "P3 Release",
+        "reason": "",
+        "importance": 2,
+        "urgency": 1,
+        "effort": 2,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S22",
+      "title": "Device validation gate for 1.0",
+      "short_title": "Device validation gate for 1.0",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [
+        "S18",
+        "S09",
+        "S17",
+        "S19"
+      ],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "M",
+        "flags": [],
+        "trees": [
+          "release"
+        ],
+        "trees_literal": false,
+        "findings": "",
+        "pass": "",
+        "group": "P3 Release",
+        "reason": "",
+        "importance": 3,
+        "urgency": 1,
+        "effort": 2,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S23",
+      "title": "Notification \"Mark done\" action",
+      "short_title": "Notification \"Mark done\" action",
+      "status": "later",
+      "has_slice": false,
+      "depends_on": [],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "",
+        "flags": [],
+        "trees": [
+          "reminders"
+        ],
+        "trees_literal": false,
+        "findings": "",
+        "pass": "",
+        "group": "Later",
+        "reason": "",
+        "importance": 2,
+        "urgency": 1,
+        "effort": 1,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S24",
+      "title": "Manual tracker reordering",
+      "short_title": "Manual tracker reordering",
+      "status": "later",
+      "has_slice": false,
+      "depends_on": [],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "",
+        "flags": [],
+        "trees": [
+          "ui"
+        ],
+        "trees_literal": false,
+        "findings": "",
+        "pass": "",
+        "group": "Later",
+        "reason": "",
+        "importance": 1,
+        "urgency": 1,
+        "effort": 2,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S25",
+      "title": "Password-protected backup export",
+      "short_title": "Password-protected backup export",
+      "status": "later",
+      "has_slice": false,
+      "depends_on": [],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "",
+        "flags": [],
+        "trees": [
+          "data"
+        ],
+        "trees_literal": false,
+        "findings": "",
+        "pass": "",
+        "group": "Later",
+        "reason": "",
+        "importance": 2,
+        "urgency": 1,
+        "effort": 2,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S26",
+      "title": "Revisit at-rest database encryption (SQLCipher + Keystore explored in early `first` commits)",
+      "short_title": "Revisit at-rest database encryption (SQLCipher + Keystore explored in early `first` commits)",
+      "status": "later",
+      "has_slice": false,
+      "depends_on": [],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "",
+        "flags": [],
+        "trees": [
+          "data"
+        ],
+        "trees_literal": false,
+        "findings": "",
+        "pass": "",
+        "group": "Later",
+        "reason": "",
+        "importance": 2,
+        "urgency": 1,
+        "effort": 3,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S27",
+      "title": "Tags; filtering and richer tracker organization",
+      "short_title": "Tags; filtering and richer tracker organization",
+      "status": "later",
+      "has_slice": false,
+      "depends_on": [],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "",
+        "flags": [],
+        "trees": [
+          "ui"
+        ],
+        "trees_literal": false,
+        "findings": "",
+        "pass": "",
+        "group": "Later",
+        "reason": "",
+        "importance": 1,
+        "urgency": 1,
+        "effort": 3,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S28",
+      "title": "More flexible targets and schedule rules (e.g. N times per week, specific weekdays)",
+      "short_title": "More flexible targets and schedule rules (e.g. N times per week, specific weekdays)",
+      "status": "later",
+      "has_slice": false,
+      "depends_on": [],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "",
+        "flags": [],
+        "trees": [
+          "data"
+        ],
+        "trees_literal": false,
+        "findings": "",
+        "pass": "",
+        "group": "Later",
+        "reason": "",
+        "importance": 2,
+        "urgency": 1,
+        "effort": 3,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S29",
+      "title": "Home-screen widget",
+      "short_title": "Home-screen widget",
+      "status": "later",
+      "has_slice": false,
+      "depends_on": [],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "",
+        "flags": [],
+        "trees": [
+          "ui"
+        ],
+        "trees_literal": false,
+        "findings": "",
+        "pass": "",
+        "group": "Later",
+        "reason": "",
+        "importance": 1,
+        "urgency": 1,
+        "effort": 3,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S30",
+      "title": "Extract domain; streak and backup logic into a Kotlin Multiplatform shared core",
+      "short_title": "Extract domain; streak and backup logic into a Kotlin Multiplatform shared core",
+      "status": "later",
+      "has_slice": false,
+      "depends_on": [],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "",
+        "flags": [],
+        "trees": [
+          "build"
+        ],
+        "trees_literal": false,
+        "findings": "",
+        "pass": "",
+        "group": "Later",
+        "reason": "",
+        "importance": 1,
+        "urgency": 1,
+        "effort": 3,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S31",
+      "title": "iOS client on the shared core",
+      "short_title": "iOS client on the shared core",
+      "status": "later",
+      "has_slice": false,
+      "depends_on": [
+        "S30"
+      ],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "",
+        "flags": [],
+        "trees": [
+          "build"
+        ],
+        "trees_literal": false,
+        "findings": "",
+        "pass": "",
+        "group": "Later",
+        "reason": "",
+        "importance": 1,
+        "urgency": 1,
+        "effort": 3,
+        "attempts": 0
+      }
+    }
+  ],
+  "epilogue": "## Licensing\n\n- Repository license is `MPL-2.0`.\n- Code imported from third parties must be checked for MPL-2.0 compatibility before merging.\n- Squalor LLC brand marks (RF badge, seal, SSS) are not licensed for this app; see `~/code/squalor-xyz/branding/LICENSE`.",
+  "goals": "- Ship a local-first Android habit/measurement tracker to F-Droid, Google Play and GitHub releases.\n- Entries are the source of truth; streaks, totals and trends are derived and editable through history.\n- One-tap daily logging with a clear \"done today\" state.\n- Reliable local reminders without exact-alarm permission.\n- Portable data: versioned JSON backup (import replaces state) and flat CSV export.\n- FLOSS-clean (MPL-2.0): no proprietary dependencies, analytics, ads or accounts.",
+  "non_goals": "- Cloud sync, accounts or collaboration.\n- iOS / Kotlin Multiplatform (tracked as later items).\n- Widgets.\n- Encrypted backups or at-rest encryption (tracked as later items).\n- Advanced analytics suite.\n- Squalor brand marks in the APK (brand marks are all-rights-reserved; the app icon is app-specific and MPL-2.0)."
+}

@@ -1,0 +1,41 @@
+{
+  "id": "S13",
+  "title": "Today-first dashboard with one-tap logging and undo",
+  "lead": [
+    "The core loop of a habit app is to open it, see what's left today, and tap. That loop is currently weak."
+  ],
+  "depends_note": null,
+  "findings_note": "TrackerDao.kt:14; MainScreen.kt:277-343; TrackerRepository.kt:111",
+  "size": "L",
+  "flags": [],
+  "trees_note": "ui",
+  "trees_plural": false,
+  "boundary": "**Not in this slice:**",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "- Order is `updatedAtEpochMs DESC` (TrackerDao:14), so every quick log moves the card to the top and the list reshuffles under the user's thumb.\n- There's no \"done today\" or \"today's progress\" indicator. Users can't tell what remains.\n- Quick-log on YES_NO adds a duplicate entry if tapped twice. `totalValue` then double-counts, and there's no undo.\n- MEASURE trackers have no fast path, so the user has to open the detail screen and then the dialog.\n- \"Recent completion 0%\" and its progress bar show for trackers with no target, because `completionRate` is 0 when there is no target.\n- A header block of marketing copy (\"Local-first tracker dashboard…\", MainScreen:277-287) wastes the first screen.\n- `AssistChip(onClick = {})` (MainScreen:331-332, 345-350) are focusable no-op buttons, which hurts accessibility and adds touch noise."
+    },
+    {
+      "heading": "Files",
+      "body": "- TrackerModels.kt (TrackerSummary fields), TrackerAnalytics.kt, TrackerDao.kt, TrackerRepository.kt, TrackerViewModel.kt, MainScreen.kt (or split into `ui/DashboardScreen.kt`)"
+    },
+    {
+      "heading": "Failing tests",
+      "body": "JVM, in TrackerAnalyticsTest:\n- `todayValue sums today's non-deleted entries`\n- `doneToday true for YES_NO with entry today`\n- `doneToday for COUNT daily target compares todayValue to target`\n- `completionRate null when no target`"
+    },
+    {
+      "heading": "Implement",
+      "body": "1. Add `todayValue: Double`, `doneToday: Boolean`, `todayEntryIds: List<Long>` to `TrackerSummary`, and make `completionRate: Float?` (null when there's no target or for MEASURE). Compute them in `toSummary` from the injected `today`.\n2. Change the sort to `ORDER BY isArchived ASC, createdAtEpochMs ASC`. It's stable. Manual reorder is a later item.\n3. Each card's primary action, a 48dp trailing button:\n   - YES_NO: a check toggle. Tapping when not done adds an entry for today. Tapping when done soft-deletes today's entries, after confirming via a snackbar with Undo rather than a dialog.\n   - COUNT: a `+1` button showing `todayValue / target`. Long-press opens the entry dialog for a custom amount.\n   - MEASURE: a \"Log\" button that opens the entry dialog prefilled with today.\n4. After every quick action, show a snackbar \"Logged Water (+1)\" with the action \"Undo\", which soft-deletes the created entry ID. The repo returns the new entry ID from `addEntry`. Use `SnackbarHostState.showSnackbar(actionLabel=…)` and route the message channel through a `UiEvent` sealed class instead of `String?`.\n5. Card layout: emoji + name, the status line (\"Done today\" / \"2 / 8 glasses today\" / \"Not logged today\"), a streak line (\"🔥 12-day streak · best 30\", with \"week\" for weekly targets), and the completion bar only when `completionRate != null`. Replace the MetricChips with plain `Text`. Remove the header copy and empty-state marketing; use a short empty state with a \"Create tracker\" button.\n6. Visually de-emphasize done trackers (container color `surfaceVariant`), but don't reorder them."
+    },
+    {
+      "heading": "Check",
+      "body": "- The unit tests pass.\n- Manual: tap yes/no twice → one entry, then removed via Undo. Card order never changes when logging.\n- A tracker with no target shows no completion bar."
+    },
+    {
+      "heading": "Git",
+      "body": "Commit on `first`, message `S13: <summary>`."
+    }
+  ],
+  "notes": []
+}

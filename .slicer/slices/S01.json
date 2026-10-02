@@ -1,0 +1,41 @@
+{
+  "id": "S01",
+  "title": "Build green: remove machine-specific JDK path and fix compile errors",
+  "lead": [
+    "The Phase 0 pass edited code it never compiled. Nothing else can be verified until `assembleDebug` succeeds on a clean machine and in CI."
+  ],
+  "depends_note": null,
+  "findings_note": "gradle.properties:25, TrackerAnalytics.kt:80, no JDK in prior agent env",
+  "size": "S",
+  "flags": [],
+  "trees_note": "build",
+  "trees_plural": false,
+  "boundary": "**Not in this slice:**",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "- `org.gradle.java.home=/Library/Java/...` in `gradle.properties:25` is macOS- and user-specific. The ubuntu CI job (`.github/workflows/build.yml`) fails at startup.\n- `metTarget = target?.let { targetMet(value, it) } ?: value > 0.0` (`TrackerAnalytics.kt:80`): elvis binds tighter than `>`, so this parses as `(Boolean? ?: Double) > 0.0` and should not type-check.\n- AGP was bumped to 8.13.2 and Gradle to 8.13 with Kotlin 1.9.20 and Compose compiler 1.5.4. This combination has never been built."
+    },
+    {
+      "heading": "Files",
+      "body": "- gradle.properties\n- app/src/main/java/com/squalor/consecutor/TrackerAnalytics.kt\n- gradle/libs.versions.toml, app/build.gradle (only if the AGP/KGP combination fails)\n- BUILDING.md / DEVELOPERS.md (JDK setup note)"
+    },
+    {
+      "heading": "Failing tests",
+      "body": "- `./gradlew compileDebugKotlin` currently fails, or is expected to."
+    },
+    {
+      "heading": "Implement",
+      "body": "1. Delete the `org.gradle.java.home` line and its comment. Document in BUILDING.md that `JAVA_HOME` should point at JDK 17. An alternative is a Gradle toolchain via `kotlin { jvmToolchain(17) }`; prefer that if it doesn't need the foojay resolver plugin, otherwise use the `JAVA_HOME` doc only.\n2. Fix the precedence: `metTarget = target?.let { targetMet(value, it) } ?: (value > 0.0)`.\n3. Run `./gradlew assembleDebug`. If AGP 8.13 rejects Kotlin 1.9.20, choose one of two options and record the choice in a slice note:\n   - (a) Pin AGP back to the newest version the toolchain accepts.\n   - (b) Move to Kotlin 2.x with the `org.jetbrains.kotlin.plugin.compose` plugin, removing `composeOptions.kotlinCompilerExtensionVersion`.\n4. Fix any further compile errors with the smallest change possible. Don't refactor."
+    },
+    {
+      "heading": "Check",
+      "body": "- `./gradlew assembleDebug` succeeds with only `JAVA_HOME` set.\n- `git grep org.gradle.java.home` returns nothing."
+    },
+    {
+      "heading": "Git",
+      "body": "Commit on `first`, message `S01: <summary>`."
+    }
+  ],
+  "notes": []
+}

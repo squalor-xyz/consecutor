@@ -45,6 +45,8 @@ See [BUILDING.md](BUILDING.md).
 
 Future work, including iOS support and stronger privacy/security upgrades, lives in [ROADMAP.md](ROADMAP.md).
 
+Current MVP work is tracked with `slicer` (`slicer status`); see [ROADMAP.md](ROADMAP.md).
+
 ## License
 
 `MPL-2.0`

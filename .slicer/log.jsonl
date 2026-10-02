@@ -1,0 +1,36 @@
+{"when": "2026-10-02T16:25:40Z", "item": "goals", "action": "prose", "from": "", "to": "", "note": "edit"}
+{"when": "2026-10-02T16:25:40Z", "item": "non_goals", "action": "prose", "from": "", "to": "", "note": "edit"}
+{"when": "2026-10-02T16:25:40Z", "item": "epilogue", "action": "prose", "from": "", "to": "", "note": "edit"}
+{"when": "2026-10-02T16:25:52Z", "item": "S01", "action": "add", "from": "", "to": "open", "note": "Build green: remove machine-specific JDK path and fix compile errors"}
+{"when": "2026-10-02T16:25:52Z", "item": "S02", "action": "add", "from": "", "to": "open", "note": "Test real reminder scheduling logic instead of a copy"}
+{"when": "2026-10-02T16:25:52Z", "item": "S03", "action": "add", "from": "", "to": "open", "note": "Run BackupCodec tests on the JVM and validate imported data"}
+{"when": "2026-10-02T16:25:52Z", "item": "S04", "action": "add", "from": "", "to": "open", "note": "CI: build; unit test and lint on every push and PR"}
+{"when": "2026-10-02T16:25:52Z", "item": "S05", "action": "add", "from": "", "to": "open", "note": "Freeze schema v1 baseline with foreign keys and 0..1 constraints"}
+{"when": "2026-10-02T16:25:52Z", "item": "S06", "action": "add", "from": "", "to": "open", "note": "Move IO off the main thread and handle every ViewModel failure"}
+{"when": "2026-10-02T16:25:52Z", "item": "S07", "action": "add", "from": "", "to": "open", "note": "Fix detail-screen flow resubscription and midnight rollover"}
+{"when": "2026-10-02T16:25:52Z", "item": "S08", "action": "add", "from": "", "to": "open", "note": "Reminder reliability: inexact alarms; stale-alarm cleanup; time changes; tap-to-open"}
+{"when": "2026-10-02T16:25:52Z", "item": "S09", "action": "add", "from": "", "to": "open", "note": "Notification permission UX that reflects real state"}
+{"when": "2026-10-02T16:25:52Z", "item": "S10", "action": "add", "from": "", "to": "open", "note": "System back navigation and state that survives rotation"}
+{"when": "2026-10-02T16:25:52Z", "item": "S11", "action": "add", "from": "", "to": "open", "note": "Brand theme: light and dark palettes following the system"}
+{"when": "2026-10-02T16:25:52Z", "item": "S12", "action": "add", "from": "", "to": "open", "note": "Consecutor app icon (adaptive and themed; FLOSS-licensed)"}
+{"when": "2026-10-02T16:25:52Z", "item": "S13", "action": "add", "from": "", "to": "open", "note": "Today-first dashboard with one-tap logging and undo"}
+{"when": "2026-10-02T16:25:52Z", "item": "S14", "action": "add", "from": "", "to": "open", "note": "Date and time pickers with inline validation in editors"}
+{"when": "2026-10-02T16:25:52Z", "item": "S15", "action": "add", "from": "", "to": "open", "note": "Archive; restore and permanently delete trackers"}
+{"when": "2026-10-02T16:25:52Z", "item": "S16", "action": "add", "from": "", "to": "open", "note": "Detail charts and calendar heatmap without a chart library"}
+{"when": "2026-10-02T16:25:52Z", "item": "S17", "action": "add", "from": "", "to": "open", "note": "Export and import UX: save to file; confirm before replace; flat CSV"}
+{"when": "2026-10-02T16:25:52Z", "item": "S18", "action": "add", "from": "", "to": "open", "note": "Accessibility and string resources pass"}
+{"when": "2026-10-02T16:25:52Z", "item": "S19", "action": "add", "from": "", "to": "open", "note": "Release build hardening: R8; signing; target SDK; dependency trim"}
+{"when": "2026-10-02T16:25:52Z", "item": "S20", "action": "add", "from": "", "to": "open", "note": "Store metadata, privacy policy and user docs"}
+{"when": "2026-10-02T16:25:52Z", "item": "S21", "action": "add", "from": "", "to": "open", "note": "Tagged release workflow publishing signed APK to GitHub releases"}
+{"when": "2026-10-02T16:25:52Z", "item": "S22", "action": "add", "from": "", "to": "open", "note": "Device validation gate for 1.0"}
+{"when": "2026-10-02T16:25:52Z", "item": "S23", "action": "add", "from": "", "to": "later", "note": "Notification \"Mark done\" action"}
+{"when": "2026-10-02T16:25:52Z", "item": "S24", "action": "add", "from": "", "to": "later", "note": "Manual tracker reordering"}
+{"when": "2026-10-02T16:25:52Z", "item": "S25", "action": "add", "from": "", "to": "later", "note": "Password-protected backup export"}
+{"when": "2026-10-02T16:25:52Z", "item": "S26", "action": "add", "from": "", "to": "later", "note": "Revisit at-rest database encryption (SQLCipher + Keystore explored in early `first` commits)"}
+{"when": "2026-10-02T16:25:52Z", "item": "S27", "action": "add", "from": "", "to": "later", "note": "Tags; filtering and richer tracker organization"}
+{"when": "2026-10-02T16:25:52Z", "item": "S28", "action": "add", "from": "", "to": "later", "note": "More flexible targets and schedule rules (e.g. N times per week, specific weekdays)"}
+{"when": "2026-10-02T16:25:52Z", "item": "S29", "action": "add", "from": "", "to": "later", "note": "Home-screen widget"}
+{"when": "2026-10-02T16:25:52Z", "item": "S30", "action": "add", "from": "", "to": "later", "note": "Extract domain; streak and backup logic into a Kotlin Multiplatform shared core"}
+{"when": "2026-10-02T16:25:52Z", "item": "S31", "action": "add", "from": "", "to": "later", "note": "iOS client on the shared core"}
+{"when": "2026-10-02T16:26:07Z", "item": "S01", "action": "set", "from": "", "to": "", "note": "findings gradle.properties:25, TrackerAnalytics.kt:80, PHASES.md (no JDK in agent env)→gradle.properties:25, TrackerAnalytics.kt:80, no JDK in prior agent env"}
+{"when": "2026-10-02T16:26:07Z", "item": "S17", "action": "edit", "from": "", "to": "", "note": "Why"}
