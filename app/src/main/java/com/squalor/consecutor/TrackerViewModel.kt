@@ -94,7 +94,8 @@ class TrackerViewModel(
             rescheduleReminders()
             _message.value = "Backup imported."
         }.onFailure {
-            _message.value = "Backup import failed."
+            val detail = it.message?.takeIf { m -> m.isNotBlank() } ?: it.javaClass.simpleName
+            _message.value = "Backup import failed: $detail"
         }
     }
 
