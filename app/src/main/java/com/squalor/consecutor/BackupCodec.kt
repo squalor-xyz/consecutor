@@ -1,7 +1,12 @@
 package com.squalor.consecutor
 
 import org.json.JSONArray
+import org.json.JSONException
 import org.json.JSONObject
+import java.time.LocalDate
+
+/** A backup file that cannot be imported; [message] is shown to the user. */
+class BackupFormatException(message: String) : IllegalArgumentException(message)
 
 object BackupCodec {
     private const val VERSION = 1
@@ -58,14 +63,31 @@ object BackupCodec {
     }
 
     fun decode(raw: String): ImportPayload {
-        val root = JSONObject(raw)
-        require(root.getInt("version") == VERSION) { "Unsupported backup version." }
+        val root = try {
+            JSONObject(raw)
+        } catch (e: JSONException) {
+            throw BackupFormatException("Not a Consecutor backup file.")
+        }
+        return try {
+            decodeRoot(root)
+        } catch (e: JSONException) {
+            throw BackupFormatException("Backup is missing required data: ${e.message}")
+        }
+    }
+
+    private fun decodeRoot(root: JSONObject): ImportPayload {
+        if (root.optInt("version", -1) != VERSION) {
+            throw BackupFormatException("Unsupported backup version.")
+        }
 
         val trackers = mutableListOf<ImportedTracker>()
         val items = root.getJSONArray("trackers")
         for (index in 0 until items.length()) {
             val item = items.getJSONObject(index)
             val trackerJson = item.getJSONObject("tracker")
+            val name = trackerJson.getString("name").trim()
+            ensure(name.isNotEmpty()) { "Tracker ${index + 1} has a blank name." }
+            val context = "Tracker '$name'"
             val targetJson = item.optJSONObject("target")
             val reminderJson = item.optJSONObject("reminder")
             val entriesJson = item.getJSONArray("entries")
@@ -73,11 +95,15 @@ object BackupCodec {
             val entries = mutableListOf<ImportedEntry>()
             for (entryIndex in 0 until entriesJson.length()) {
                 val entryJson = entriesJson.getJSONObject(entryIndex)
+                val effectiveDate = entryJson.getString("effectiveDate")
+                ensure(runCatching { LocalDate.parse(effectiveDate) }.isSuccess) {
+                    "$context, entry ${entryIndex + 1}: invalid date '$effectiveDate'."
+                }
                 entries += ImportedEntry(
-                    effectiveDate = entryJson.getString("effectiveDate"),
+                    effectiveDate = effectiveDate,
                     occurredAtEpochMs = entryJson.getLong("occurredAtEpochMs"),
                     value = if (entryJson.isNull("value")) null else entryJson.getDouble("value"),
-                    note = if (entryJson.isNull("note")) null else entryJson.getString("note"),
+                    note = entryJson.nullableString("note"),
                     createdAtEpochMs = entryJson.getLong("createdAtEpochMs"),
                     updatedAtEpochMs = entryJson.getLong("updatedAtEpochMs"),
                     isDeleted = entryJson.optBoolean("isDeleted", false)
@@ -86,34 +112,56 @@ object BackupCodec {
 
             trackers += ImportedTracker(
                 tracker = TrackerEntity(
-                    name = trackerJson.getString("name"),
-                    emoji = trackerJson.optString("emoji").ifBlank { null },
-                    description = trackerJson.optString("description").ifBlank { null },
-                    type = TrackerType.valueOf(trackerJson.getString("type")),
-                    unit = trackerJson.optString("unit").ifBlank { null },
-                    colorHex = trackerJson.optString("colorHex", "#1F6FEB"),
+                    name = name,
+                    emoji = trackerJson.nullableString("emoji"),
+                    description = trackerJson.nullableString("description"),
+                    type = enumValue<TrackerType>(trackerJson.getString("type"), "$context: unknown tracker type"),
+                    unit = trackerJson.nullableString("unit"),
+                    colorHex = trackerJson.nullableString("colorHex") ?: "#1F6FEB",
                     isArchived = trackerJson.optBoolean("isArchived", false),
                     createdAtEpochMs = trackerJson.getLong("createdAtEpochMs"),
                     updatedAtEpochMs = trackerJson.getLong("updatedAtEpochMs")
                 ),
                 target = targetJson?.let {
+                    val targetValue = it.getDouble("targetValue")
+                    ensure(targetValue > 0.0) { "$context: target must be greater than zero." }
                     ImportedTarget(
-                        period = TargetPeriod.valueOf(it.getString("period")),
-                        targetValue = it.getDouble("targetValue")
+                        period = enumValue<TargetPeriod>(it.getString("period"), "$context: unknown target period"),
+                        targetValue = targetValue
                     )
                 },
                 reminder = reminderJson?.let {
+                    val hourOfDay = it.getInt("hourOfDay")
+                    val minuteOfHour = it.getInt("minuteOfHour")
+                    ensure(hourOfDay in 0..23) { "$context: reminder hour $hourOfDay is out of range." }
+                    ensure(minuteOfHour in 0..59) { "$context: reminder minute $minuteOfHour is out of range." }
+                    val daysOfWeekCsv = it.nullableString("daysOfWeekCsv")?.ifBlank { null }
+                    daysOfWeekCsv?.split(",")?.forEach { token ->
+                        ensure(token.trim().toIntOrNull() in 1..7) { "$context: invalid reminder weekday '$token'." }
+                    }
                     ImportedReminder(
                         enabled = it.getBoolean("enabled"),
-                        hourOfDay = it.getInt("hourOfDay"),
-                        minuteOfHour = it.getInt("minuteOfHour"),
-                        daysOfWeekCsv = it.optString("daysOfWeekCsv").ifBlank { null }
+                        hourOfDay = hourOfDay,
+                        minuteOfHour = minuteOfHour,
+                        daysOfWeekCsv = daysOfWeekCsv
                     )
                 },
                 entries = entries
             )
         }
         return ImportPayload(trackers)
+    }
+
+    // Reads absent or JSON-null keys as null. Avoids optString, whose null handling differs
+    // between Android's org.json and other implementations.
+    private fun JSONObject.nullableString(key: String): String? =
+        if (!has(key) || isNull(key)) null else getString(key)
+
+    private inline fun <reified T : Enum<T>> enumValue(name: String, message: String): T =
+        enumValues<T>().firstOrNull { it.name == name } ?: throw BackupFormatException("$message '$name'.")
+
+    private inline fun ensure(condition: Boolean, message: () -> String) {
+        if (!condition) throw BackupFormatException(message())
     }
 
     data class ImportPayload(val trackers: List<ImportedTracker>)

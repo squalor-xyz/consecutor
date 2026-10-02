@@ -67,6 +67,8 @@ dependencies {
 
     // Testing
     testImplementation 'junit:junit:4.13.2'
+    // JVM implementation of org.json (Public Domain); android.jar's org.json is a stub in local unit tests
+    testImplementation 'org.json:json:20260814'
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4"
     testImplementation "androidx.arch.core:core-testing:2.2.0"
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
