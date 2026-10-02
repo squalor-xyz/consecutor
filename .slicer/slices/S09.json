@@ -1,0 +1,39 @@
+{
+  "id": "S09",
+  "title": "Notification permission UX that reflects real state",
+  "lead": [],
+  "depends_note": null,
+  "findings_note": "MainScreen.kt:111,123,247-251,514-521",
+  "size": "S",
+  "flags": [],
+  "trees_note": "ui",
+  "trees_plural": false,
+  "boundary": "**Not in this slice:**",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "- `maybeRequestNotifications` launches the permission dialog on every save that has a reminder, even when the permission is already granted or permanently denied.\n- The Settings button is a no-op below API 33 and never shows the current state.\n- After two denials Android stops showing the dialog, and the app offers no path to system settings."
+    },
+    {
+      "heading": "Files",
+      "body": "- MainScreen.kt (or a new `ui/NotificationPermission.kt`)"
+    },
+    {
+      "heading": "Failing tests",
+      "body": "- None on the JVM. Covered by manual checks."
+    },
+    {
+      "heading": "Implement",
+      "body": "1. Use a `rememberNotificationPermissionState()` helper. It computes `granted` from `NotificationManagerCompat.areNotificationsEnabled()` and re-checks on `ON_RESUME`.\n2. When saving with a reminder: if not granted, request the permission once. If the request returns denied, show a snackbar with the action \"Open settings\", which opens `Settings.ACTION_APP_NOTIFICATION_SETTINGS` with `EXTRA_APP_PACKAGE`.\n3. The Settings card shows \"Notifications: On\" or \"Off\" with a button that either requests the permission or deep-links to settings. It's the same on all APIs, because notifications can be disabled per app on API 26–32 too.\n4. On the dashboard, show a small inline warning on the reminder label of any tracker that has a reminder while notifications are off."
+    },
+    {
+      "heading": "Check",
+      "body": "- API 33+ emulator: deny twice → the settings deep link works, and re-enabling updates the card on return.\n- API 30 emulator: disable notifications in settings → the card shows Off."
+    },
+    {
+      "heading": "Git",
+      "body": "Commit on `first`, message `S09: <summary>`."
+    }
+  ],
+  "notes": []
+}

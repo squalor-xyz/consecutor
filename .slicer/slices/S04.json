@@ -1,0 +1,39 @@
+{
+  "id": "S04",
+  "title": "CI: build; unit test and lint on every push and PR",
+  "lead": [],
+  "depends_note": null,
+  "findings_note": ".github/workflows/build.yml",
+  "size": "S",
+  "flags": [],
+  "trees_note": "build",
+  "trees_plural": false,
+  "boundary": "**Not in this slice:**",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "The workflow uses `actions/checkout@v3` and runs only on `push`. It runs `build` and then `test`, which is redundant. It uploads no reports, and it has no lint gate."
+    },
+    {
+      "heading": "Files",
+      "body": "- .github/workflows/build.yml"
+    },
+    {
+      "heading": "Failing tests",
+      "body": "- None. The workflow itself is the test."
+    },
+    {
+      "heading": "Implement",
+      "body": "1. Trigger on `push` and `pull_request`, and add `actions/checkout@v4`.\n2. Keep `actions/setup-java@v4` (temurin 17) and add `gradle/actions/setup-gradle` for caching. It's Apache-2.0 and a GitHub Action, not an app dependency.\n3. Run a single step: `./gradlew testDebugUnitTest lintDebug assembleDebug`.\n4. Upload `app/build/reports/**` on failure."
+    },
+    {
+      "heading": "Check",
+      "body": "- Push to `first`. The workflow is green and lint runs."
+    },
+    {
+      "heading": "Git",
+      "body": "Commit on `first`, message `S04: <summary>`."
+    }
+  ],
+  "notes": []
+}

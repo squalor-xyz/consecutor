@@ -1,0 +1,39 @@
+{
+  "id": "S03",
+  "title": "Run BackupCodec tests on the JVM and validate imported data",
+  "lead": [],
+  "depends_note": null,
+  "findings_note": "BackupCodecTest.kt, BackupCodec.kt:62-118",
+  "size": "M",
+  "flags": [],
+  "trees_note": "data",
+  "trees_plural": false,
+  "boundary": "**Not in this slice:**",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "- `org.json` comes from android.jar, which is a throwing stub in local unit tests, so `BackupCodecTest` errors at runtime.\n- `decode` doesn't validate values. A backup with `effectiveDate: \"2026-13-40\"`, `hourOfDay: 99`, or an empty name imports successfully, and then `TrackerAnalytics` throws `DateTimeParseException` inside the dashboard Flow, crashing the app on every launch until the data is cleared."
+    },
+    {
+      "heading": "Files",
+      "body": "- app/build.gradle (test dependency)\n- app/src/main/java/com/squalor/consecutor/BackupCodec.kt\n- app/src/test/java/com/squalor/consecutor/BackupCodecTest.kt"
+    },
+    {
+      "heading": "Failing tests",
+      "body": "- `decode rejects invalid effectiveDate`\n- `decode rejects reminder hour out of range`\n- `decode rejects blank tracker name`\n- `decode rejects unknown tracker type with readable message` (currently `IllegalArgumentException: No enum constant…`)"
+    },
+    {
+      "heading": "Implement",
+      "body": "1. Get the owner's approval for a test-only `testImplementation 'org.json:json:<latest>'`. Verify its license (stated as Public Domain since 2023) before adding it; the alternative is Robolectric, which is heavier. Record the decision in a slice note.\n2. Introduce `class BackupFormatException(message: String) : IllegalArgumentException(message)`. In `decode`, validate the following and throw with a human message (`\"Entry 3 of 'Water': invalid date '2026-13-40'\"`):\n   - The version.\n   - A non-blank name.\n   - The enum names.\n   - `LocalDate.parse(effectiveDate)`.\n   - Hour 0–23 and minute 0–59.\n   - Weekday tokens 1–7.\n   - `targetValue > 0`.\n3. The JSON null handling for `optString` of absent keys is already covered. Add one test asserting that an emoji literally equal to `\"null\"` round-trips. It will show whether `optString` returns `\"null\"`; if so, switch to `if (isNull(k)) null else getString(k)`."
+    },
+    {
+      "heading": "Check",
+      "body": "- `./gradlew testDebugUnitTest --tests '*BackupCodecTest'` passes.\n- Import a hand-corrupted backup on a device: the snackbar shows the readable message and the app doesn't crash."
+    },
+    {
+      "heading": "Git",
+      "body": "Commit on `first`, message `S03: <summary>`."
+    }
+  ],
+  "notes": []
+}

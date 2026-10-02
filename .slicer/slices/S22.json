@@ -1,0 +1,41 @@
+{
+  "id": "S22",
+  "title": "Device validation gate for 1.0",
+  "lead": [
+    "This is the go/no-go gate for publishing 1.0. Afterwards, merge `first` → `main`."
+  ],
+  "depends_note": null,
+  "findings_note": "",
+  "size": "M",
+  "flags": [],
+  "trees_note": "release",
+  "trees_plural": false,
+  "boundary": "**Not in this slice:**",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "The Manual QA Checklist in DEVELOPERS.md has never been executed, and the rebuild has never run on a device."
+    },
+    {
+      "heading": "Files",
+      "body": "- DEVELOPERS.md (checklist updated for new features)"
+    },
+    {
+      "heading": "Failing tests",
+      "body": "- Any failure found becomes a new slice via `slicer add`."
+    },
+    {
+      "heading": "Implement",
+      "body": "1. Run the release build on these emulators: API 26 (minSdk), API 30, API 33 (notification permission), the target API, and one physical device.\n2. Use the checklist from DEVELOPERS.md, extended with:\n   - quick-log and undo\n   - midnight rollover\n   - pickers\n   - archive, restore, and delete\n   - charts and calendar\n   - save-to-file export, and import confirmation with a safety copy\n   - reminder tap-through, and the timezone change\n   - reboot persistence of reminders\n   - TalkBack\n   - 200% font scale\n   - dark and light mode\n3. Record pass or fail per item with `slicer note`."
+    },
+    {
+      "heading": "Check",
+      "body": "- Every checklist item passes on every listed API level.\n- `slicer list --json` shows no open MVP-group items."
+    },
+    {
+      "heading": "Git",
+      "body": "Commit on `first`, message `S22: <summary>`. Merging `first` into `main` and tagging `v1.0.0` happens only on the owner's instruction."
+    }
+  ],
+  "notes": []
+}

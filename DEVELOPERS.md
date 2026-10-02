@@ -12,7 +12,7 @@ The current repository is Android-first:
 - local reminder notifications
 - CSV export and JSON backup import/export
 
-Future plans such as iOS support and shared-core extraction live in [ROADMAP.md](ROADMAP.md). This repository does not yet include an iOS client or Kotlin Multiplatform module.
+Future plans such as iOS support and shared-core extraction live in [ROADMAP.md](ROADMAP.md). Current MVP work is tracked as slicer items (`slicer status`, `slicer next`). This repository does not yet include an iOS client or Kotlin Multiplatform module.
 
 ## Requirements
 
@@ -352,6 +352,7 @@ Before shipping anywhere:
 - Room schema version is currently `2`.
 - `fallbackToDestructiveMigration()` is enabled.
 - That is acceptable during this rebuild phase, but production releases should replace destructive migration with explicit migrations once the schema stabilizes.
+- See Privacy Notes below for the current (no extra) at-rest encryption posture and history.
 
 ## Privacy Notes
 
@@ -359,6 +360,8 @@ Before shipping anywhere:
 - There is no account system or cloud sync in the MVP.
 - Exported files are user-managed and may contain sensitive data.
 - The current MVP does not add extra at-rest encryption on top of the local Room database.
+
+Early commits on the `first` branch explored SQLCipher (with keys wrapped by Android Keystore) for at-rest protection of the Room DB. This was intentionally omitted from the current implementation to keep the data model, backup format (BackupCodec), and import/export semantics stable during the MVP rebuild. Per the roadmap, local encryption and/or password-protected backups should be revisited once the schema and round-tripping behavior have been validated on device. Update PRIVACY.md and this section if/when that changes.
 
 ## Key Project Files
 

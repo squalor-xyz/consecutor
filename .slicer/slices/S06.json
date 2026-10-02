@@ -1,0 +1,39 @@
+{
+  "id": "S06",
+  "title": "Move IO off the main thread and handle every ViewModel failure",
+  "lead": [],
+  "depends_note": null,
+  "findings_note": "TrackerViewModel.kt:39-63,86; TrackerRepository.kt:127,134",
+  "size": "S",
+  "flags": [],
+  "trees_note": "data",
+  "trees_plural": false,
+  "boundary": "**Not in this slice:**",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "- `viewModelScope.launch` runs on Main. `contentResolver.openInputStream(...).readText()` (VM:86) and `file.writeText` (Repo:127, :134) block the UI thread, and StrictMode or a large backup turns that into jank or an ANR.\n- `archiveTracker`/`addEntry`/`updateEntry`/`deleteEntry`/`quickLog` have no `runCatching`. A Room exception crashes the app, and the user sees a success snackbar before the write has finished."
+    },
+    {
+      "heading": "Files",
+      "body": "- TrackerViewModel.kt, TrackerRepository.kt"
+    },
+    {
+      "heading": "Failing tests",
+      "body": "- None practical on the JVM without Robolectric. This slice is covered by manual check plus StrictMode."
+    },
+    {
+      "heading": "Implement",
+      "body": "1. In the repository, wrap file writes in `withContext(Dispatchers.IO)`. In the VM, read the URI inside `withContext(Dispatchers.IO)`.\n2. Add a private `launchAction(success: String, failure: String, block: suspend () -> Unit)` helper in the VM and route every mutation through it. Report the backup error detail from `BackupFormatException` only, and show generic text for anything else.\n3. Enable `StrictMode.ThreadPolicy` with `detectDiskReads/Writes().penaltyLog()` in `ConsecutorApp` under `BuildConfig.DEBUG`."
+    },
+    {
+      "heading": "Check",
+      "body": "- Export and import a backup on a debug build. Logcat shows no StrictMode disk violations from app code."
+    },
+    {
+      "heading": "Git",
+      "body": "Commit on `first`, message `S06: <summary>`."
+    }
+  ],
+  "notes": []
+}

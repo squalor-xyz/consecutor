@@ -1,0 +1,39 @@
+{
+  "id": "S10",
+  "title": "System back navigation and state that survives rotation",
+  "lead": [],
+  "depends_note": null,
+  "findings_note": "MainScreen.kt:67-255 (no BackHandler); editor dialogs use remember",
+  "size": "S",
+  "flags": [],
+  "trees_note": "ui",
+  "trees_plural": false,
+  "boundary": "**Not in this slice:**",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "- Navigation is a hand-rolled `Screen` enum with no `BackHandler`. Pressing system back or using the predictive back gesture on Detail or Settings exits the app instead of returning to the dashboard.\n- Dialog visibility and in-progress form fields use `remember`, so rotation or a dark-mode toggle loses half-typed input."
+    },
+    {
+      "heading": "Files",
+      "body": "- MainScreen.kt"
+    },
+    {
+      "heading": "Failing tests",
+      "body": "- Compose UI test (androidTest, `ui-test-junit4` is already declared): `back from detail returns to dashboard`, using `Espresso.pressBack()`."
+    },
+    {
+      "heading": "Implement",
+      "body": "1. Add `BackHandler(enabled = screen != Screen.DASHBOARD) { screen = DASHBOARD; viewModel.select(null) }` from `androidx.activity.compose`, which is already a dependency.\n2. Don't add navigation-compose. With three screens, the enum plus BackHandler is enough; revisit if more screens arrive.\n3. Make dialog-open flags `rememberSaveable`. Make the editor fields `rememberSaveable`, using a `listSaver` for `Set<DayOfWeek>`. `TrackerDetail` isn't saveable, so store `editingTrackerId: Long?` rather than the object.\n4. Add `android:enableOnBackInvokedCallback=\"true\"` to `<application>` for predictive back on API 33+."
+    },
+    {
+      "heading": "Check",
+      "body": "- On both Detail and Settings, back returns to the dashboard, and back on the dashboard exits.\n- Rotate mid-edit → the field values persist."
+    },
+    {
+      "heading": "Git",
+      "body": "Commit on `first`, message `S10: <summary>`."
+    }
+  ],
+  "notes": []
+}

@@ -1,0 +1,39 @@
+{
+  "id": "S15",
+  "title": "Archive; restore and permanently delete trackers",
+  "lead": [],
+  "depends_note": null,
+  "findings_note": "TrackerRepository.kt:16,68; MainScreen.kt:233-237,388",
+  "size": "M",
+  "flags": [],
+  "trees_note": "ui",
+  "trees_plural": false,
+  "boundary": "**Not in this slice:**",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "- \"Archive tracker\" is a text button next to \"Log entry\" with no confirmation.\n- Archived trackers disappear entirely (`filterNot { isArchived }`, Repo:16), and there's no UI to restore them.\n- `archiveTracker` deletes the reminder row, so restoring would lose the reminder config.\n- There's no way to delete a tracker permanently, short of importing a backup."
+    },
+    {
+      "heading": "Files",
+      "body": "- TrackerRepository.kt, TrackerDao.kt, TrackerViewModel.kt, MainScreen.kt\n- androidTest TrackerDaoTest"
+    },
+    {
+      "heading": "Failing tests",
+      "body": "Instrumented tests:\n- `archive keeps reminder row but disabled; unarchive re-enables`\n- `deleteTracker removes children`, which relies on the S05 cascade"
+    },
+    {
+      "heading": "Implement",
+      "body": "1. Archive sets `isArchived = true` and keeps the reminder row; the scheduler already skips archived trackers. Unarchive clears the flag and reschedules.\n2. Add an \"Archived (N)\" entry at the bottom of the dashboard list, shown only when N > 0, which opens an archived-list screen (a new `Screen.ARCHIVED`, included in BackHandler). Each row offers Restore and Delete.\n3. Move Archive into a detail top-bar overflow menu, alongside \"Delete permanently\".\n   - Archive shows an Undo snackbar.\n   - Delete shows a confirmation `AlertDialog` naming the tracker and its entry count, with a destructive-colored button.\n   - Delete cancels the reminder and pops to the dashboard.\n4. Add `deleteTracker(id)` in the DAO and repository; children go via the S05 cascade."
+    },
+    {
+      "heading": "Check",
+      "body": "- Archive → restore → the reminder is intact.\n- Delete → the tracker is gone and no reminder fires.\n- An exported backup no longer contains the deleted tracker."
+    },
+    {
+      "heading": "Git",
+      "body": "Commit on `first`, message `S15: <summary>`."
+    }
+  ],
+  "notes": []
+}

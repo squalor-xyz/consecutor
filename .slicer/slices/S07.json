@@ -1,0 +1,39 @@
+{
+  "id": "S07",
+  "title": "Fix detail-screen flow resubscription and midnight rollover",
+  "lead": [],
+  "depends_note": null,
+  "findings_note": "MainScreen.kt:85; TrackerAnalytics.kt:11,38; TrackerRepository.kt:117",
+  "size": "S",
+  "flags": [],
+  "trees_note": "ui",
+  "trees_plural": false,
+  "boundary": "**Not in this slice:**",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "- `viewModel.trackerDetail(it).collectAsState(initial = null)` (MainScreen:85) builds a new cold Flow on every recomposition. `collectAsState` restarts on each new instance, so detail flickers through `null` (\"Tracker not found.\") and re-queries Room.\n- Summaries capture `LocalDate.now()` per emission. A dashboard left open past midnight shows yesterday's \"today\" and streak until some data changes."
+    },
+    {
+      "heading": "Files",
+      "body": "- TrackerViewModel.kt, MainScreen.kt, TrackerRepository.kt"
+    },
+    {
+      "heading": "Failing tests",
+      "body": "- JVM test of a new `TrackerAnalytics` input: `today` must be injected (it already is). Add `streak continues across midnight when yesterday satisfied`."
+    },
+    {
+      "heading": "Implement",
+      "body": "1. In the VM, add `private val selectedId = MutableStateFlow<Long?>(null)` and `val detail = selectedId.flatMapLatest { id -> id?.let(repository::observeTrackerDetail) ?: flowOf(null) }.stateIn(...)`, plus `fun select(id: Long?)`. MainScreen collects `viewModel.detail`.\n2. Add a `today: StateFlow<LocalDate>` in the VM driven by a coroutine that delays until the next local midnight. Re-emit on `ON_RESUME` via `LifecycleEventEffect` (lifecycle-runtime-compose; check whether it's already transitively available, and otherwise use `DisposableEffect` with a `LifecycleEventObserver`).\n3. `combine` it into the dashboard and detail flows, and pass it to `TrackerAnalytics.toSummary/toDetail`. Quick-log uses the same `today`.\n4. Switch `collectAsState` to `collectAsStateWithLifecycle`. It needs `androidx.lifecycle:lifecycle-runtime-compose`; align all lifecycle artifacts to one version. Lifecycle is already a dependency family, but confirm the extra artifact with the owner."
+    },
+    {
+      "heading": "Check",
+      "body": "- Open a tracker. There's no \"Tracker not found\" flash.\n- Set the device clock to 23:59 with the dashboard open. After midnight, the done-today state resets without any interaction."
+    },
+    {
+      "heading": "Git",
+      "body": "Commit on `first`, message `S07: <summary>`."
+    }
+  ],
+  "notes": []
+}

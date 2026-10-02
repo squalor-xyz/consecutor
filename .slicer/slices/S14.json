@@ -1,0 +1,39 @@
+{
+  "id": "S14",
+  "title": "Date and time pickers with inline validation in editors",
+  "lead": [],
+  "depends_note": null,
+  "findings_note": "MainScreen.kt:523-790 (text fields for date/hour/minute; Save no-ops at :650,:656,:760,:764)",
+  "size": "M",
+  "flags": [],
+  "trees_note": "ui",
+  "trees_plural": false,
+  "boundary": "**Not in this slice:**",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "- Dates are typed as `YYYY-MM-DD`, and reminder hour and minute are separate free-text fields.\n- An invalid value makes Save silently `return@Button`, with no error shown.\n- Future dates are accepted, and they inflate streaks.\n- The numeric fields use the default text keyboard.\n- Changing an existing tracker's type (for example COUNT→YES_NO) silently reinterprets history.\n- The color field exists in the model but isn't editable. That's fine for the MVP; this slice won't add it."
+    },
+    {
+      "heading": "Files",
+      "body": "- MainScreen.kt (or `ui/TrackerEditor.kt`, `ui/EntryEditor.kt`)\n- new pure `EditorValidation.kt` + test"
+    },
+    {
+      "heading": "Failing tests",
+      "body": "These JVM tests cover the new pure validators:\n- `parseTarget rejects zero and negative`\n- `parseMeasure requires number`\n- `entry date after today is rejected`\n- `name required and trimmed max 60 chars`"
+    },
+    {
+      "heading": "Implement",
+      "body": "1. Add `EditorValidation.kt` with `validateTrackerForm(...)` and `validateEntryForm(..., today)`, both returning `Map<Field, String>` errors. The dialogs show `supportingText` + `isError` per field, and Save stays enabled but displays the errors.\n2. Entry date: a read-only field plus a calendar icon that opens the Material3 `DatePickerDialog`. Use `selectableDates` to block dates after `today` (UTC millis conversion via `LocalDate.atStartOfDay(ZoneOffset.UTC)`). Add quick chips for \"Today\" and \"Yesterday\".\n3. Reminder time: a single field showing the localized time (`DateTimeFormatter.ofLocalizedTime(SHORT)`), which opens a Material3 `TimePicker` in an `AlertDialog` with `is24Hour = DateFormat.is24HourFormat(context)`.\n4. Use `KeyboardOptions(keyboardType = KeyboardType.Decimal)` for the value and target fields. Parse with `NumberFormat.getInstance()` to accept a locale decimal comma.\n5. Editing an existing tracker that has entries: disable the type chips, with the helper text \"Type can't change after logging.\"\n6. Emoji field: limit it to one grapheme, using `BreakIterator.getCharacterInstance()`.\n7. Material3 1.2.1 date and time pickers are `@ExperimentalMaterial3Api`, which is acceptable. Bump only if a needed API is missing."
+    },
+    {
+      "heading": "Check",
+      "body": "- The unit tests pass.\n- Manual: a future date can't be picked, and an invalid target shows an error and doesn't save.\n- With a German locale, `2,5` is accepted for MEASURE."
+    },
+    {
+      "heading": "Git",
+      "body": "Commit on `first`, message `S14: <summary>`."
+    }
+  ],
+  "notes": []
+}

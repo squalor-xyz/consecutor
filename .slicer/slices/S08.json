@@ -1,0 +1,39 @@
+{
+  "id": "S08",
+  "title": "Reminder reliability: inexact alarms; stale-alarm cleanup; time changes; tap-to-open",
+  "lead": [],
+  "depends_note": null,
+  "findings_note": "ReminderScheduler.kt:39; AndroidManifest.xml SCHEDULE_EXACT_ALARM; TrackerRepository.importBackup",
+  "size": "M",
+  "flags": [],
+  "trees_note": "reminders",
+  "trees_plural": false,
+  "boundary": "**Not in this slice:** the \"Mark done\" notification action (later item).",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "- The owner decided to drop exact alarms. `SCHEDULE_EXACT_ALARM` is a special access permission that habit reminders shouldn't need, and Play policy scrutinizes it.\n- `importBackup` deletes all trackers and reinserts them with new IDs. `rescheduleReminders` only schedules the new IDs, so the alarms for the old IDs (PendingIntent request code = old ID) still fire with stale names.\n- There are no receivers for `ACTION_TIME_CHANGED`/`ACTION_TIMEZONE_CHANGED`, so reminders drift after travel or manual clock changes.\n- The notification has no `contentIntent`, so tapping it does nothing.\n- It fires even when the tracker is already satisfied for today."
+    },
+    {
+      "heading": "Files",
+      "body": "- ReminderScheduler.kt, AndroidManifest.xml, TrackerViewModel.kt, TrackerRepository.kt, MainActivity.kt"
+    },
+    {
+      "heading": "Failing tests",
+      "body": "- `nextReminderTrigger` tests from S02 still pass.\n- Add a JVM test for the new pure `shouldNotify(bundle, today)`: false when today's target is met, true otherwise."
+    },
+    {
+      "heading": "Implement",
+      "body": "1. Remove `SCHEDULE_EXACT_ALARM` and its comment from the manifest. Delete `canScheduleExactAlarms` and the exact branch; always call `setAndAllowWhileIdle`.\n2. Stale alarms:\n   - Before the import transaction, read the existing tracker IDs and call `cancelTracker` for each.\n   - Call `cancelTracker` on archive and on delete (S15).\n   - Add `cancelAll(ids)`.\n3. Extend `ReminderBootReceiver` with `ACTION_TIME_CHANGED`, `ACTION_TIMEZONE_CHANGED`, and `ACTION_LOCALE_CHANGED`, and add the matching manifest intent-filter actions.\n4. Add `setContentIntent(PendingIntent.getActivity(..., Intent(context, MainActivity::class.java).putExtra(EXTRA_TRACKER_ID, id), FLAG_IMMUTABLE|FLAG_UPDATE_CURRENT))`. Handle the extra in `MainActivity.onCreate/onNewIntent` by calling `viewModel.select(id)` (from S07). Use `launchMode=\"singleTop\"`.\n5. Add `shouldNotify`: the receiver loads the bundle and skips the notification if `TrackerAnalytics` reports today satisfied. Use a YES_NO entry today, or a daily COUNT at or above target. For weekly targets, always notify.\n6. Replace the stock `ic_popup_reminder` small icon with a monochrome vector app glyph from S13. Until S13 lands, use a placeholder vector.\n7. Update DEVELOPERS.md: reminders are inexact and may arrive a few minutes late."
+    },
+    {
+      "heading": "Check",
+      "body": "- Manual: set a reminder 2 minutes out → it arrives, and tapping it opens that tracker.\n- Import a backup → the old reminders don't fire.\n- Change the timezone → the reminder fires at the new local time.\n- Log a yes/no tracker today → no notification.\n- `aapt dump permissions` (or the merged manifest) has no `SCHEDULE_EXACT_ALARM`."
+    },
+    {
+      "heading": "Git",
+      "body": "Commit on `first`, message `S08: <summary>`."
+    }
+  ],
+  "notes": []
+}

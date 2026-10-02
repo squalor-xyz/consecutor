@@ -1,0 +1,39 @@
+{
+  "id": "S19",
+  "title": "Release build hardening: R8; signing; target SDK; dependency trim",
+  "lead": [],
+  "depends_note": null,
+  "findings_note": "app/build.gradle:14,19,27; dependencies block",
+  "size": "M",
+  "flags": [],
+  "trees_note": "release",
+  "trees_plural": false,
+  "boundary": "**Not in this slice:**",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "- `minifyEnabled false`, there's no signing config, and versionCode/versionName are 1/\"1.0.0\" with no scheme.\n- `compileSdk`/`targetSdk` are 34. Google Play requires a recent target API; check the current Play requirement at release time, which is at least 35 for new apps since Aug 2025.\n- The dependencies carry likely-unused artifacts: `appcompat`, `com.google.android.material` (only the XML theme parent, which S11 removes), and Compose `material` (M2). Lifecycle versions are mismatched (2.6.2 vs 2.8.2).\n- F-Droid builds from source with its own signing and prefers no blobs, so the build must not need any local-only files."
+    },
+    {
+      "heading": "Files",
+      "body": "- app/build.gradle, app/proguard-rules.pro, gradle/libs.versions.toml, .gitignore"
+    },
+    {
+      "heading": "Failing tests",
+      "body": "- `./gradlew assembleRelease` with R8 must produce an APK that launches and round-trips a backup. A manual smoke test covers this."
+    },
+    {
+      "heading": "Implement",
+      "body": "1. Set `minifyEnabled true` and `shrinkResources true`. Add keep rules only if a smoke test fails. Room and Compose ship consumer rules; the enums use `valueOf` in BackupCodec, and R8 keeps enum `valueOf` by default.\n2. Signing: add a `signingConfigs.release` read from `keystore.properties` (gitignored) or the env vars `CONSECUTOR_KEYSTORE`, `…_PASSWORD`, `…_ALIAS`, `…_KEY_PASSWORD`. When they're absent, the release build stays unsigned, which is what F-Droid wants.\n3. Versioning: `versionCode` = an integer bumped per release, `versionName` = semver. Document this in DEVELOPERS.md.\n4. Bump `compileSdk`/`targetSdk` to the current Play-required level. Then:\n   - Re-test edge-to-edge (forced on API 35+).\n   - Re-test foreground and notification behavior.\n   - Re-test the predictive back animation.\n5. Remove the unused dependencies after confirming with `./gradlew :app:dependencies` and a build. Align the lifecycle artifacts on one version. Optionally move the app dependencies into `libs.versions.toml`, and drop the explanatory comment the Phase 0 pass added at the top of app/build.gradle.\n6. Disable `dependenciesInfo { includeInApk = false; includeInBundle = false }`. F-Droid flags this signing block."
+    },
+    {
+      "heading": "Check",
+      "body": "- `./gradlew assembleRelease bundleRelease` succeeds.\n- Install the release APK → create, log, export, and import work.\n- The APK size before and after is recorded with `slicer note`."
+    },
+    {
+      "heading": "Git",
+      "body": "Commit on `first`, message `S19: <summary>`."
+    }
+  ],
+  "notes": []
+}

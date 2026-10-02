@@ -1,0 +1,39 @@
+{
+  "id": "S11",
+  "title": "Brand theme: light and dark palettes following the system",
+  "lead": [],
+  "depends_note": null,
+  "findings_note": "ConsecutorTheme.kt (template #6200EE light-only); res/values/themes.xml DarkActionBar",
+  "size": "S",
+  "flags": [],
+  "trees_note": "ui",
+  "trees_plural": false,
+  "boundary": "**Not in this slice:** Material You dynamic color and an in-app theme override. Both are owner decisions: no dynamic color, follow the system.",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "- `ConsecutorTheme` hardcodes the Android-template light scheme, and dark mode renders black-on-white.\n- The XML theme is `Theme.MaterialComponents.DayNight.DarkActionBar` with template purple/teal colors.\n- The brand palette (from `~/code/squalor-xyz/branding/STYLE_GUIDE.md`) isn't used. Colors can be used freely; the marks are reserved, but this slice uses no marks."
+    },
+    {
+      "heading": "Files",
+      "body": "- ConsecutorTheme.kt, res/values/themes.xml, res/values-night/themes.xml, res/values/colors.xml, MainActivity.kt"
+    },
+    {
+      "heading": "Failing tests",
+      "body": "- None. Covered by visual check."
+    },
+    {
+      "heading": "Implement",
+      "body": "1. Dark scheme (from the site palette):\n   - background `#0f1419`\n   - surface `#18242d`, surfaceVariant/surfaceContainerHigh `#223542`\n   - onBackground/onSurface `#f4efe7`, onSurfaceVariant `#b4c0c8`\n   - primary `#6ee7d2` with onPrimary `#0f1419`\n   - tertiary (gold, sparingly: streak/longest highlights only) `#f6c177`\n2. Light scheme (from the paper palette):\n   - background `#f7f4ef`, surface `#ffffff`, outline `#d4dde3`\n   - onSurface `#18242d`, onSurfaceVariant `#5c6b75`\n   - primary `#0f766e` with onPrimary `#ffffff`\n   - tertiary `#b45309`\n3. Select with `isSystemInDarkTheme()`. Check the contrast of primary/onPrimary and the text colors against WCAG AA (4.5:1) and adjust the containers if needed.\n4. XML: parent `android:Theme.Material.NoActionBar` in values and values-night, with `android:windowBackground` set to the background color. Call `enableEdgeToEdge()` in MainActivity; activity 1.9 has it. Ensure Scaffold insets work.\n5. Typography: keep `Typography()` defaults (system sans fits the brand's \"system sans\" guidance). Use uppercase with wide tracking only for the app-bar title \"CONSECUTOR\" on the dashboard.\n6. Remove the template colors from colors.xml."
+    },
+    {
+      "heading": "Check",
+      "body": "- Screenshots of the dashboard, detail, and editor in light and dark mode.\n- There's no white flash on cold start in dark mode."
+    },
+    {
+      "heading": "Git",
+      "body": "Commit on `first`, message `S11: <summary>`."
+    }
+  ],
+  "notes": []
+}
