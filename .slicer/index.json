@@ -94,12 +94,14 @@
       "id": "S04",
       "title": "CI: build; unit test and lint on every push and PR",
       "short_title": "CI: build; unit test and lint on every push and PR",
-      "status": "open",
+      "status": "review",
       "has_slice": true,
       "depends_on": [
         "S01"
       ],
-      "notes": [],
+      "notes": [
+        "**2026-10-02** — Ready for review: workflow triggers on push+pull_request, checkout@v4, setup-java@v4 (temurin 17), gradle/actions/setup-gradle@v4, single step testDebugUnitTest lintDebug assembleDebug, uploads reports on failure. Same command passes locally from clean (lint: 0 errors, 52 version/catalog warnings left for S19; no baseline needed). Not yet verified on GitHub: needs owner to push first. Mark done after the first green run."
+      ],
       "claim": null,
       "fields": {
         "size": "S",
@@ -115,7 +117,7 @@
         "importance": 2,
         "urgency": 3,
         "effort": 1,
-        "attempts": 0
+        "attempts": 1
       }
     },
     {
