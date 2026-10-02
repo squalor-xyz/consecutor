@@ -20,12 +20,12 @@
 - Advanced analytics suite.
 - Squalor brand marks in the APK (brand marks are all-rights-reserved; the app icon is app-specific and MPL-2.0).
 
-31 items · — 19 · done 3 · later 9
+31 items · — 18 · done 3 · later 9 · review 1
 
 | # | Slice | Title | Size | Effort | Trees | Findings | Status |
 |---|---|---|---|---|---|---|---|
 | P0 Build green | | | | | | | |
-| 1 | [S04](slices/S04.md) | CI: build; unit test and lint on every push and PR | S | 1 | build | .github/workflows/build.yml | — |
+| 1 | [S04](slices/S04.md) | CI: build; unit test and lint on every push and PR | S | 1 | build | .github/workflows/build.yml | review |
 | P1 Correctness | | | | | | | |
 | 2 | [S05](slices/S05.md) | Freeze schema v1 baseline with foreign keys and 0..1 constraints | M | 2 | data | AppDatabase.kt:12,29; TrackerModels.kt; TrackerRepository.kt:49,69,218 | — |
 | 3 | [S06](slices/S06.md) | Move IO off the main thread and handle every ViewModel failure | S | 1 | data | TrackerViewModel.kt:39-63,86; TrackerRepository.kt:127,134 | — |
