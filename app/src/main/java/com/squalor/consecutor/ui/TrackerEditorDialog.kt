@@ -22,7 +22,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,6 +35,12 @@ import com.squalor.consecutor.TrackerType
 import com.squalor.consecutor.TrackerDraft
 import com.squalor.consecutor.TargetPeriod
 
+internal val ReminderDaysSaver = listSaver<Set<DayOfWeek>, Int>(
+    // listSaver treats an empty list as unsaved, so include a count for an empty selection.
+    save = { days -> listOf(days.size) + days.map(DayOfWeek::getValue) },
+    restore = { values -> values.drop(1).map(DayOfWeek::of).toSet() }
+)
+
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun TrackerEditorDialog(
@@ -41,19 +48,21 @@ internal fun TrackerEditorDialog(
     onDismiss: () -> Unit,
     onSave: (TrackerDraft) -> Unit
 ) {
-    var name by remember { mutableStateOf(initial?.tracker?.name.orEmpty()) }
-    var emoji by remember { mutableStateOf(initial?.tracker?.emoji.orEmpty()) }
-    var description by remember { mutableStateOf(initial?.tracker?.description.orEmpty()) }
-    var unit by remember { mutableStateOf(initial?.tracker?.unit.orEmpty()) }
-    var type by remember { mutableStateOf(initial?.tracker?.type ?: TrackerType.YES_NO) }
-    var targetEnabled by remember { mutableStateOf(initial?.target != null) }
-    var targetPeriod by remember { mutableStateOf(initial?.target?.period ?: TargetPeriod.DAILY) }
-    var targetValue by remember { mutableStateOf(initial?.target?.targetValue?.toString() ?: "1") }
+    var name by rememberSaveable { mutableStateOf(initial?.tracker?.name.orEmpty()) }
+    var emoji by rememberSaveable { mutableStateOf(initial?.tracker?.emoji.orEmpty()) }
+    var description by rememberSaveable { mutableStateOf(initial?.tracker?.description.orEmpty()) }
+    var unit by rememberSaveable { mutableStateOf(initial?.tracker?.unit.orEmpty()) }
+    var type by rememberSaveable { mutableStateOf(initial?.tracker?.type ?: TrackerType.YES_NO) }
+    var targetEnabled by rememberSaveable { mutableStateOf(initial?.target != null) }
+    var targetPeriod by rememberSaveable { mutableStateOf(initial?.target?.period ?: TargetPeriod.DAILY) }
+    var targetValue by rememberSaveable { mutableStateOf(initial?.target?.targetValue?.toString() ?: "1") }
     val reminder = initial?.reminder
-    var reminderEnabled by remember { mutableStateOf(reminder?.enabled ?: false) }
-    var reminderHour by remember { mutableStateOf(reminder?.hourOfDay?.toString() ?: "20") }
-    var reminderMinute by remember { mutableStateOf(reminder?.minuteOfHour?.toString() ?: "00") }
-    var reminderDays by remember { mutableStateOf(reminder?.daysOfWeek ?: emptySet()) }
+    var reminderEnabled by rememberSaveable { mutableStateOf(reminder?.enabled ?: false) }
+    var reminderHour by rememberSaveable { mutableStateOf(reminder?.hourOfDay?.toString() ?: "20") }
+    var reminderMinute by rememberSaveable { mutableStateOf(reminder?.minuteOfHour?.toString() ?: "00") }
+    var reminderDays by rememberSaveable(
+        stateSaver = ReminderDaysSaver
+    ) { mutableStateOf(reminder?.daysOfWeek ?: emptySet()) }
 
     AlertDialog(
         onDismissRequest = onDismiss,

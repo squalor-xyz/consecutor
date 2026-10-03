@@ -2,6 +2,7 @@ package com.squalor.consecutor
 
 import android.Manifest
 import android.os.Build
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -36,6 +37,7 @@ import com.squalor.consecutor.ui.DashboardScreen
 import com.squalor.consecutor.ui.EmptyState
 import com.squalor.consecutor.ui.EntryEditorDialog
 import com.squalor.consecutor.ui.EntryEditorState
+import com.squalor.consecutor.ui.EntryEditorStateSaver
 import com.squalor.consecutor.ui.SettingsScreen
 import com.squalor.consecutor.ui.TrackerDetailScreen
 import com.squalor.consecutor.ui.TrackerEditorDialog
@@ -54,11 +56,21 @@ fun MainScreen(viewModel: TrackerViewModel) {
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
     var screen by rememberSaveable { mutableStateOf(Screen.DASHBOARD) }
+    val selectedId by viewModel.selectedId.collectAsState()
     val detailState by viewModel.detail.collectAsState()
     val selectedDetail = (detailState as? DetailState.Loaded)?.detail
-    var showTrackerEditor by remember { mutableStateOf<TrackerDetail?>(null) }
-    var showNewTrackerDialog by remember { mutableStateOf(false) }
-    var entryEditorState by remember { mutableStateOf<EntryEditorState?>(null) }
+    var editingTrackerId by rememberSaveable { mutableStateOf<Long?>(null) }
+    var showNewTrackerDialog by rememberSaveable { mutableStateOf(false) }
+    var entryEditorState by rememberSaveable(stateSaver = EntryEditorStateSaver) { mutableStateOf<EntryEditorState?>(null) }
+    val returnToDashboard: () -> Unit = {
+        screen = Screen.DASHBOARD
+        viewModel.select(null)
+    }
+    BackHandler(enabled = screen != Screen.DASHBOARD, onBack = returnToDashboard)
+    LaunchedEffect(screen, selectedId) {
+        if (screen == Screen.DETAIL && selectedId == null) screen = Screen.DASHBOARD
+    }
+
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner, viewModel) {
         val observer = LifecycleEventObserver { _, event ->
@@ -98,14 +110,14 @@ fun MainScreen(viewModel: TrackerViewModel) {
         )
     }
 
-    showTrackerEditor?.let { detail ->
+    selectedDetail?.takeIf { it.tracker.id == editingTrackerId }?.let { detail ->
         TrackerEditorDialog(
             initial = detail,
-            onDismiss = { showTrackerEditor = null },
+            onDismiss = { editingTrackerId = null },
             onSave = { draft ->
                 maybeRequestNotifications(permissionLauncher, draft)
                 viewModel.saveTracker(detail.tracker.id, draft)
-                showTrackerEditor = null
+                editingTrackerId = null
             }
         )
     }
@@ -145,10 +157,7 @@ fun MainScreen(viewModel: TrackerViewModel) {
                 },
                 navigationIcon = {
                     if (screen != Screen.DASHBOARD) {
-                        IconButton(onClick = {
-                            screen = Screen.DASHBOARD
-                            viewModel.select(null)
-                        }) {
+                        IconButton(onClick = returnToDashboard) {
                             Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                         }
                     }
@@ -162,7 +171,7 @@ fun MainScreen(viewModel: TrackerViewModel) {
                         }
                         Screen.DETAIL -> {
                             selectedDetail?.let { detail ->
-                                IconButton(onClick = { showTrackerEditor = detail }) {
+                                IconButton(onClick = { editingTrackerId = detail.tracker.id }) {
                                     Icon(Icons.Default.Edit, contentDescription = "Edit tracker")
                                 }
                             }
