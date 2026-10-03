@@ -3,7 +3,10 @@ package com.squalor.consecutor
 import android.content.Context
 import androidx.room.withTransaction
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.time.LocalDate
 
@@ -15,13 +18,13 @@ class TrackerRepository(
         return combine(trackerDao.observeTrackerBundles(), today) { bundles, date ->
             bundles.filterNot { it.tracker.isArchived }
                 .map { TrackerAnalytics.toSummary(it, date) }
-        }
+        }.flowOn(Dispatchers.Default)
     }
 
     fun observeTrackerDetail(trackerId: Long, today: Flow<LocalDate>): Flow<TrackerDetail?> {
         return combine(trackerDao.observeTrackerBundle(trackerId), today) { bundle, date ->
             bundle?.let { TrackerAnalytics.toDetail(it, date) }
-        }
+        }.flowOn(Dispatchers.Default)
     }
 
     suspend fun createTracker(draft: TrackerDraft): Long {
@@ -130,16 +133,20 @@ class TrackerRepository(
 
     suspend fun exportCsv(context: Context): File {
         val bundles = trackerDao.getTrackerBundles()
-        val file = File(context.cacheDir, "consecutor-trackers.csv")
-        file.writeText(buildCsv(bundles))
-        return file
+        return withContext(Dispatchers.IO) {
+            val file = File(context.cacheDir, "consecutor-trackers.csv")
+            file.writeText(buildCsv(bundles))
+            file
+        }
     }
 
     suspend fun exportBackup(context: Context): File {
         val bundles = trackerDao.getTrackerBundles()
-        val file = File(context.cacheDir, "consecutor-backup.json")
-        file.writeText(BackupCodec.encode(bundles))
-        return file
+        return withContext(Dispatchers.IO) {
+            val file = File(context.cacheDir, "consecutor-backup.json")
+            file.writeText(BackupCodec.encode(bundles))
+            file
+        }
     }
 
     suspend fun importBackup(rawBackup: String) {
