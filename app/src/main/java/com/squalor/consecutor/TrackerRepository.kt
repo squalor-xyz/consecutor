@@ -46,7 +46,7 @@ class TrackerRepository(
     }
 
     suspend fun updateTracker(trackerId: Long, draft: TrackerDraft) {
-        val existing = trackerDao.getTrackerBundles().firstOrNull { it.tracker.id == trackerId }?.tracker ?: return
+        val existing = trackerDao.getTracker(trackerId) ?: throw IllegalArgumentException("Unknown tracker $trackerId")
         val now = System.currentTimeMillis()
         database.withTransaction {
             trackerDao.updateTracker(
@@ -66,46 +66,53 @@ class TrackerRepository(
     }
 
     suspend fun archiveTracker(trackerId: Long) {
-        val existing = trackerDao.getTrackerBundles().firstOrNull { it.tracker.id == trackerId }?.tracker ?: return
+        val existing = trackerDao.getTracker(trackerId) ?: throw IllegalArgumentException("Unknown tracker $trackerId")
         trackerDao.updateTracker(existing.copy(isArchived = true, updatedAtEpochMs = System.currentTimeMillis()))
         trackerDao.deleteReminderForTracker(trackerId)
     }
 
     suspend fun addEntry(trackerId: Long, trackerType: TrackerType, draft: EntryDraft) {
         val now = System.currentTimeMillis()
-        trackerDao.insertEntry(
-            EntryEntity(
-                trackerId = trackerId,
-                effectiveDate = draft.effectiveDate.toString(),
-                occurredAtEpochMs = now,
-                value = normalizeValue(trackerType, draft.value),
-                note = draft.note?.trim()?.ifBlank { null },
-                createdAtEpochMs = now,
-                updatedAtEpochMs = now
+        database.withTransaction {
+            trackerDao.insertEntry(
+                EntryEntity(
+                    trackerId = trackerId,
+                    effectiveDate = draft.effectiveDate.toString(),
+                    occurredAtEpochMs = now,
+                    value = normalizeValue(trackerType, draft.value),
+                    note = draft.note?.trim()?.ifBlank { null },
+                    createdAtEpochMs = now,
+                    updatedAtEpochMs = now
+                )
             )
-        )
-        bumpTracker(trackerId, now)
+            bumpTracker(trackerId, now)
+        }
     }
 
     suspend fun updateEntry(entryId: Long, trackerId: Long, trackerType: TrackerType, draft: EntryDraft) {
-        val existing = trackerDao.getEntryById(entryId) ?: return
         val now = System.currentTimeMillis()
-        trackerDao.updateEntry(
-            existing.copy(
-                effectiveDate = draft.effectiveDate.toString(),
-                value = normalizeValue(trackerType, draft.value),
-                note = draft.note?.trim()?.ifBlank { null },
-                updatedAtEpochMs = now
+        database.withTransaction {
+            val existing = trackerDao.getEntryById(entryId) ?: return@withTransaction
+            require(existing.trackerId == trackerId) { "Entry $entryId does not belong to tracker $trackerId" }
+            trackerDao.updateEntry(
+                existing.copy(
+                    effectiveDate = draft.effectiveDate.toString(),
+                    value = normalizeValue(trackerType, draft.value),
+                    note = draft.note?.trim()?.ifBlank { null },
+                    updatedAtEpochMs = now
+                )
             )
-        )
-        bumpTracker(trackerId, now)
+            bumpTracker(trackerId, now)
+        }
     }
 
     suspend fun deleteEntry(entryId: Long, trackerId: Long) {
-        val existing = trackerDao.getEntryById(entryId) ?: return
         val now = System.currentTimeMillis()
-        trackerDao.updateEntry(existing.copy(isDeleted = true, updatedAtEpochMs = now))
-        bumpTracker(trackerId, now)
+        database.withTransaction {
+            val existing = trackerDao.getEntryById(entryId) ?: return@withTransaction
+            trackerDao.updateEntry(existing.copy(isDeleted = true, updatedAtEpochMs = now))
+            bumpTracker(trackerId, now)
+        }
     }
 
     suspend fun quickLog(summary: TrackerSummary, today: LocalDate) {
@@ -215,7 +222,7 @@ class TrackerRepository(
     }
 
     private suspend fun bumpTracker(trackerId: Long, now: Long) {
-        val tracker = trackerDao.getTrackerBundles().firstOrNull { it.tracker.id == trackerId }?.tracker ?: return
+        val tracker = trackerDao.getTracker(trackerId) ?: return
         trackerDao.updateTracker(tracker.copy(updatedAtEpochMs = now))
     }
 

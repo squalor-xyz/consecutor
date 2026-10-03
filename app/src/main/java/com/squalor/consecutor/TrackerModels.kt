@@ -2,6 +2,7 @@ package com.squalor.consecutor
 
 import androidx.room.Embedded
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.Relation
@@ -35,7 +36,15 @@ data class TrackerEntity(
 
 @Entity(
     tableName = "entries",
-    indices = [Index("trackerId")]
+    foreignKeys = [
+        ForeignKey(
+            entity = TrackerEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["trackerId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
+    indices = [Index("trackerId"), Index("trackerId", "effectiveDate")]
 )
 data class EntryEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
@@ -51,7 +60,15 @@ data class EntryEntity(
 
 @Entity(
     tableName = "targets",
-    indices = [Index("trackerId")],
+    foreignKeys = [
+        ForeignKey(
+            entity = TrackerEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["trackerId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
+    indices = [Index("trackerId", unique = true)]
 )
 data class TargetEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
@@ -62,7 +79,15 @@ data class TargetEntity(
 
 @Entity(
     tableName = "reminders",
-    indices = [Index("trackerId")],
+    foreignKeys = [
+        ForeignKey(
+            entity = TrackerEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["trackerId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
+    indices = [Index("trackerId", unique = true)]
 )
 data class ReminderEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
