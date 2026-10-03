@@ -20,7 +20,7 @@ Requirements:
 
 - Android Studio Koala or newer
 - JDK 17
-- Android SDK 34
+- Android SDK 36.1 (compile SDK; target SDK stays 34)
 
 Basic local flow:
 
@@ -38,7 +38,7 @@ Useful commands:
 
 ## Fire It Up For MVP Testing
 
-From a machine with Android Studio, JDK 17, and Android SDK 34 installed:
+From a machine with Android Studio, JDK 17, and Android SDK 36.1 installed:
 
 1. Open the repository in Android Studio.
 2. Let Gradle sync finish.

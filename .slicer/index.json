@@ -1532,13 +1532,20 @@
       "id": "S53",
       "title": "Toolchain refresh: Kotlin 2.x, Compose compiler plugin, Compose BOM, Material3 1.3, lifecycle, version catalog",
       "short_title": "Toolchain refresh: Kotlin 2.x, Compose compiler plugin, Compose BOM, Material3 1.3, lifecycle, version catalog",
-      "status": "open",
+      "status": "started",
       "has_slice": true,
       "depends_on": [
         "S04"
       ],
-      "notes": [],
-      "claim": null,
+      "notes": [
+        "**2026-10-03** — Versions chosen (looked up 2026-10-03). Kotlin 2.4.20 (kotlinlang.org/docs/releases.html; kotlinlang.org/docs/gradle-configure-project.html table lists AGP 8.5.2-9.3.1 for 2.4.20, so AGP 8.13.2 is in range). Compose BOM 2026.09.00: ui/foundation/runtime 1.12.1, material3 1.4.0, material-icons-extended 1.7.8 (developer.android.com/develop/ui/compose/bom/bom-mapping). Lifecycle 2.11.0 for runtime-ktx, runtime-compose, viewmodel-compose (developer.android.com/jetpack/androidx/releases/lifecycle). activity-compose 1.13.0 (developer.android.com/jetpack/androidx/releases/activity). AGP stays 8.13.2: max API 36.1 (developer.android.com/build/releases/past-releases/agp-8-13-0-release-notes). Room stays 2.6.0 unless Kotlin forces it. Open risk: Compose release notes mention compileSdk 37.1 from the 1.13 line; AGP 8.13 supports only up to 36.1, so fall back to an older BOM if checkDebugAarMetadata fails (an AGP bump is out of scope). Baseline: debug APK 19103397 bytes; releaseRuntimeClasspath tree 658 dependency lines; kotlinx-coroutines resolves to 1.7.3 at runtime.",
+        "**2026-10-03** — Deviations found while building. (1) Compose BOM 2026.09.00 (Compose 1.12.1) needs compileSdk 37, but AGP 8.13.2 supports at most 36.1, so BOM 2026.06.01 (Compose 1.11.4, material3 1.4.0; needs compileSdk 35) is used instead. (2) Lifecycle 2.11.0 needs compileSdk 37 and AGP 9.1.0+ (docs: AGP 9.2.0 for Compose compileSdk), so lifecycle 2.10.0 is used (developer.android.com/jetpack/androidx/releases/lifecycle). (3) activity-compose 1.13.0 and core-ktx 1.18.0 (transitive) need compileSdk 36. Platform android-36 is not installed but android-36.1 is, so app/build.gradle uses compileSdkVersion 'android-36.1' instead of installing a platform. (4) Room 2.6.0 kapt fails under Kotlin 2.4.20 with 'Unable to read Kotlin metadata due to unsupported metadata kind', so Room is raised to 2.8.5 (developer.android.com/jetpack/androidx/releases/room), still on kapt.",
+        "**2026-10-03** — Final: Kotlin 2.3.21 (2.4.20 emits metadata 2.4.0 that Room 2.8.5 kapt cannot read: 'Provided Metadata instance has version 2.4.0, while maximum supported version is 2.3.0'), Compose BOM 2026.06.01, lifecycle 2.10.0 incl. runtime-compose, activity-compose 1.13.0, Room 2.8.5 on kapt, compileSdk android-36.1 (targetSdk stays 34), kotlinx-coroutines-test 1.9.0 (runtime resolves 1.9.0). Dependency lines in releaseRuntimeClasspath: 658 -> 856. Debug APK: 19103397 -> 23387446 bytes. Remaining deprecation warnings left alone: AppDatabase.kt:29 fallbackToDestructiveMigration(), MainScreen.kt:90 LocalLifecycleOwner (moved to androidx.lifecycle.compose; S07/S09). Checks run: testDebugUnitTest lintDebug assembleDebug assembleRelease pass with JDK 17. Not run: device smoke test (no adb on PATH), CI after push. Gradle 8.13 is deprecated for Kotlin 2.5 (needs 8.14.4+), outside this slice."
+      ],
+      "claim": {
+        "owner": "Jon R",
+        "at": "2026-10-03T23:06:11Z"
+      },
       "fields": {
         "size": "M",
         "flags": [],
@@ -1553,7 +1560,7 @@
         "importance": 3,
         "urgency": 3,
         "effort": 2,
-        "attempts": 0
+        "attempts": 1
       }
     },
     {

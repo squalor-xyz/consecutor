@@ -281,3 +281,7 @@
 {"when": "2026-10-03T22:46:35Z", "item": "S50", "action": "status", "from": "review", "to": "done", "note": "Merged to main. Removed ai-output/chatgpt-output.md. No references remain outside .slicer.", "by": "Jon R"}
 {"when": "2026-10-03T22:46:35Z", "item": "S51", "action": "status", "from": "open", "to": "done", "note": "Merged to main. Explicit backup exclusions added. lintDebug and assembleDebug passed. The app was not launched on a device.", "by": "Jon R"}
 {"when": "2026-10-03T22:58:21Z", "item": "S04", "action": "status", "from": "review", "to": "done", "note": "", "by": "Jon R"}
+{"when": "2026-10-03T23:06:11Z", "item": "S53", "action": "status", "from": "open", "to": "started", "note": "", "by": "Jon R"}
+{"when": "2026-10-03T23:07:18Z", "item": "S53", "action": "note", "from": "", "to": "", "note": "Versions chosen (looked up 2026-10-03). Kotlin 2.4.20 (kotli"}
+{"when": "2026-10-03T23:10:33Z", "item": "S53", "action": "note", "from": "", "to": "", "note": "Deviations found while building. (1) Compose BOM 2026.09.00 "}
+{"when": "2026-10-03T23:14:37Z", "item": "S53", "action": "note", "from": "", "to": "", "note": "Final: Kotlin 2.3.21 (2.4.20 emits metadata 2.4.0 that Room "}
