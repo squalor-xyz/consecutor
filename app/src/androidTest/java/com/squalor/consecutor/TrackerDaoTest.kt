@@ -53,7 +53,7 @@ class TrackerDaoTest {
     private fun draft() = EntryDraft(effectiveDate = LocalDate.of(2026, 1, 2), value = 2.0, note = null)
 
     @Test
-    fun `deleting a tracker cascades to entries targets and reminders`() = runBlocking {
+    fun deletingATrackerCascadesToEntriesTargetsAndReminders() = runBlocking {
         val id = dao.insertTracker(tracker())
         dao.insertEntry(entry(id))
         dao.insertTarget(TargetEntity(trackerId = id, period = TargetPeriod.DAILY, targetValue = 3.0))
@@ -72,7 +72,7 @@ class TrackerDaoTest {
     }
 
     @Test
-    fun `a second target for the same tracker replaces the first`() = runBlocking {
+    fun aSecondTargetForTheSameTrackerReplacesTheFirst() = runBlocking {
         val id = dao.insertTracker(tracker())
         dao.insertTarget(TargetEntity(trackerId = id, period = TargetPeriod.DAILY, targetValue = 3.0))
         dao.insertTarget(TargetEntity(trackerId = id, period = TargetPeriod.WEEKLY, targetValue = 5.0))
@@ -84,7 +84,7 @@ class TrackerDaoTest {
     }
 
     @Test
-    fun `a second reminder for the same tracker replaces the first`() = runBlocking {
+    fun aSecondReminderForTheSameTrackerReplacesTheFirst() = runBlocking {
         val id = dao.insertTracker(tracker())
         dao.insertReminder(ReminderEntity(trackerId = id, enabled = true, hourOfDay = 8, minuteOfHour = 0))
         dao.insertReminder(ReminderEntity(trackerId = id, enabled = true, hourOfDay = 20, minuteOfHour = 30))
@@ -96,7 +96,7 @@ class TrackerDaoTest {
     }
 
     @Test
-    fun `getTracker returns a single row or null`() = runBlocking {
+    fun getTrackerReturnsASingleRowOrNull() = runBlocking {
         val id = dao.insertTracker(tracker("Run"))
         dao.insertTracker(tracker("Read"))
 
@@ -105,7 +105,7 @@ class TrackerDaoTest {
     }
 
     @Test
-    fun `updateEntry rejects an entry that belongs to another tracker`() = runBlocking {
+    fun updateEntryRejectsAnEntryThatBelongsToAnotherTracker() = runBlocking {
         val first = dao.insertTracker(tracker("A"))
         val second = dao.insertTracker(tracker("B"))
         val entryId = dao.insertEntry(entry(first))
@@ -120,7 +120,7 @@ class TrackerDaoTest {
     }
 
     @Test
-    fun `updateTracker and archiveTracker for an unknown id throw IllegalArgumentException`() = runBlocking {
+    fun updateTrackerAndArchiveTrackerForAnUnknownIdThrowIllegalArgumentException() = runBlocking {
         val trackerDraft = TrackerDraft(
             name = "Ghost",
             emoji = null,

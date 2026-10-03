@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.core.content.FileProvider
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -28,16 +29,16 @@ sealed interface DetailState {
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class TrackerViewModel(
+    private val savedState: SavedStateHandle,
     private val repository: TrackerRepository,
     private val reminderScheduler: ReminderScheduler
 ) : ViewModel() {
     private val _today = MutableStateFlow(LocalDate.now())
     val today: StateFlow<LocalDate> = _today
 
-    private val _selectedId = MutableStateFlow<Long?>(null)
-    val selectedId: StateFlow<Long?> = _selectedId
+    val selectedId: StateFlow<Long?> = savedState.getStateFlow("selectedId", null)
 
-    val detail: StateFlow<DetailState> = _selectedId.flatMapLatest { id ->
+    val detail: StateFlow<DetailState> = selectedId.flatMapLatest { id ->
         if (id == null) {
             flowOf<DetailState>(DetailState.Loading)
         } else {
@@ -69,7 +70,7 @@ class TrackerViewModel(
     }
 
     fun select(id: Long?) {
-        _selectedId.value = id
+        savedState["selectedId"] = id
     }
 
     fun saveTracker(existingTrackerId: Long?, draft: TrackerDraft) = viewModelScope.launch {

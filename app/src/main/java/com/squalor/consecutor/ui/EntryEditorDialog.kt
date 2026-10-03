@@ -12,7 +12,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -54,6 +55,33 @@ internal data class EntryEditorState(
     }
 }
 
+internal val EntryEditorStateSaver = listSaver<EntryEditorState?, Any?>(
+    save = { state ->
+        state?.let {
+            listOf(
+                it.trackerId,
+                it.trackerType.name,
+                it.unit,
+                it.entryId,
+                it.existingDate.toString(),
+                it.existingValue,
+                it.existingNote
+            )
+        } ?: emptyList()
+    },
+    restore = { values ->
+        if (values.isEmpty()) null else EntryEditorState(
+            trackerId = values[0] as Long,
+            trackerType = TrackerType.valueOf(values[1] as String),
+            unit = values[2] as String?,
+            entryId = values[3] as Long?,
+            existingDate = LocalDate.parse(values[4] as String),
+            existingValue = values[5] as Double?,
+            existingNote = values[6] as String?
+        )
+    }
+)
+
 @Composable
 internal fun EntryEditorDialog(
     state: EntryEditorState,
@@ -61,9 +89,9 @@ internal fun EntryEditorDialog(
     onSave: (EntryDraft) -> Unit,
     onDelete: (() -> Unit)?
 ) {
-    var dateText by remember { mutableStateOf(state.existingDate.toString()) }
-    var valueText by remember { mutableStateOf(state.existingValue?.toString().orEmpty()) }
-    var note by remember { mutableStateOf(state.existingNote.orEmpty()) }
+    var dateText by rememberSaveable { mutableStateOf(state.existingDate.toString()) }
+    var valueText by rememberSaveable { mutableStateOf(state.existingValue?.toString().orEmpty()) }
+    var note by rememberSaveable { mutableStateOf(state.existingNote.orEmpty()) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
