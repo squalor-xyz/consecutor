@@ -49,6 +49,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -59,8 +60,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import java.time.DayOfWeek
 import java.time.LocalDate
 
@@ -78,12 +82,19 @@ fun MainScreen(viewModel: TrackerViewModel) {
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
     var screen by rememberSaveable { mutableStateOf(Screen.DASHBOARD) }
-    var selectedTrackerId by rememberSaveable { mutableStateOf<Long?>(null) }
+    val detailState by viewModel.detail.collectAsState()
+    val selectedDetail = (detailState as? DetailState.Loaded)?.detail
     var showTrackerEditor by remember { mutableStateOf<TrackerDetail?>(null) }
     var showNewTrackerDialog by remember { mutableStateOf(false) }
     var entryEditorState by remember { mutableStateOf<EntryEditorState?>(null) }
-    val selectedDetail by selectedTrackerId?.let { viewModel.trackerDetail(it).collectAsState(initial = null) }
-        ?: remember { mutableStateOf<TrackerDetail?>(null) }
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner, viewModel) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) viewModel.refreshToday()
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
 
     val importLauncher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         if (uri != null) {
@@ -164,7 +175,7 @@ fun MainScreen(viewModel: TrackerViewModel) {
                     if (screen != Screen.DASHBOARD) {
                         IconButton(onClick = {
                             screen = Screen.DASHBOARD
-                            selectedTrackerId = null
+                            viewModel.select(null)
                         }) {
                             Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                         }
@@ -215,28 +226,29 @@ fun MainScreen(viewModel: TrackerViewModel) {
                 dashboard = dashboard,
                 padding = padding,
                 onOpenTracker = {
-                    selectedTrackerId = it
+                    viewModel.select(it)
                     screen = Screen.DETAIL
                 },
                 onQuickLog = { summary -> viewModel.quickLog(summary) }
             )
             Screen.DETAIL -> {
-                if (selectedTrackerId == null) {
-                    EmptyState("Select a tracker.")
-                } else {
-                    selectedDetail?.let {
+                when (val state = detailState) {
+                    DetailState.Loading -> Unit
+                    DetailState.NotFound -> EmptyState("Tracker not found.")
+                    is DetailState.Loaded -> {
+                        val detail = state.detail
                         TrackerDetailScreen(
-                            detail = it,
+                            detail = detail,
                             padding = padding,
-                            onAddEntry = { entryEditorState = EntryEditorState.new(it) },
-                            onEditEntry = { entry -> entryEditorState = EntryEditorState.from(it, entry) },
+                            onAddEntry = { entryEditorState = EntryEditorState.new(detail) },
+                            onEditEntry = { entry -> entryEditorState = EntryEditorState.from(detail, entry) },
                             onArchive = {
-                                viewModel.archiveTracker(it.tracker.id)
+                                viewModel.archiveTracker(detail.tracker.id)
                                 screen = Screen.DASHBOARD
-                                selectedTrackerId = null
+                                viewModel.select(null)
                             }
                         )
-                    } ?: EmptyState("Tracker not found.")
+                    }
                 }
             }
             Screen.SETTINGS -> SettingsScreen(

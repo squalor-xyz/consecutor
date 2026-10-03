@@ -7,6 +7,27 @@ import java.time.LocalDate
 
 class TrackerAnalyticsTest {
     @Test
+    fun `streak is kept the day after the last satisfied day and lost two days after`() {
+        val day = LocalDate.of(2026, 4, 21)
+        val bundle = TrackerBundle(
+            tracker = TrackerEntity(
+                id = 1,
+                name = "Read",
+                type = TrackerType.YES_NO,
+                createdAtEpochMs = 0,
+                updatedAtEpochMs = 0
+            ),
+            entries = listOf(entry(1, day.toString())),
+            target = listOf(TargetEntity(trackerId = 1, period = TargetPeriod.DAILY, targetValue = 1.0)),
+            reminder = emptyList()
+        )
+
+        assertEquals(1, TrackerAnalytics.toSummary(bundle, day).currentStreak)
+        assertEquals(1, TrackerAnalytics.toSummary(bundle, day.plusDays(1)).currentStreak)
+        assertEquals(0, TrackerAnalytics.toSummary(bundle, day.plusDays(2)).currentStreak)
+    }
+
+    @Test
     fun `daily streak counts contiguous satisfied days`() {
         val tracker = TrackerEntity(
             id = 1,

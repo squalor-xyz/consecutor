@@ -37,14 +37,14 @@
 - Encrypted backups or at-rest encryption (tracked as later items).<br>
 - Advanced analytics suite.<br>
 - Squalor brand marks in the APK (brand marks are all-rights-reserved; the app icon is app-specific and MPL-2.0).</p></div></section>
-<p class="summary">52 items · — 38 · done 3 · later 10 · review 1</p>
+<p class="summary">52 items · — 37 · done 3 · later 10 · started 1 · review 1</p>
 <table><thead><tr><th>#</th><th>ID</th><th>Title</th><th>Size</th><th>Effort</th><th>Trees</th><th>Findings</th><th>Status</th></tr></thead><tbody>
 <tr class="group"><td></td><td colspan="7"><strong>P0 Build green</strong></td></tr>
 <tr class="other"><td>1</td><td>S04</td><td>CI: build; unit test and lint on every push and PR</td><td>S</td><td>1</td><td>build</td><td>.github/workflows/build.yml</td><td class="status">review</td></tr>
 <tr class="group"><td></td><td colspan="7"><strong>P1 Correctness</strong></td></tr>
 <tr class="open"><td>2</td><td>S05</td><td>Freeze schema v1 baseline with foreign keys and 0..1 constraints</td><td>M</td><td>2</td><td>data</td><td>AppDatabase.kt:12,29; TrackerModels.kt; TrackerRepository.kt:49,69,218</td><td class="status">—</td></tr>
 <tr class="open"><td>3</td><td>S06</td><td>Move IO off the main thread and handle every ViewModel failure</td><td>S</td><td>1</td><td>data</td><td>TrackerViewModel.kt:39-63,86; TrackerRepository.kt:127,134</td><td class="status">—</td></tr>
-<tr class="open"><td>4</td><td>S07</td><td>Fix detail-screen flow resubscription and midnight rollover</td><td>S</td><td>1</td><td>ui</td><td>MainScreen.kt:85; TrackerAnalytics.kt:11,38; TrackerRepository.kt:117</td><td class="status">—</td></tr>
+<tr class="started"><td>4</td><td>S07</td><td>Fix detail-screen flow resubscription and midnight rollover</td><td>S</td><td>1</td><td>ui</td><td>MainScreen.kt:85; TrackerAnalytics.kt:11,38; TrackerRepository.kt:117</td><td class="status">started</td></tr>
 <tr class="open"><td>5</td><td>S08</td><td>Reminder reliability: inexact alarms and stale-alarm cleanup</td><td>S</td><td>1</td><td>reminders</td><td>ReminderScheduler.kt:26-52,107-109; AndroidManifest.xml SCHEDULE_EXACT_ALARM; TrackerViewModel.kt:85-100</td><td class="status">—</td></tr>
 <tr class="open"><td>6</td><td>S09</td><td>Notification permission UX that reflects real state</td><td>S</td><td>1</td><td>ui</td><td>MainScreen.kt:111,123,247-251,514-521</td><td class="status">—</td></tr>
 <tr class="group"><td></td><td colspan="7"><strong>P2 MVP UX</strong></td></tr>
