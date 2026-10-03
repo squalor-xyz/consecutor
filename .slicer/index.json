@@ -124,7 +124,7 @@
       "id": "S05",
       "title": "Freeze schema v1 baseline with foreign keys and 0..1 constraints",
       "short_title": "Freeze schema v1 baseline with foreign keys and 0..1 constraints",
-      "status": "open",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S01",
