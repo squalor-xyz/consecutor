@@ -125,9 +125,9 @@ Unit tests:
 
 - `./gradlew test`
 
-Instrumented tests, when present and configured:
+Instrumented tests (need a device or emulator; CI does not run them, so run them locally before merging data-layer changes):
 
-- `./gradlew connectedAndroidTest`
+- `./gradlew connectedDebugAndroidTest`
 
 Manual install to a connected device:
 
@@ -355,9 +355,11 @@ Before shipping anywhere:
 
 ## Persistence Notes
 
-- Room schema version is currently `2`.
-- `fallbackToDestructiveMigration()` is enabled.
-- That is acceptable during this rebuild phase, but production releases should replace destructive migration with explicit migrations once the schema stabilizes.
+- Room schema version is currently `1` (the frozen baseline).
+- Schemas are exported to `app/schemas/` and committed; regenerate and commit them with every schema change.
+- `fallbackToDestructiveMigration()` is enabled in debug builds only. Pre-1.0 data loss is acceptable (owner decision).
+- From 1.0 on every schema change needs an explicit `Migration`. In release builds a version bump without one fails loudly instead of wiping data.
+- `entries`, `targets` and `reminders` have a cascading foreign key to `trackers`; `targets` and `reminders` are unique per tracker (0..1).
 - See Privacy Notes below for the current (no extra) at-rest encryption posture and history.
 
 ## Privacy Notes

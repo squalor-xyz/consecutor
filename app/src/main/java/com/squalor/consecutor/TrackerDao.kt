@@ -22,6 +22,12 @@ interface TrackerDao {
     @Query("SELECT * FROM trackers ORDER BY id ASC")
     suspend fun getTrackerBundles(): List<TrackerBundle>
 
+    @Query("SELECT * FROM trackers WHERE id = :id")
+    suspend fun getTracker(id: Long): TrackerEntity?
+
+    @Query("DELETE FROM trackers WHERE id = :id")
+    suspend fun deleteTracker(id: Long)
+
     @Insert
     suspend fun insertTracker(tracker: TrackerEntity): Long
 
