@@ -3,7 +3,7 @@ package com.squalor.consecutor
 import android.content.Context
 import androidx.room.withTransaction
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import java.io.File
 import java.time.LocalDate
 
@@ -11,16 +11,16 @@ class TrackerRepository(
     private val database: AppDatabase,
     private val trackerDao: TrackerDao
 ) {
-    fun observeDashboard(): Flow<List<TrackerSummary>> {
-        return trackerDao.observeTrackerBundles().map { bundles ->
+    fun observeDashboard(today: Flow<LocalDate>): Flow<List<TrackerSummary>> {
+        return combine(trackerDao.observeTrackerBundles(), today) { bundles, date ->
             bundles.filterNot { it.tracker.isArchived }
-                .map { TrackerAnalytics.toSummary(it) }
+                .map { TrackerAnalytics.toSummary(it, date) }
         }
     }
 
-    fun observeTrackerDetail(trackerId: Long): Flow<TrackerDetail?> {
-        return trackerDao.observeTrackerBundle(trackerId).map { bundle ->
-            bundle?.let { TrackerAnalytics.toDetail(it) }
+    fun observeTrackerDetail(trackerId: Long, today: Flow<LocalDate>): Flow<TrackerDetail?> {
+        return combine(trackerDao.observeTrackerBundle(trackerId), today) { bundle, date ->
+            bundle?.let { TrackerAnalytics.toDetail(it, date) }
         }
     }
 
@@ -108,13 +108,13 @@ class TrackerRepository(
         bumpTracker(trackerId, now)
     }
 
-    suspend fun quickLog(summary: TrackerSummary) {
+    suspend fun quickLog(summary: TrackerSummary, today: LocalDate) {
         if (summary.type == TrackerType.MEASURE) return
         addEntry(
             trackerId = summary.id,
             trackerType = summary.type,
             draft = EntryDraft(
-                effectiveDate = LocalDate.now(),
+                effectiveDate = today,
                 value = 1.0,
                 note = null
             )
