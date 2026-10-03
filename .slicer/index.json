@@ -333,7 +333,9 @@
       "status": "open",
       "has_slice": true,
       "depends_on": [],
-      "notes": [],
+      "notes": [
+        "**2026-10-03** — Owner approved the preview: a horizontal chain of three overlapping rounded-square rings, teal #6ee7d2 on #0f1419. Each link is a ring so the three marks stay distinct. The notification glyph is the same chain in white on a 24dp canvas. No Squalor marks."
+      ],
       "claim": null,
       "fields": {
         "size": "M",

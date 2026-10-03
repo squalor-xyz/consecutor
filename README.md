@@ -50,3 +50,5 @@ Current MVP work is tracked with `slicer` (`slicer status`); see [ROADMAP.md](RO
 ## License
 
 `MPL-2.0`
+
+The launcher icon and notification glyph are original artwork, licensed MPL-2.0 with the app.

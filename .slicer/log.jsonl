@@ -273,3 +273,4 @@
 {"when": "2026-10-03T22:29:08Z", "item": "S22", "action": "edit", "from": "", "to": "", "note": "lead"}
 {"when": "2026-10-03T22:29:25Z", "item": "S22", "action": "promote", "from": "", "to": "", "note": ""}
 {"when": "2026-10-03T22:29:42Z", "item": "S26", "action": "set", "from": "", "to": "", "note": "title Revisit at-rest database encryption (SQLCipher + Keystore explored in early `first` commits)→Revisit at-rest database encryption (SQLCipher + Keystore explored in commits 5fcabda, e60d2b2); short_title Revisit at-rest database encryption (SQLCipher + Keystore explored in early `first` commits)→Revisit at-rest database encryption (SQLCipher + Keystore explored in commits 5fcabda, e60d2b2)"}
+{"when": "2026-10-03T22:35:09Z", "item": "S12", "action": "note", "from": "", "to": "", "note": "Owner approved the preview: a horizontal chain of three over"}

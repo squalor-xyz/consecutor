@@ -76,7 +76,7 @@ class ReminderScheduler(private val context: Context) {
         }
         val title = listOfNotNull(trackerEmoji, trackerName).joinToString(" ").trim()
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(android.R.drawable.ic_popup_reminder)
+            .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(if (title.isBlank()) "Tracker reminder" else title)
             .setContentText("Log today's progress in Consecutor.")
             .setAutoCancel(true)
