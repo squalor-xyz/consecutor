@@ -220,3 +220,4 @@
 {"when": "2026-10-03T21:57:38Z", "item": "S07", "action": "note", "from": "", "to": "", "note": "Implementation complete in .worktrees/S07 on s07-detail-roll"}
 {"when": "2026-10-03T22:10:56Z", "item": "S07", "action": "note", "from": "", "to": "", "note": "Build blocker resolved: Homebrew JDK 17 is /opt/homebrew/opt"}
 {"when": "2026-10-03T22:10:56Z", "item": "S07", "action": "status", "from": "started", "to": "done", "note": "Shared detail state and midnight/resume date refresh implemented; unit tests, lint and debug assembly passed with JDK 17. Manual device validation remains pending.", "by": "Jon R"}
+{"when": "2026-10-03T22:25:35Z", "item": "S07", "action": "note", "from": "", "to": "", "note": "Reviewed and merged onto first: testDebugUnitTest lintDebug "}
