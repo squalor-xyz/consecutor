@@ -365,7 +365,7 @@ Before shipping anywhere:
 ## Reminders
 
 - Reminders use inexact alarms (`AlarmManager.setAndAllowWhileIdle`). The app does not request `SCHEDULE_EXACT_ALARM`.
-- A reminder may arrive late, especially in Doze. Maximum measured delay: TODO (not yet measured; fill in from the `whenElapsed`/`maxWhenElapsed` check recorded with `slicer note S08`).
+- A reminder may arrive late, especially in Doze. Measured on emulators (Google APIs, arm64) for an alarm set about 12 hours ahead: on API 34 the system may deliver it up to 1 hour late; on API 26 up to about 9 hours late. Short-horizon check: a reminder set about 2 minutes ahead on API 34 was delivered.
 - Alarms are keyed by tracker id (`PendingIntent` request code). Archiving cancels a tracker's alarm; a backup import cancels all existing alarms before replacing the trackers.
 
 ## Privacy Notes
