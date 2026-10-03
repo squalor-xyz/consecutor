@@ -94,7 +94,7 @@
       "id": "S04",
       "title": "CI: build; unit test and lint on every push and PR",
       "short_title": "CI: build; unit test and lint on every push and PR",
-      "status": "review",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S01"
@@ -330,7 +330,7 @@
       "id": "S12",
       "title": "Consecutor app icon (adaptive and themed; FLOSS-licensed)",
       "short_title": "Consecutor app icon (adaptive and themed; FLOSS-licensed)",
-      "status": "open",
+      "status": "done",
       "has_slice": true,
       "depends_on": [],
       "notes": [
@@ -1452,7 +1452,7 @@
       "id": "S50",
       "title": "Remove the ai-output sample dump",
       "short_title": "Remove the ai-output sample dump",
-      "status": "review",
+      "status": "done",
       "has_slice": true,
       "depends_on": [],
       "notes": [
@@ -1480,7 +1480,7 @@
       "id": "S51",
       "title": "Make auto-backup exclusion explicit",
       "short_title": "Make auto-backup exclusion explicit",
-      "status": "open",
+      "status": "done",
       "has_slice": true,
       "depends_on": [],
       "notes": [],
