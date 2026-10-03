@@ -153,7 +153,7 @@
       "id": "S06",
       "title": "Move IO off the main thread and handle every ViewModel failure",
       "short_title": "Move IO off the main thread and handle every ViewModel failure",
-      "status": "open",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S01",
