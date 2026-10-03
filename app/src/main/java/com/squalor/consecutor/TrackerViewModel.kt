@@ -159,11 +159,14 @@ class TrackerViewModel(
             return@launch
         }
         runCatching {
+            reminderScheduler.cancelAll(repository.getReminderBundles().map { it.tracker.id })
             repository.importBackup(raw)
             rescheduleReminders()
         }.onSuccess {
             _message.value = "Backup imported."
         }.onFailure {
+            // The database is unchanged when the import fails, so re-arm the previous reminders.
+            runCatching { rescheduleReminders() }
             if (it is CancellationException) throw it
             _message.value = if (it is BackupFormatException) {
                 "Backup import failed: ${it.message}"
