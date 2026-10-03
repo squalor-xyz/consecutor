@@ -6,6 +6,8 @@ import android.net.Uri
 import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,6 +19,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.ZonedDateTime
 
@@ -72,42 +75,53 @@ class TrackerViewModel(
         _selectedId.value = id
     }
 
-    fun saveTracker(existingTrackerId: Long?, draft: TrackerDraft) = viewModelScope.launch {
-        runCatching {
-            existingTrackerId?.also { repository.updateTracker(it, draft) } ?: repository.createTracker(draft)
-        }.onSuccess {
-            rescheduleReminders()
-            _message.value = if (existingTrackerId == null) "Tracker created." else "Tracker updated."
-        }.onFailure {
-            _message.value = "Unable to save tracker."
+    private fun launchAction(success: String?, failure: String, block: suspend () -> Unit) {
+        viewModelScope.launch {
+            runCatching { block() }
+                .onSuccess { success?.let { _message.value = it } }
+                .onFailure {
+                    if (it is CancellationException) throw it
+                    _message.value = failure
+                }
         }
     }
 
-    fun archiveTracker(trackerId: Long) = viewModelScope.launch {
+    fun saveTracker(existingTrackerId: Long?, draft: TrackerDraft) = launchAction(
+        success = if (existingTrackerId == null) "Tracker created." else "Tracker updated.",
+        failure = "Unable to save tracker."
+    ) {
+        if (existingTrackerId != null) {
+            repository.updateTracker(existingTrackerId, draft)
+        } else {
+            repository.createTracker(draft)
+        }
+        rescheduleReminders()
+    }
+
+    fun archiveTracker(trackerId: Long) = launchAction("Tracker archived.", "Unable to archive tracker.") {
         repository.archiveTracker(trackerId)
         reminderScheduler.cancelTracker(trackerId)
-        _message.value = "Tracker archived."
     }
 
-    fun addEntry(trackerId: Long, trackerType: TrackerType, draft: EntryDraft) = viewModelScope.launch {
-        repository.addEntry(trackerId, trackerType, draft)
-        _message.value = "Entry added."
-    }
+    fun addEntry(trackerId: Long, trackerType: TrackerType, draft: EntryDraft) =
+        launchAction("Entry added.", "Unable to add entry.") {
+            repository.addEntry(trackerId, trackerType, draft)
+        }
 
-    fun updateEntry(entryId: Long, trackerId: Long, trackerType: TrackerType, draft: EntryDraft) = viewModelScope.launch {
-        repository.updateEntry(entryId, trackerId, trackerType, draft)
-        _message.value = "Entry updated."
-    }
+    fun updateEntry(entryId: Long, trackerId: Long, trackerType: TrackerType, draft: EntryDraft) =
+        launchAction("Entry updated.", "Unable to update entry.") {
+            repository.updateEntry(entryId, trackerId, trackerType, draft)
+        }
 
-    fun deleteEntry(entryId: Long, trackerId: Long) = viewModelScope.launch {
-        repository.deleteEntry(entryId, trackerId)
-        _message.value = "Entry deleted."
-    }
+    fun deleteEntry(entryId: Long, trackerId: Long) =
+        launchAction("Entry deleted.", "Unable to delete entry.") {
+            repository.deleteEntry(entryId, trackerId)
+        }
 
-    fun quickLog(summary: TrackerSummary) = viewModelScope.launch {
-        repository.quickLog(summary, today.value)
-        _message.value = "Logged ${summary.name}."
-    }
+    fun quickLog(summary: TrackerSummary) =
+        launchAction("Logged ${summary.name}.", "Unable to log ${summary.name}.") {
+            repository.quickLog(summary, today.value)
+        }
 
     fun exportCsv(context: Context) = viewModelScope.launch {
         runCatching {
@@ -115,6 +129,7 @@ class TrackerViewModel(
         }.onSuccess { file ->
             shareFile(context, file, "text/csv", "Share CSV")
         }.onFailure {
+            if (it is CancellationException) throw it
             _message.value = "Unable to export CSV."
         }
     }
@@ -125,24 +140,36 @@ class TrackerViewModel(
         }.onSuccess { file ->
             shareFile(context, file, "application/json", "Share backup")
         }.onFailure {
+            if (it is CancellationException) throw it
             _message.value = "Unable to export backup."
         }
     }
 
     fun importBackup(context: Context, uri: Uri) = viewModelScope.launch {
-        val raw = context.contentResolver.openInputStream(uri)?.bufferedReader()?.use { it.readText() }
+        val raw = runCatching {
+            withContext(Dispatchers.IO) {
+                context.contentResolver.openInputStream(uri)?.bufferedReader()?.use { it.readText() }
+            }
+        }.getOrElse {
+            if (it is CancellationException) throw it
+            null
+        }
         if (raw.isNullOrBlank()) {
             _message.value = "Unable to read backup file."
             return@launch
         }
         runCatching {
             repository.importBackup(raw)
-        }.onSuccess {
             rescheduleReminders()
+        }.onSuccess {
             _message.value = "Backup imported."
         }.onFailure {
-            val detail = it.message?.takeIf { m -> m.isNotBlank() } ?: it.javaClass.simpleName
-            _message.value = "Backup import failed: $detail"
+            if (it is CancellationException) throw it
+            _message.value = if (it is BackupFormatException) {
+                "Backup import failed: ${it.message}"
+            } else {
+                "Backup import failed."
+            }
         }
     }
 
