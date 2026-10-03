@@ -156,3 +156,63 @@
 {"when": "2026-10-03T21:24:15Z", "item": "S52", "action": "set", "from": "", "to": "", "note": "importance 1→2"}
 {"when": "2026-10-03T21:45:44Z", "item": "S52", "action": "set", "from": "", "to": "", "note": "importance 2→1"}
 {"when": "2026-10-03T21:46:40Z", "item": "S46", "action": "note", "from": "", "to": "", "note": "S04's review note says lintDebug reports 52 version/catalog "}
+{"when": "2026-10-03T22:05:08Z", "item": "S53", "action": "add", "from": "", "to": "open", "note": "Toolchain refresh: Kotlin 2.x, Compose compiler plugin, Compose BOM, Material3 1.3, lifecycle, version catalog"}
+{"when": "2026-10-03T22:05:08Z", "item": "S54", "action": "add", "from": "", "to": "open", "note": "Resource-id UiEvents and structured target and reminder labels"}
+{"when": "2026-10-03T22:05:08Z", "item": "S55", "action": "add", "from": "", "to": "open", "note": "CI: instrumented tests on a Gradle Managed Device"}
+{"when": "2026-10-03T22:05:08Z", "item": "S56", "action": "add", "from": "", "to": "open", "note": "Deleted entries: never exported, purged after 24 hours"}
+{"when": "2026-10-03T22:05:08Z", "item": "S57", "action": "add", "from": "", "to": "open", "note": "Settings About card: version, licence, source link and third-party notices"}
+{"when": "2026-10-03T22:05:08Z", "item": "S58", "action": "add", "from": "", "to": "open", "note": "Cap content width on large screens and in landscape"}
+{"when": "2026-10-03T22:05:08Z", "item": "S59", "action": "add", "from": "", "to": "later", "note": "Optional scheduled backup to a user-chosen folder"}
+{"when": "2026-10-03T22:05:17Z", "item": "S53", "action": "set", "from": "", "to": "", "note": "depends_on -→S04"}
+{"when": "2026-10-03T22:05:17Z", "item": "S54", "action": "set", "from": "", "to": "", "note": "depends_on -→S15,S36,S38,S39,S43,S44"}
+{"when": "2026-10-03T22:05:18Z", "item": "S55", "action": "set", "from": "", "to": "", "note": "depends_on -→S04,S05,S53"}
+{"when": "2026-10-03T22:05:18Z", "item": "S56", "action": "set", "from": "", "to": "", "note": "depends_on -→S05,S39,S44"}
+{"when": "2026-10-03T22:05:19Z", "item": "S57", "action": "set", "from": "", "to": "", "note": "depends_on -→S18,S43,S46"}
+{"when": "2026-10-03T22:05:19Z", "item": "S58", "action": "set", "from": "", "to": "", "note": "depends_on -→S15,S38,S41,S42,S43"}
+{"when": "2026-10-03T22:05:20Z", "item": "S05", "action": "set", "from": "", "to": "", "note": "depends_on S01→S01,S53"}
+{"when": "2026-10-03T22:05:20Z", "item": "S06", "action": "set", "from": "", "to": "", "note": "depends_on S01→S01,S53"}
+{"when": "2026-10-03T22:05:21Z", "item": "S07", "action": "set", "from": "", "to": "", "note": "depends_on S01→S01,S53"}
+{"when": "2026-10-03T22:05:21Z", "item": "S11", "action": "set", "from": "", "to": "", "note": "depends_on S01→S01,S53"}
+{"when": "2026-10-03T22:05:22Z", "item": "S17", "action": "set", "from": "", "to": "", "note": "depends_on S03→S03,S53"}
+{"when": "2026-10-03T22:05:22Z", "item": "S33", "action": "set", "from": "", "to": "", "note": "depends_on S01→S01,S53"}
+{"when": "2026-10-03T22:05:23Z", "item": "S34", "action": "set", "from": "", "to": "", "note": "depends_on S01→S01,S53"}
+{"when": "2026-10-03T22:05:23Z", "item": "S47", "action": "set", "from": "", "to": "", "note": "depends_on S04→S04,S53"}
+{"when": "2026-10-03T22:05:24Z", "item": "S43", "action": "set", "from": "", "to": "", "note": "depends_on S06,S17→S06,S17,S07,S32"}
+{"when": "2026-10-03T22:05:24Z", "item": "S46", "action": "set", "from": "", "to": "", "note": "depends_on S11,S04→S11,S53"}
+{"when": "2026-10-03T22:05:25Z", "item": "S18", "action": "set", "from": "", "to": "", "note": "depends_on S38,S39,S14,S40,S15,S41,S42,S43,S44,S37→S38,S39,S14,S40,S15,S41,S42,S43,S44,S37,S54"}
+{"when": "2026-10-03T22:05:25Z", "item": "S20", "action": "set", "from": "", "to": "", "note": "depends_on S19,S44,S51,S15→S19,S44,S51,S15,S56,S57"}
+{"when": "2026-10-03T22:05:26Z", "item": "S22", "action": "set", "from": "", "to": "", "note": "depends_on S09,S19,S36,S45,S47,S48,S50,S51,S12→S09,S19,S36,S45,S47,S48,S50,S51,S12,S55,S56,S57,S58"}
+{"when": "2026-10-03T22:07:54Z", "item": "S05", "action": "edit", "from": "", "to": "", "note": "Check"}
+{"when": "2026-10-03T22:07:55Z", "item": "S07", "action": "edit", "from": "", "to": "", "note": "Implement"}
+{"when": "2026-10-03T22:07:57Z", "item": "S07", "action": "edit", "from": "", "to": "", "note": "Failing tests"}
+{"when": "2026-10-03T22:07:57Z", "item": "S08", "action": "edit", "from": "", "to": "", "note": "Implement"}
+{"when": "2026-10-03T22:07:57Z", "item": "S08", "action": "edit", "from": "", "to": "", "note": "Check"}
+{"when": "2026-10-03T22:07:57Z", "item": "S10", "action": "edit", "from": "", "to": "", "note": "Files"}
+{"when": "2026-10-03T22:07:58Z", "item": "S10", "action": "edit", "from": "", "to": "", "note": "Implement"}
+{"when": "2026-10-03T22:07:58Z", "item": "S10", "action": "edit", "from": "", "to": "", "note": "Check"}
+{"when": "2026-10-03T22:07:58Z", "item": "S11", "action": "edit", "from": "", "to": "", "note": "Implement"}
+{"when": "2026-10-03T22:07:58Z", "item": "S11", "action": "edit", "from": "", "to": "", "note": "Failing tests"}
+{"when": "2026-10-03T22:07:58Z", "item": "S14", "action": "edit", "from": "", "to": "", "note": "Implement"}
+{"when": "2026-10-03T22:07:59Z", "item": "S14", "action": "edit", "from": "", "to": "", "note": "Failing tests"}
+{"when": "2026-10-03T22:07:59Z", "item": "S15", "action": "edit", "from": "", "to": "", "note": "Failing tests"}
+{"when": "2026-10-03T22:07:59Z", "item": "S15", "action": "edit", "from": "", "to": "", "note": "Implement"}
+{"when": "2026-10-03T22:07:59Z", "item": "S18", "action": "edit", "from": "", "to": "", "note": "Implement"}
+{"when": "2026-10-03T22:07:59Z", "item": "S18", "action": "edit", "from": "", "to": "", "note": "Check"}
+{"when": "2026-10-03T22:07:59Z", "item": "S21", "action": "edit", "from": "", "to": "", "note": "Implement"}
+{"when": "2026-10-03T22:08:00Z", "item": "S22", "action": "edit", "from": "", "to": "", "note": "Implement"}
+{"when": "2026-10-03T22:08:00Z", "item": "S33", "action": "edit", "from": "", "to": "", "note": "Implement"}
+{"when": "2026-10-03T22:08:00Z", "item": "S33", "action": "edit", "from": "", "to": "", "note": "Failing tests"}
+{"when": "2026-10-03T22:08:00Z", "item": "S34", "action": "edit", "from": "", "to": "", "note": "Implement"}
+{"when": "2026-10-03T22:08:00Z", "item": "S36", "action": "edit", "from": "", "to": "", "note": "Implement"}
+{"when": "2026-10-03T22:08:01Z", "item": "S38", "action": "edit", "from": "", "to": "", "note": "Files"}
+{"when": "2026-10-03T22:08:01Z", "item": "S38", "action": "edit", "from": "", "to": "", "note": "Implement"}
+{"when": "2026-10-03T22:08:01Z", "item": "S39", "action": "edit", "from": "", "to": "", "note": "Implement"}
+{"when": "2026-10-03T22:08:01Z", "item": "S39", "action": "edit", "from": "", "to": "", "note": "Check"}
+{"when": "2026-10-03T22:08:01Z", "item": "S40", "action": "edit", "from": "", "to": "", "note": "Implement"}
+{"when": "2026-10-03T22:08:01Z", "item": "S46", "action": "edit", "from": "", "to": "", "note": "Implement"}
+{"when": "2026-10-03T22:08:02Z", "item": "S46", "action": "edit", "from": "", "to": "", "note": "Why"}
+{"when": "2026-10-03T22:08:02Z", "item": "S48", "action": "edit", "from": "", "to": "", "note": "Implement"}
+{"when": "2026-10-03T22:08:33Z", "item": "S07", "action": "set", "from": "", "to": "", "note": "depends_on S01,S53→S01"}
+{"when": "2026-10-03T22:08:43Z", "item": "S07", "action": "edit", "from": "", "to": "", "note": "Implement"}
+{"when": "2026-10-03T22:08:43Z", "item": "S07", "action": "edit", "from": "", "to": "", "note": "Failing tests"}
+{"when": "2026-10-03T22:08:50Z", "item": "S32", "action": "set", "from": "", "to": "", "note": "depends_on S07→S07,S53"}

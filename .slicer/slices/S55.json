@@ -1,0 +1,39 @@
+{
+  "id": "S55",
+  "title": "CI: instrumented tests on a Gradle Managed Device",
+  "lead": [],
+  "depends_note": null,
+  "findings_note": ".github/workflows/build.yml (unit tests only); S05, S10, S15, S35, S39 and S45 add instrumented tests that CI never runs",
+  "size": "M",
+  "flags": [],
+  "trees_note": "build",
+  "trees_plural": false,
+  "boundary": "**Not in this slice:** writing new instrumented tests, third-party emulator actions, and running on more than one API level.",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "Six slices put their acceptance tests in `app/src/androidTest` (Room constraints, navigation, undo, accessibility). Today they run only when someone remembers `./gradlew connectedDebugAndroidTest` on a device, so regressions in the data layer can merge unnoticed. Gradle Managed Devices are built into the Android Gradle Plugin, so this needs no new dependency."
+    },
+    {
+      "heading": "Files",
+      "body": "- `app/build.gradle` (`testOptions.managedDevices`)\n- `.github/workflows/build.yml` (a second job)\n- `DEVELOPERS.md` (\"Local Test Runs\")"
+    },
+    {
+      "heading": "Failing tests",
+      "body": "- None new. The job runs the existing `androidTest` suite (`TrackerDaoTest` from S05, `BackupCodecInstrumentedTest`, and later ones)."
+    },
+    {
+      "heading": "Implement",
+      "body": "1. In `app/build.gradle`, inside `android { testOptions { … } }`, declare one managed virtual device named `pixel6api34`: `device = \"Pixel 6\"`, `apiLevel = 34`, `systemImageSource = \"aosp-atd\"`. The DSL block name differs between AGP versions (`devices` with an explicit `ManagedVirtualDevice` type in older 8.x, `localDevices` in newer ones). Use the form documented at developer.android.com/studio/test/gradle-managed-devices for the AGP version in `gradle/libs.versions.toml`. Confirm the task exists with `./gradlew tasks --all | rg pixel6api34DebugAndroidTest`.\n2. If `aosp-atd` has no image for API 34, use `systemImageSource = \"aosp\"` and record that with `slicer note S55`.\n3. Run it locally once: `./gradlew pixel6api34DebugAndroidTest`. The first run downloads the system image. It must pass.\n4. In `.github/workflows/build.yml` add a job `instrumented` (it runs in parallel with `build`) on `ubuntu-latest`:\n   - `actions/checkout@v4`, `actions/setup-java@v4` (temurin 17), `gradle/actions/setup-gradle@v4`, as the `build` job does.\n   - Enable KVM (GitHub's documented step):\n     ```\n     echo 'KERNEL==\"kvm\", GROUP=\"kvm\", MODE=\"0666\", OPTIONS+=\"static_node=kvm\"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules\n     sudo udevadm control --reload-rules\n     sudo udevadm trigger --name-match=kvm\n     ```\n   - `./gradlew pixel6api34DebugAndroidTest -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect`\n   - On failure, upload `app/build/outputs/androidTest-results/` and `app/build/reports/androidTests/` with `actions/upload-artifact@v4`.\n   - `timeout-minutes: 45`.\n5. `DEVELOPERS.md` \"Local Test Runs\": document `./gradlew pixel6api34DebugAndroidTest` (no device needed, downloads an emulator image on first run) next to `connectedDebugAndroidTest`, and note that instrumented tests clear the app's database, so do not point `connectedDebugAndroidTest` at a personal phone."
+    },
+    {
+      "heading": "Check",
+      "body": "- `./gradlew pixel6api34DebugAndroidTest` passes locally.\n- After the owner pushes, both the `build` and `instrumented` jobs are green on GitHub. Record the run URL and the instrumented job's duration with `slicer note S55`.\n- Temporarily break one assertion in `TrackerDaoTest`, push to a scratch branch and confirm the `instrumented` job fails; revert. (Pushing is an owner action; if not possible, skip and say so in the note.)"
+    },
+    {
+      "heading": "Git",
+      "body": "Commit on `first`, message `S55: <summary>`."
+    }
+  ],
+  "notes": []
+}

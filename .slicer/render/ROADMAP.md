@@ -20,7 +20,7 @@
 - Advanced analytics suite.
 - Squalor brand marks in the APK (brand marks are all-rights-reserved; the app icon is app-specific and MPL-2.0).
 
-52 items · — 38 · done 3 · later 10 · review 1
+59 items · — 44 · done 3 · later 11 · review 1
 
 | # | Slice | Title | Size | Effort | Trees | Findings | Status |
 |---|---|---|---|---|---|---|---|
@@ -82,15 +82,28 @@
 | 48 | [S51](slices/S51.md) | Make auto-backup exclusion explicit | S | 1 | release | res/xml/backup_rules.xml and res/xml/data_extraction_rules.xml (template files with TODOs); AndroidManifest.xml (allowBackup=false) | — |
 | Later | | | | | | | |
 | 49 | S52 | Dashboard performance with years of history |  | 3 | data |  | later |
+| P0 Build green | | | | | | | |
+| 50 | [S53](slices/S53.md) | Toolchain refresh: Kotlin 2.x, Compose compiler plugin, Compose BOM, Material3 1.3, lifecycle, version catalog | M | 2 | build | app/build.gradle:1-5,35-61 (Kotlin 1.9.20, Compose 1.5.4, Material3 1.2.1, lifecycle 2.6.2 vs 2.8.2, versions inline); gradle/libs.versions.toml | — |
+| P2 MVP UX | | | | | | | |
+| 51 | [S54](slices/S54.md) | Resource-id UiEvents and structured target and reminder labels | M | 2 | ui | TrackerAnalytics.kt:172-190 (English formatTarget/formatReminder, 24-hour time); TrackerViewModel.kt (English messages); ReminderScheduler.kt:60-81 (English channel and notification text) | — |
+| P1 Correctness | | | | | | | |
+| 52 | [S55](slices/S55.md) | CI: instrumented tests on a Gradle Managed Device | M | 2 | build | .github/workflows/build.yml (unit tests only); S05, S10, S15, S35, S39 and S45 add instrumented tests that CI never runs | — |
+| 53 | [S56](slices/S56.md) | Deleted entries: never exported, purged after 24 hours | S | 1 | data | BackupCodec.kt:46-57 (encode writes soft-deleted entries and their notes); TrackerRepository.kt:104-109 (soft delete only, never purged) | — |
+| P3 Release | | | | | | | |
+| 54 | [S57](slices/S57.md) | Settings About card: version, licence, source link and third-party notices | S | 1 | ui | MainScreen.kt:455-461 ("Privacy-first defaults … in v1" header); no version or licence information anywhere in the app | — |
+| P2 MVP UX | | | | | | | |
+| 55 | [S58](slices/S58.md) | Cap content width on large screens and in landscape | S | 1 | ui | all screens use fillMaxSize LazyColumns that stretch edge to edge on tablets and in landscape | — |
+| Later | | | | | | | |
+| 56 | S59 | Optional scheduled backup to a user-chosen folder |  | 2 | data |  | later |
 
 ---
 
 | # | Slice | Title | Size | Effort | Trees | Findings | Status |
 |---|---|---|---|---|---|---|---|
 | P0 Build green | | | | | | | |
-| 50 | [S01](slices/S01.md) | Build green: remove machine-specific JDK path and fix compile errors | S | 1 | build | gradle.properties:25, TrackerAnalytics.kt:80, no JDK in prior agent env | done |
-| 51 | [S02](slices/S02.md) | Test real reminder scheduling logic instead of a copy | S | 1 | reminders | ReminderSchedulerTest.kt:106 | done |
-| 52 | [S03](slices/S03.md) | Run BackupCodec tests on the JVM and validate imported data | M | 2 | data | BackupCodecTest.kt, BackupCodec.kt:62-118 | done |
+| 57 | [S01](slices/S01.md) | Build green: remove machine-specific JDK path and fix compile errors | S | 1 | build | gradle.properties:25, TrackerAnalytics.kt:80, no JDK in prior agent env | done |
+| 58 | [S02](slices/S02.md) | Test real reminder scheduling logic instead of a copy | S | 1 | reminders | ReminderSchedulerTest.kt:106 | done |
+| 59 | [S03](slices/S03.md) | Run BackupCodec tests on the JVM and validate imported data | M | 2 | data | BackupCodecTest.kt, BackupCodec.kt:62-118 | done |
 
 ## Licensing
 

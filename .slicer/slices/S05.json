@@ -30,7 +30,7 @@
     },
     {
       "heading": "Check",
-      "body": "- `./gradlew connectedDebugAndroidTest` passes on an emulator or device, API 34 or newer.\n- `app/schemas/com.squalor.consecutor.AppDatabase/1.json` exists and is committed.\n- `./gradlew testDebugUnitTest lintDebug assembleDebug assembleRelease` passes (the release build must still compile with the debug-only fallback)."
+      "body": "- `./gradlew connectedDebugAndroidTest` passes on an emulator or device, API 34 or newer.\n- `app/schemas/com.squalor.consecutor.AppDatabase/1.json` exists and is committed.\n- `./gradlew testDebugUnitTest lintDebug assembleDebug assembleRelease` passes (the release build must still compile with the debug-only fallback).\n- Before installing this build on a device that ran an earlier build, uninstall the app (`adb uninstall com.squalor.consecutor`). The schema version drops from 2 to 1, and only debug builds fall back to wiping the database; a release build would crash on the downgrade."
     },
     {
       "heading": "Git",

@@ -1,0 +1,41 @@
+{
+  "id": "S56",
+  "title": "Deleted entries: never exported, purged after 24 hours",
+  "lead": [
+    "Owner decision (2026-10-03): deleted entries are excluded from every export and removed from the device 24 hours after deletion."
+  ],
+  "depends_note": null,
+  "findings_note": "BackupCodec.kt:46-57 (encode writes soft-deleted entries and their notes); TrackerRepository.kt:104-109 (soft delete only, never purged)",
+  "size": "S",
+  "flags": [],
+  "trees_note": "data",
+  "trees_plural": false,
+  "boundary": "**Not in this slice:** changing undo behaviour (S39), the CSV format (S17 already skips deleted entries), and `PRIVACY.md` (S20 writes the claim).",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "- Deleting an entry only sets `isDeleted = true`. The row, including any note, stays in the database forever and is written into every JSON backup, so \"deleted\" text leaves the device in every export.\n- Soft delete exists for Undo (S39). The undo snackbar lasts seconds, so 24 hours is a generous window."
+    },
+    {
+      "heading": "Files",
+      "body": "- `app/src/main/java/com/squalor/consecutor/BackupCodec.kt`\n- `app/src/main/java/com/squalor/consecutor/TrackerDao.kt`, `TrackerRepository.kt`\n- `app/src/main/java/com/squalor/consecutor/ConsecutorApp.kt`\n- `app/src/test/java/com/squalor/consecutor/BackupCodecTest.kt`\n- `app/src/androidTest/java/com/squalor/consecutor/TrackerDaoTest.kt` (from S05), `BackupCodecInstrumentedTest.kt`\n- `DEVELOPERS.md` (\"Persistence Notes\")"
+    },
+    {
+      "heading": "Failing tests",
+      "body": "JVM, in `BackupCodecTest`:\n- `encode omits deleted entries` (a bundle with one active and one deleted entry encodes one entry)\n\nInstrumented, in `TrackerDaoTest`:\n- `purgeDeletedEntries removes only deleted entries older than the cutoff` (three entries: active and old, deleted and old, deleted and recent; after the purge only the first and third remain, and it returns 1)\n- `importBackup skips entries marked deleted`"
+    },
+    {
+      "heading": "Implement",
+      "body": "1. `BackupCodec.encode`: write only entries with `isDeleted == false`. Keep writing the `isDeleted` field (always `false`) so older app versions can still read the file. `decode` keeps accepting `isDeleted` so older backups still import.\n2. `TrackerRepository.importBackup`: skip imported entries with `isDeleted == true` (do not insert them).\n3. DAO: `@Query(\"DELETE FROM entries WHERE isDeleted = 1 AND updatedAtEpochMs < :cutoffEpochMs\") suspend fun purgeDeletedEntries(cutoffEpochMs: Long): Int`. Repository: `suspend fun purgeDeletedEntries(now: Long = System.currentTimeMillis()): Int = trackerDao.purgeDeletedEntries(now - PURGE_AFTER_MS)` with `const val PURGE_AFTER_MS = 24 * 60 * 60 * 1000L` in a companion object.\n4. `ConsecutorApp`: add `val appScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)` if S43 has not already added it, and in `onCreate` launch `runCatching { repository.purgeDeletedEntries() }` on it. A failure must not crash startup.\n5. Update tests that expected deleted entries to round-trip: `BackupCodecTest` decode tests that read a fixture with a deleted entry stay (decode still accepts it); any test that encodes a deleted entry and expects it back must now expect it to be absent. Do the same in `BackupCodecInstrumentedTest`.\n6. `DEVELOPERS.md` \"Persistence Notes\": one line, \"Deleted entries are kept for 24 hours (for Undo), then removed at the next app start; they are never written to backups or CSV.\""
+    },
+    {
+      "heading": "Check",
+      "body": "- `./gradlew testDebugUnitTest` passes, and the instrumented tests pass (`./gradlew pixel6api34DebugAndroidTest` once S55 has landed, otherwise `connectedDebugAndroidTest`).\n- Manual: add an entry with the note \"secret\", delete it, export a backup: the file does not contain \"secret\". Undo still works within the snackbar."
+    },
+    {
+      "heading": "Git",
+      "body": "Commit on `first`, message `S56: <summary>`."
+    }
+  ],
+  "notes": []
+}

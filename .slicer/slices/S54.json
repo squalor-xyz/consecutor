@@ -1,0 +1,41 @@
+{
+  "id": "S54",
+  "title": "Resource-id UiEvents and structured target and reminder labels",
+  "lead": [
+    "Split out of S18 so that S18 only moves Compose text. This slice removes English from the layers that have no `Context`: the ViewModel, the analytics and the notification code."
+  ],
+  "depends_note": null,
+  "findings_note": "TrackerAnalytics.kt:172-190 (English formatTarget/formatReminder, 24-hour time); TrackerViewModel.kt (English messages); ReminderScheduler.kt:60-81 (English channel and notification text)",
+  "size": "M",
+  "flags": [],
+  "trees_note": "ui",
+  "trees_plural": false,
+  "boundary": "**Not in this slice:** moving Compose `Text(\"…\")` literals to resources (S18), translations, and accessibility labels (S45).",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "- ViewModel messages are English strings. A ViewModel has no `Context`, so it cannot use resources; it must emit resource ids.\n- `TrackerAnalytics.formatTarget` and `formatReminder` build English labels with a hardcoded `%02d:%02d` 24-hour time and English weekday names, so they can never be localized and ignore the 12-hour setting.\n- The notification channel name, description, title fallback and text are English literals."
+    },
+    {
+      "heading": "Files",
+      "body": "- `app/src/main/java/com/squalor/consecutor/UiEvent.kt` (from S39), `TrackerViewModel.kt`, `MainScreen.kt`\n- `app/src/main/java/com/squalor/consecutor/TrackerModels.kt` (`TrackerSummary`), `TrackerAnalytics.kt`\n- `app/src/main/java/com/squalor/consecutor/ui/DashboardScreen.kt`, `ui/TrackerDetailScreen.kt`, `ui/Components.kt`\n- New `app/src/main/java/com/squalor/consecutor/ui/Labels.kt`\n- `app/src/main/java/com/squalor/consecutor/ReminderScheduler.kt`\n- `app/src/main/res/values/strings.xml`\n- `app/src/test/java/com/squalor/consecutor/TrackerAnalyticsTest.kt`"
+    },
+    {
+      "heading": "Failing tests",
+      "body": "JVM, in `TrackerAnalyticsTest`:\n- `summary exposes target period and value and the enabled reminder` (a COUNT tracker with a WEEKLY target of 3 and an enabled reminder at 07:30 on Monday and Friday: `targetPeriod == WEEKLY`, `targetValue == 3.0`, `reminder.hourOfDay == 7`, `reminder.daysOfWeek == setOf(MONDAY, FRIDAY)`)\n- `summary has a null reminder when the reminder is disabled`\nDelete any existing assertion on `targetLabel` or `reminderLabel`."
+    },
+    {
+      "heading": "Implement",
+      "body": "1. `UiEvent`: change `Message(text: String)`, `Logged(text, …)`, `Cleared(text, …)` and S15's `Archived(text, …)` to carry `@StringRes val textRes: Int` and `val args: List<Any> = emptyList()` instead of `text`. In `MainScreen`, resolve them with `context.getString(event.textRes, *event.args.toTypedArray())` before calling `showSnackbar`. The Undo action label is `R.string.action_undo`.\n2. Convert every message in `TrackerViewModel` to a string resource named `event_…` (for example `event_tracker_created`, `event_logged` with `%1$s` for the tracker name). The one exception is the backup import error: pass the `BackupFormatException` message as the argument of `event_import_failed` (\"Backup import failed: %1$s\"), and add the code comment `// BackupCodec messages are English and not localized.`\n3. `TrackerSummary`: remove `targetLabel` and `reminderLabel`. Add `targetPeriod: TargetPeriod?`, `targetValue: Double?` and `reminder: ReminderConfig?` (non-null only when a reminder exists and is enabled). Delete `formatTarget`, `formatReminder` and the private `formatNumber` from `TrackerAnalytics`.\n4. `ui/Labels.kt` has two `@Composable` functions that build the display text from resources:\n   - `targetLabel(type, period, value, unit)`: \"1 per day\" for YES_NO DAILY, \"3 days per week\" for YES_NO WEEKLY (plurals), \"8 glasses per day\" for COUNT. Numbers via `NumberRules.formatNumber`.\n   - `reminderLabel(config)`: time with `LocalTime.of(h, m).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT))`; days with `DayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())` in `WeekFields.of(Locale.getDefault()).firstDayOfWeek` order; \"Every day at %1$s\" when the set is empty or has all seven days, otherwise \"%1$s at %2$s\".\n   Replace every use of the removed fields in the dashboard card and the detail header with these functions.\n5. `ReminderScheduler`: channel name and description, the notification title fallback and the text come from `context.getString(R.string.notification_…)`.\n6. Add every new string to `values/strings.xml` with the prefixes `event_`, `action_`, `label_`, `notification_`."
+    },
+    {
+      "heading": "Check",
+      "body": "- `./gradlew testDebugUnitTest lintDebug assembleDebug` passes.\n- `rg -n '\"[A-Z][a-z]+ [a-z]' app/src/main/java/com/squalor/consecutor/TrackerViewModel.kt app/src/main/java/com/squalor/consecutor/TrackerAnalytics.kt app/src/main/java/com/squalor/consecutor/ReminderScheduler.kt` finds no English sentences (apart from log tags or the code comment in step 2).\n- Manual: with the device set to 12-hour time, a reminder label reads \"8:00 PM\"; with 24-hour time it reads \"20:00\". Each snackbar still shows, with Undo where it had it."
+    },
+    {
+      "heading": "Git",
+      "body": "Commit on `first`, message `S54: <summary>`."
+    }
+  ],
+  "notes": []
+}

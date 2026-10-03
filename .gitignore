@@ -34,3 +34,6 @@ google-services.json
 
 # slicer runtime lock
 .slicer/lock
+
+# Agent worktrees
+.worktrees/

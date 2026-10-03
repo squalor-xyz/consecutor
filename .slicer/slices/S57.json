@@ -1,0 +1,39 @@
+{
+  "id": "S57",
+  "title": "Settings About card: version, licence, source link and third-party notices",
+  "lead": [],
+  "depends_note": null,
+  "findings_note": "MainScreen.kt:455-461 (\"Privacy-first defaults … in v1\" header); no version or licence information anywhere in the app",
+  "size": "S",
+  "flags": [],
+  "trees_note": "ui",
+  "trees_plural": false,
+  "boundary": "**Not in this slice:** an in-app privacy policy (S20 publishes it), a licence-collection Gradle plugin (Google's oss-licenses plugin depends on Play services and is not allowed), and a crash reporter.",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "- There is no way to see the app version in the app, which bug reports need.\n- The APK bundles Apache-2.0 libraries (AndroidX, Kotlin, kotlinx-coroutines). Showing their licence in the app is the usual way to meet the attribution expectations of Apache-2.0 §4.\n- The Settings header says \"…avoids account-based sync in v1\", which is development copy, not user copy."
+    },
+    {
+      "heading": "Files",
+      "body": "- `app/src/main/java/com/squalor/consecutor/ui/SettingsScreen.kt`\n- New `app/src/main/res/raw/third_party_notices.txt`\n- `app/src/main/res/values/strings.xml`\n- `app/build.gradle` (read only: `buildConfig true` is set by S05)"
+    },
+    {
+      "heading": "Failing tests",
+      "body": "- None. Checked manually and with the shell check below."
+    },
+    {
+      "heading": "Implement",
+      "body": "1. Replace the Settings header item (the \"Privacy-first defaults\" title and paragraph) with one line: \"Your data stays on this device unless you export it.\" (string resource).\n2. Add an \"About\" `SettingsCard` as the last item:\n   - \"Consecutor %1$s\" with `BuildConfig.VERSION_NAME`.\n   - \"Free software under the Mozilla Public License 2.0.\"\n   - A \"Source code\" `TextButton` that calls `context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(\"https://github.com/squalor-xyz/consecutor\")))` inside `try { … } catch (e: ActivityNotFoundException) { … }`, showing a snackbar \"No app can open links.\" on failure. Opening a browser needs no permission and no `<queries>` entry.\n   - An \"Open-source licences\" `TextButton` that opens an `AlertDialog` whose text is the content of `R.raw.third_party_notices` (read with `context.resources.openRawResource(...).bufferedReader().use { it.readText() }` inside `remember`), in a vertically scrollable `Column`, with a \"Close\" button.\n3. `third_party_notices.txt`: run `./gradlew :app:dependencies --configuration releaseRuntimeClasspath` (after S46), and for each distinct `group:artifact` write one line `group:artifact — License name`, grouped by licence. Take each licence from the artifact's POM (`<licenses>`) or its project page; do not guess. After the list, include the full text of each licence that appears (Apache-2.0 is expected for AndroidX, Kotlin and kotlinx). Start the file with \"Consecutor is licensed under MPL-2.0. It includes the following open-source components:\".\n4. All visible text goes through `stringResource` (S18's convention), except the notices file, which stays English."
+    },
+    {
+      "heading": "Check",
+      "body": "- `./gradlew lintDebug assembleDebug` passes.\n- Every runtime dependency is listed: `./gradlew -q :app:dependencies --configuration releaseRuntimeClasspath | rg -o '[a-z0-9.\\-]+:[a-z0-9.\\-]+(?=:)' | sort -u` and confirm each `group:artifact` appears in `third_party_notices.txt`.\n- Manual: the About card shows the version from `app/build.gradle`, Source code opens the repository page in a browser, and the licences dialog scrolls to the end."
+    },
+    {
+      "heading": "Git",
+      "body": "Commit on `first`, message `S57: <summary>`."
+    }
+  ],
+  "notes": []
+}

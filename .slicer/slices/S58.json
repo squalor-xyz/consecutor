@@ -1,0 +1,39 @@
+{
+  "id": "S58",
+  "title": "Cap content width on large screens and in landscape",
+  "lead": [],
+  "depends_note": null,
+  "findings_note": "all screens use fillMaxSize LazyColumns that stretch edge to edge on tablets and in landscape",
+  "size": "S",
+  "flags": [],
+  "trees_note": "ui",
+  "trees_plural": false,
+  "boundary": "**Not in this slice:** two-pane layouts, navigation rails, and any change to phone portrait layout.",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "On tablets, foldables and phones in landscape, cards, charts and the calendar stretch across the whole width, so lines of text become very long and the calendar cells become huge. From target API 36 Android also ignores orientation and resizability restrictions on large screens, so the app must look reasonable at any width."
+    },
+    {
+      "heading": "Files",
+      "body": "- `app/src/main/java/com/squalor/consecutor/ui/DashboardScreen.kt`, `TrackerDetailScreen.kt`, `SettingsScreen.kt`, `ArchivedScreen.kt`\n- `app/src/main/java/com/squalor/consecutor/ui/Components.kt`"
+    },
+    {
+      "heading": "Failing tests",
+      "body": "- None. Checked manually."
+    },
+    {
+      "heading": "Implement",
+      "body": "1. In `Components.kt` add `@Composable fun ContentColumn(padding: PaddingValues, content: @Composable () -> Unit)`: a `Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.TopCenter)` whose child is wrapped in `Box(Modifier.widthIn(max = 640.dp).fillMaxWidth())`.\n2. Wrap each screen's `LazyColumn` in `ContentColumn`, and move the Scaffold `padding` from the `LazyColumn` modifier to `ContentColumn`. Keep the existing `contentPadding` values.\n3. Do the same for `EmptyState`.\n4. Do not change dialogs; Material3 already limits their width."
+    },
+    {
+      "heading": "Check",
+      "body": "- Manual on a Pixel Tablet emulator (API 34) and on a phone in landscape: content is centred and no wider than 640dp on every screen, nothing is cut off, and the FAB is still reachable.\n- Phone portrait looks exactly as before (compare screenshots).\n- `./gradlew lintDebug assembleDebug` passes."
+    },
+    {
+      "heading": "Git",
+      "body": "Commit on `first`, message `S58: <summary>`."
+    }
+  ],
+  "notes": []
+}
