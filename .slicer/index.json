@@ -751,8 +751,8 @@
     },
     {
       "id": "S26",
-      "title": "Revisit at-rest database encryption (SQLCipher + Keystore explored in early `first` commits)",
-      "short_title": "Revisit at-rest database encryption (SQLCipher + Keystore explored in early `first` commits)",
+      "title": "Revisit at-rest database encryption (SQLCipher + Keystore explored in commits 5fcabda, e60d2b2)",
+      "short_title": "Revisit at-rest database encryption (SQLCipher + Keystore explored in commits 5fcabda, e60d2b2)",
       "status": "later",
       "has_slice": false,
       "depends_on": [],

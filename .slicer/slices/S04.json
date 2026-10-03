@@ -28,11 +28,11 @@
     },
     {
       "heading": "Check",
-      "body": "- Push to `first`. The workflow is green and lint runs."
+      "body": "- Push to `main`. The workflow is green and lint runs."
     },
     {
       "heading": "Git",
-      "body": "Commit on `first`, message `S04: <summary>`."
+      "body": "Commit on `main`, message `S04: <summary>`."
     }
   ],
   "notes": []

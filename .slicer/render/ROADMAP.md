@@ -50,7 +50,7 @@
 | 19 | S23 | Notification "Mark done" action |  | 1 | reminders |  | later |
 | 20 | S24 | Manual tracker reordering |  | 2 | ui |  | later |
 | 21 | S25 | Password-protected backup export |  | 2 | data |  | later |
-| 22 | S26 | Revisit at-rest database encryption (SQLCipher + Keystore explored in early `first` commits) |  | 3 | data |  | later |
+| 22 | S26 | Revisit at-rest database encryption (SQLCipher + Keystore explored in commits 5fcabda, e60d2b2) |  | 3 | data |  | later |
 | 23 | S27 | Tags; filtering and richer tracker organization |  | 3 | ui |  | later |
 | 24 | S28 | More flexible targets and schedule rules (e.g. N times per week, specific weekdays) |  | 3 | data |  | later |
 | 25 | S29 | Home-screen widget |  | 3 | ui |  | later |
