@@ -8,7 +8,7 @@
   "flags": [],
   "trees_note": "ui",
   "trees_plural": false,
-  "boundary": "**Not in this slice:**",
+  "boundary": "**Not in this slice:** reminder delivery logic (S08, S36) and the notification tap target (S37).",
   "sections": [
     {
       "heading": "Why",
@@ -16,7 +16,7 @@
     },
     {
       "heading": "Files",
-      "body": "- MainScreen.kt (or a new `ui/NotificationPermission.kt`)"
+      "body": "- New `app/src/main/java/com/squalor/consecutor/ui/NotificationPermission.kt` (the state helper)\n- `app/src/main/java/com/squalor/consecutor/MainScreen.kt`, `ui/SettingsScreen.kt`, `ui/DashboardScreen.kt` (after S32; before S32 these live in `MainScreen.kt`)"
     },
     {
       "heading": "Failing tests",
@@ -24,7 +24,7 @@
     },
     {
       "heading": "Implement",
-      "body": "1. Use a `rememberNotificationPermissionState()` helper. It computes `granted` from `NotificationManagerCompat.areNotificationsEnabled()` and re-checks on `ON_RESUME`.\n2. When saving with a reminder: if not granted, request the permission once. If the request returns denied, show a snackbar with the action \"Open settings\", which opens `Settings.ACTION_APP_NOTIFICATION_SETTINGS` with `EXTRA_APP_PACKAGE`.\n3. The Settings card shows \"Notifications: On\" or \"Off\" with a button that either requests the permission or deep-links to settings. It's the same on all APIs, because notifications can be disabled per app on API 26–32 too.\n4. On the dashboard, show a small inline warning on the reminder label of any tracker that has a reminder while notifications are off."
+      "body": "1. Use a `rememberNotificationPermissionState()` helper. It computes `granted` from `NotificationManagerCompat.areNotificationsEnabled()` and re-checks on `ON_RESUME`.\n2. When saving with a reminder: if not granted, request the permission once. If the request returns denied, show a snackbar with the action \"Open settings\", which opens `Settings.ACTION_APP_NOTIFICATION_SETTINGS` with `EXTRA_APP_PACKAGE`.\n3. The Settings card shows \"Notifications: On\" or \"Off\" with a button that either requests the permission or deep-links to settings. It's the same on all APIs, because notifications can be disabled per app on API 26–32 too.\n4. On the dashboard, show a small inline warning on the reminder label of any tracker that has a reminder while notifications are off.\n\nNotes for the implementer:\n- Step 4 changes the reminder label on the existing dashboard card (the chip built from `tracker.reminderLabel`). S38 later rebuilds that card and is required to keep this warning, so write it as a small separate composable (`ReminderLabel(label, notificationsEnabled)`) that S38 can reuse.\n- `rememberNotificationPermissionState()` returns a `State<Boolean>`. Re-read `NotificationManagerCompat.from(context).areNotificationsEnabled()` in a `DisposableEffect` that observes `Lifecycle.Event.ON_RESUME`, the same pattern as S07's resume hook. No new dependency is needed.\n- The settings deep link is `Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)`."
     },
     {
       "heading": "Check",

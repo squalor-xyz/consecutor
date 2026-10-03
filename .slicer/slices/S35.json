@@ -1,0 +1,39 @@
+{
+  "id": "S35",
+  "title": "Repository: YES_NO add is idempotent per date; addEntry returns the entry id",
+  "lead": [],
+  "depends_note": null,
+  "findings_note": "TrackerRepository.kt:74-88 (addEntry returns Unit and always inserts)",
+  "size": "S",
+  "flags": [],
+  "trees_note": "data",
+  "trees_plural": false,
+  "boundary": "**Not in this slice:** the dashboard buttons and undo UI (S39) and the editor's duplicate-date warning (S14).",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "- Owner decision: YES_NO counts once per day. Analytics (S34) defends against duplicates, but the data layer should not create them from quick actions.\n- One-tap logging with undo (S39) needs the id of the entry that was created.\n- `addEntry` inserts the entry and bumps the tracker as two unrelated writes."
+    },
+    {
+      "heading": "Files",
+      "body": "- `app/src/main/java/com/squalor/consecutor/TrackerDao.kt`\n- `app/src/main/java/com/squalor/consecutor/TrackerRepository.kt`\n- `app/src/main/java/com/squalor/consecutor/TrackerViewModel.kt` (call sites only)\n- `app/src/androidTest/java/com/squalor/consecutor/TrackerDaoTest.kt` (created in S05; extend it)"
+    },
+    {
+      "heading": "Failing tests",
+      "body": "Instrumented, on an in-memory Room database with a `TrackerRepository` built from it:\n- `yes_no addEntry twice on one date returns the same id and keeps one row`\n- `count addEntry twice on one date inserts two rows`\n- `yes_no addEntry after the entry was soft-deleted inserts a new row`"
+    },
+    {
+      "heading": "Implement",
+      "body": "1. DAO: `@Query(\"SELECT id FROM entries WHERE trackerId = :trackerId AND effectiveDate = :date AND isDeleted = 0 LIMIT 1\") suspend fun findActiveEntryId(trackerId: Long, date: String): Long?`.\n2. Change `addEntry` to return `Long` and wrap the body in `database.withTransaction { ... }`. When `trackerType == YES_NO` and `findActiveEntryId` returns an id, return that id without inserting or bumping.\n3. Update the ViewModel call sites (they can ignore the return value for now).\n4. Leave `updateEntry` alone. A user moving a YES_NO entry onto a date that already has one is allowed here, and S34 counts it once."
+    },
+    {
+      "heading": "Check",
+      "body": "- `./gradlew connectedDebugAndroidTest` passes on an emulator or device (API 34 or newer). CI does not run instrumented tests, so run them locally.\n- `./gradlew testDebugUnitTest` still passes."
+    },
+    {
+      "heading": "Git",
+      "body": "Commit on `first`, message `S35: <summary>`."
+    }
+  ],
+  "notes": []
+}

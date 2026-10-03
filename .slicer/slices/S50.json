@@ -1,0 +1,39 @@
+{
+  "id": "S50",
+  "title": "Remove the ai-output sample dump",
+  "lead": [],
+  "depends_note": null,
+  "findings_note": "ai-output/chatgpt-output.md (1,167 lines of generated sample code and docs that mention an MIT licence, in an MPL-2.0 repo)",
+  "size": "S",
+  "flags": [],
+  "trees_note": "docs",
+  "trees_plural": false,
+  "boundary": "**Not in this slice:** editing `specs-and-reqs.md` or any other document.",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "The directory holds a generated example project unrelated to the current code. It mentions an MIT licence in an MPL-2.0 repository, nothing builds or references it, and F-Droid and Play reviewers would have to ask what it is. The owner decided to delete it."
+    },
+    {
+      "heading": "Files",
+      "body": "- `ai-output/chatgpt-output.md` (delete)"
+    },
+    {
+      "heading": "Failing tests",
+      "body": "- None."
+    },
+    {
+      "heading": "Implement",
+      "body": "1. Check for references: `rg -n \"ai-output|chatgpt-output\" --glob '!ai-output/**' --glob '!.slicer/**'`. If anything refers to it, remove or fix that reference.\n2. `git rm -r ai-output`.\n3. Keep `specs-and-reqs.md`."
+    },
+    {
+      "heading": "Check",
+      "body": "- The `rg` command above returns nothing.\n- `./gradlew assembleDebug` still passes."
+    },
+    {
+      "heading": "Git",
+      "body": "Commit on `first`, message `S50: <summary>`."
+    }
+  ],
+  "notes": []
+}

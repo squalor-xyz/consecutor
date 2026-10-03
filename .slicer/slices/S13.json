@@ -1,36 +1,36 @@
 {
   "id": "S13",
-  "title": "Today-first dashboard with one-tap logging and undo",
+  "title": "Dashboard analytics: today and period progress on TrackerSummary",
   "lead": [
-    "The core loop of a habit app is to open it, see what's left today, and tap. That loop is currently weak."
+    "The core loop of a habit app is to open it, see what is left today, and tap. This slice computes the data for that loop on the JVM. The UI is S38 (cards) and S39 (one-tap logging)."
   ],
   "depends_note": null,
-  "findings_note": "TrackerDao.kt:14; MainScreen.kt:277-343; TrackerRepository.kt:111",
-  "size": "L",
+  "findings_note": "TrackerModels.kt:114-129; TrackerAnalytics.kt:38-70",
+  "size": "M",
   "flags": [],
   "trees_note": "ui",
   "trees_plural": false,
-  "boundary": "**Not in this slice:**",
+  "boundary": "**Not in this slice:** any UI change beyond the minimal edit that keeps the app compiling, the card layout (S38), the log buttons and undo (S39), and string resources (S18).",
   "sections": [
     {
       "heading": "Why",
-      "body": "- Order is `updatedAtEpochMs DESC` (TrackerDao:14), so every quick log moves the card to the top and the list reshuffles under the user's thumb.\n- There's no \"done today\" or \"today's progress\" indicator. Users can't tell what remains.\n- Quick-log on YES_NO adds a duplicate entry if tapped twice. `totalValue` then double-counts, and there's no undo.\n- MEASURE trackers have no fast path, so the user has to open the detail screen and then the dialog.\n- \"Recent completion 0%\" and its progress bar show for trackers with no target, because `completionRate` is 0 when there is no target.\n- A header block of marketing copy (\"Local-first tracker dashboard…\", MainScreen:277-287) wastes the first screen.\n- `AssistChip(onClick = {})` (MainScreen:331-332, 345-350) are focusable no-op buttons, which hurts accessibility and adds touch noise."
+      "body": "- `TrackerSummary` cannot say whether a tracker is done today, how far into this week's target the user is, or which entries were logged today.\n- `completionRate` is `0f` for trackers with no target, so the dashboard shows \"Recent completion 0%\" and an empty bar for them.\n- \"Done today\" needs a defined meaning for weekly targets, YES_NO versus COUNT, and trackers with no target. The table below is that definition. Do not invent a different one."
     },
     {
       "heading": "Files",
-      "body": "- TrackerModels.kt (TrackerSummary fields), TrackerAnalytics.kt, TrackerDao.kt, TrackerRepository.kt, TrackerViewModel.kt, MainScreen.kt (or split into `ui/DashboardScreen.kt`)"
+      "body": "- `app/src/main/java/com/squalor/consecutor/TrackerModels.kt` (`TrackerSummary`)\n- `app/src/main/java/com/squalor/consecutor/TrackerAnalytics.kt`\n- `app/src/test/java/com/squalor/consecutor/TrackerAnalyticsTest.kt`\n- `app/src/main/java/com/squalor/consecutor/MainScreen.kt` (or `ui/DashboardScreen.kt`): only the compile fix in Implement step 5"
     },
     {
       "heading": "Failing tests",
-      "body": "JVM, in TrackerAnalyticsTest:\n- `todayValue sums today's non-deleted entries`\n- `doneToday true for YES_NO with entry today`\n- `doneToday for COUNT daily target compares todayValue to target`\n- `completionRate null when no target`"
+      "body": "JVM, in `TrackerAnalyticsTest`. Use a fixed `today` and `WeekFields.ISO`:\n- `todayValue sums today's active entries and ignores deleted ones`\n- `yes_no doneToday is true with an entry today and false otherwise`\n- `count with a daily target is done today only when todayValue reaches the target`\n- `count with a weekly target reports week sum and periodMet`\n- `yes_no with a weekly target counts distinct days in periodValue`\n- `tracker without a target has null periodTarget and null completionRate`\n- `measure tracker has null periodTarget and null completionRate and is done today with an entry`\n- `todayEntryIds lists only active entries dated today`"
     },
     {
       "heading": "Implement",
-      "body": "1. Add `todayValue: Double`, `doneToday: Boolean`, `todayEntryIds: List<Long>` to `TrackerSummary`, and make `completionRate: Float?` (null when there's no target or for MEASURE). Compute them in `toSummary` from the injected `today`.\n2. Change the sort to `ORDER BY isArchived ASC, createdAtEpochMs ASC`. It's stable. Manual reorder is a later item.\n3. Each card's primary action, a 48dp trailing button:\n   - YES_NO: a check toggle. Tapping when not done adds an entry for today. Tapping when done soft-deletes today's entries, after confirming via a snackbar with Undo rather than a dialog.\n   - COUNT: a `+1` button showing `todayValue / target`. Long-press opens the entry dialog for a custom amount.\n   - MEASURE: a \"Log\" button that opens the entry dialog prefilled with today.\n4. After every quick action, show a snackbar \"Logged Water (+1)\" with the action \"Undo\", which soft-deletes the created entry ID. The repo returns the new entry ID from `addEntry`. Use `SnackbarHostState.showSnackbar(actionLabel=…)` and route the message channel through a `UiEvent` sealed class instead of `String?`.\n5. Card layout: emoji + name, the status line (\"Done today\" / \"2 / 8 glasses today\" / \"Not logged today\"), a streak line (\"🔥 12-day streak · best 30\", with \"week\" for weekly targets), and the completion bar only when `completionRate != null`. Replace the MetricChips with plain `Text`. Remove the header copy and empty-state marketing; use a short empty state with a \"Create tracker\" button.\n6. Visually de-emphasize done trackers (container color `surfaceVariant`), but don't reorder them."
+      "body": "1. Add these fields to `TrackerSummary`:\n   - `todayValue: Double`\n   - `doneToday: Boolean`\n   - `todayEntryIds: List<Long>`\n   - `periodValue: Double`\n   - `periodTarget: Double?`\n   - `periodMet: Boolean` (true only when `periodTarget != null && periodValue >= periodTarget`)\n   - change `completionRate` to `Float?`\n2. Compute them in `toSummary` from the same active, not-after-`today` entries and the same per-day aggregation that S34 introduced, using the `weekFields` parameter for the week. Meanings:\n\n| Tracker | `doneToday` | `periodValue` / `periodTarget` | `completionRate` |\n|---|---|---|---|\n| YES_NO, DAILY target | at least one active entry today | today's count (0 or 1) / target | existing 14-day rate |\n| YES_NO, WEEKLY target n | at least one active entry today | distinct days logged this week / n | existing 8-week rate |\n| YES_NO, no target | at least one active entry today | today's count / null | null |\n| COUNT, DAILY target n | `todayValue >= n` | `todayValue` / n | existing 14-day rate |\n| COUNT, WEEKLY target n | any active entry today (it was logged today) | sum of this week's values / n | existing 8-week rate |\n| COUNT, no target | `todayValue > 0` | `todayValue` / null | null |\n| MEASURE | at least one active entry today | `todayValue` / null | null |\n\n   `todayValue` is the aggregated value for today (YES_NO is 0 or 1, COUNT is the sum, MEASURE is the sum of today's values and is only used for display of \"logged\"). \"This week\" starts on `weekFields.firstDayOfWeek` and ends today.\n3. `completionRate` is null when the tracker has no target or is MEASURE. Otherwise it is the existing 14-day (daily) or 8-week (weekly) rate. Keep `StreakStats` as it is.\n4. Leave `targetLabel` and `reminderLabel` in place. S18 removes them.\n5. Keep the app compiling: wherever the UI reads `completionRate` (MainScreen `TrackerSummaryCard`), use `tracker.completionRate ?: 0f` for now. S38 replaces that code.\n6. Existing tests must still pass. The assertion `summary.completionRate > 0f` in the first test becomes `summary.completionRate!! > 0f`."
     },
     {
       "heading": "Check",
-      "body": "- The unit tests pass.\n- Manual: tap yes/no twice → one entry, then removed via Undo. Card order never changes when logging.\n- A tracker with no target shows no completion bar."
+      "body": "- `./gradlew testDebugUnitTest lintDebug assembleDebug` passes.\n- Read the table above against your implementation once: every row has a test or is covered by one."
     },
     {
       "heading": "Git",

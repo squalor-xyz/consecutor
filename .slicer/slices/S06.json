@@ -8,11 +8,11 @@
   "flags": [],
   "trees_note": "data",
   "trees_plural": false,
-  "boundary": "**Not in this slice:**",
+  "boundary": "**Not in this slice:** the export and import UX changes (S43, S44) and the dashboard buttons (S39).",
   "sections": [
     {
       "heading": "Why",
-      "body": "- `viewModelScope.launch` runs on Main. `contentResolver.openInputStream(...).readText()` (VM:86) and `file.writeText` (Repo:127, :134) block the UI thread, and StrictMode or a large backup turns that into jank or an ANR.\n- `archiveTracker`/`addEntry`/`updateEntry`/`deleteEntry`/`quickLog` have no `runCatching`. A Room exception crashes the app, and the user sees a success snackbar before the write has finished."
+      "body": "- `viewModelScope.launch` runs on the Main dispatcher. `contentResolver.openInputStream(...).readText()` (ViewModel, `importBackup`) and `file.writeText` (repository `exportCsv` and `exportBackup`) block the UI thread, so a large backup causes jank or an ANR.\n- `archiveTracker`, `addEntry`, `updateEntry`, `deleteEntry` and `quickLog` have no error handling. A Room exception (for example from S05's new constraints) crashes the app instead of showing a message.\n- `observeDashboard` and `observeTrackerDetail` run `TrackerAnalytics` inside `Flow.map`, which executes on the collector's dispatcher (Main). Streak and trend maths over every entry therefore runs on the UI thread on each change."
     },
     {
       "heading": "Files",
@@ -24,11 +24,11 @@
     },
     {
       "heading": "Implement",
-      "body": "1. In the repository, wrap file writes in `withContext(Dispatchers.IO)`. In the VM, read the URI inside `withContext(Dispatchers.IO)`.\n2. Add a private `launchAction(success: String, failure: String, block: suspend () -> Unit)` helper in the VM and route every mutation through it. Report the backup error detail from `BackupFormatException` only, and show generic text for anything else.\n3. Enable `StrictMode.ThreadPolicy` with `detectDiskReads/Writes().penaltyLog()` in `ConsecutorApp` under `BuildConfig.DEBUG`."
+      "body": "1. Repository: wrap the file writes in `withContext(Dispatchers.IO)`. ViewModel: read the picked URI inside `withContext(Dispatchers.IO)`.\n2. Add `private fun launchAction(success: String?, failure: String, block: suspend () -> Unit)` to the ViewModel. It does `viewModelScope.launch { runCatching { block() }.onSuccess { success?.let { _message.value = it } }.onFailure { if (it is CancellationException) throw it; _message.value = failure } }`. Re-throw `CancellationException` so cancellation still works. Route every mutation through it (`saveTracker`, `archiveTracker`, `addEntry`, `updateEntry`, `deleteEntry`, `quickLog`). The message is set only after the write has completed. For backup import keep showing the detail of a `BackupFormatException` (its message is written for users) and show generic text for any other exception.\n3. In `ConsecutorApp.onCreate`, when `BuildConfig.DEBUG`, call `StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder().detectDiskReads().detectDiskWrites().penaltyLog().build())`. `BuildConfig` needs `buildFeatures { buildConfig true }` in `app/build.gradle`; S05 adds it, so add it here if S05 has not landed.\n4. Repository: end `observeDashboard()` and `observeTrackerDetail()` with `.flowOn(Dispatchers.Default)` so the analytics `map` runs off the main thread.\n5. `saveTracker` for an unknown tracker id now reports \"Unable to save tracker.\" (S05 makes the repository throw; confirm the message appears)."
     },
     {
       "heading": "Check",
-      "body": "- Export and import a backup on a debug build. Logcat shows no StrictMode disk violations from app code."
+      "body": "- Export and import a backup on a debug build: logcat shows no `StrictMode` disk violations from app code (`adb logcat | grep -i strictmode`).\n- Temporarily make `repository.addEntry` throw, add an entry, and confirm a failure snackbar appears and the app does not crash. Revert the temporary change.\n- `./gradlew testDebugUnitTest lintDebug assembleDebug` passes."
     },
     {
       "heading": "Git",

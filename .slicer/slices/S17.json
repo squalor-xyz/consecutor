@@ -1,34 +1,34 @@
 {
   "id": "S17",
-  "title": "Export and import UX: save to file; confirm before replace; flat CSV",
+  "title": "Flat CSV export as a pure function (with formula-injection guard)",
   "lead": [],
   "depends_note": null,
-  "findings_note": "TrackerRepository.kt:124-136,227-282; MainScreen.kt:242-252,462-478",
-  "size": "M",
+  "findings_note": "TrackerRepository.kt:230-289 (buildCsv)",
+  "size": "S",
   "flags": [],
   "trees_note": "data",
   "trees_plural": false,
-  "boundary": "**Not in this slice:**",
+  "boundary": "**Not in this slice:** the save-to-file and share flow (S43), the import flow (S44) and the backup JSON format (unchanged).",
   "sections": [
     {
       "heading": "Why",
-      "body": "- Import immediately wipes all data on file pick, with no confirmation and no preview.\n- Export is share-sheet only. Users who want \"save a backup to Downloads or Drive\" depend on the share targets.\n- The CSV mixes `tracker` and `entry` record rows with 18 mostly blank columns and blank separator lines. It includes soft-deleted entries and renders YES_NO values as `1.0`, so it isn't spreadsheet-friendly.\n- There's no warning that exports contain sensitive personal data, which the earlier roadmap called for."
+      "body": "- The CSV interleaves `tracker` and `entry` record rows with 18 mostly blank columns and blank separator lines. It includes soft-deleted entries and prints YES_NO values as `1.0`, so it opens badly in a spreadsheet.\n- Text cells that begin with `=`, `+`, `-` or `@` are treated as formulas by spreadsheet programs. A tracker name or note such as `=HYPERLINK(...)` would run when the user opens their own export.\n- The builder is private to the repository and cannot be unit tested without Android."
     },
     {
       "heading": "Files",
-      "body": "- TrackerRepository.kt, new pure `CsvExport.kt` + test, TrackerViewModel.kt, MainScreen.kt (Settings), BackupCodec.kt"
+      "body": "- New `app/src/main/java/com/squalor/consecutor/CsvExport.kt`\n- New `app/src/test/java/com/squalor/consecutor/CsvExportTest.kt`\n- `app/src/main/java/com/squalor/consecutor/TrackerRepository.kt` (remove `buildCsv` and `csv`; `exportCsv` calls `CsvExport.build`)"
     },
     {
       "heading": "Failing tests",
-      "body": "JVM CsvExportTest:\n- `one row per non-deleted entry with tracker name type unit`\n- `quotes commas newlines and quotes in notes`\n- `header is stable`"
+      "body": "JVM, in `CsvExportTest`:\n- `header is date,tracker,type,value,unit,note`\n- `one row per active entry with tracker name, type and unit` (deleted entries are not exported)\n- `yes_no value is 1 and count values have no trailing zeros` (`3.0` is `3`, `2.5` is `2.5`, never `1.0E10`)\n- `measure entry without a value gives an empty value cell`\n- `quotes cells with commas, quotes and line breaks, doubling inner quotes`\n- `prefixes text cells that start with = + - @ tab or carriage return with a single quote`\n- `does not prefix numeric value cells, so a negative measure stays -5`\n- `rows are ordered by tracker id then date`\n- `no trackers gives the header only`"
     },
     {
       "heading": "Implement",
-      "body": "1. CSV becomes one row per active entry, with the columns `date,tracker,type,value,unit,note`. Extract it as a pure `CsvExport.build(bundles): String` (RFC 4180 quoting, CRLF optional). Remove `buildCsv` from the repository.\n2. Export uses `ActivityResultContracts.CreateDocument(\"application/json\")` with the default name `consecutor-backup-YYYY-MM-DD.json`, and the CSV equivalent. Write via `contentResolver.openOutputStream` on IO. Keep \"Share…\" as a secondary action.\n3. Import preview:\n   - Decode first, off the main thread, and show an `AlertDialog`: \"Replace all data? This backup has N trackers and M entries (exported <date>). Your current N′ trackers will be removed.\"\n   - Before replacing, write an automatic safety backup to `filesDir/backups/pre-import-<timestamp>.json`, keeping the last 3.\n   - Add an `exportedAtEpochMs` field to the backup (version stays 1; the field is optional on decode).\n4. Settings copy, in one line on each export card: \"Exports are unencrypted and contain your full history. Store them somewhere private.\"\n5. Update `file_paths.xml` to drop the unused `external-files-path` if nothing uses it."
+      "body": "1. `object CsvExport { fun build(bundles: List<TrackerBundle>): String }` (no Android imports).\n2. Columns, in order: `date` (the entry's `effectiveDate`, ISO), `tracker` (name), `type` (`YES_NO`, `COUNT`, `MEASURE`), `value`, `unit`, `note`. Archived trackers are included. Soft-deleted entries are not.\n3. Value cell: YES_NO is `1`. Otherwise format the double with `BigDecimal(value.toString()).stripTrailingZeros().toPlainString()` so there is no scientific notation and the decimal separator is always `.`, whatever the locale. Null (MEASURE without a value) is empty.\n4. Text cells (`tracker`, `unit`, `note`): if the text starts with `=`, `+`, `-`, `@`, a tab or a carriage return, prefix a single quote `'`. Then, if it contains a comma, double quote, `\\r` or `\\n`, wrap it in double quotes and double any inner quotes (RFC 4180). The value, date and type cells are never prefixed.\n5. Lines end with `\\r\\n`, including the last one. Use UTF-8 without a byte-order mark.\n6. In the repository delete `buildCsv` and `csv`, and make `exportCsv(context)` write `CsvExport.build(trackerDao.getTrackerBundles())` to the same cache file it uses today. (S43 later replaces the file handling.)\n7. Update the \"CSV export formatting\" bullet in `DEVELOPERS.md`'s testing strategy to point at `CsvExportTest`."
     },
     {
       "heading": "Check",
-      "body": "- The unit tests pass.\n- Manual: save a backup to Downloads, then import → the confirmation shows the correct counts.\n- Cancel → nothing changes.\n- The CSV opens cleanly in LibreOffice Calc."
+      "body": "- `./gradlew testDebugUnitTest` passes.\n- Manual: export a CSV from a debug build with a tracker named `=1+1` and a note with a comma and a line break. Open it in LibreOffice Calc (or any spreadsheet). The name cell shows the text `'=1+1` (the leading quote is visible, and no formula runs), and the note stays in one cell."
     },
     {
       "heading": "Git",

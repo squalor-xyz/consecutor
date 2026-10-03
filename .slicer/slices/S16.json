@@ -1,34 +1,34 @@
 {
   "id": "S16",
-  "title": "Detail charts and calendar heatmap without a chart library",
+  "title": "Trend analytics: nullable MEASURE points, 30-day window, buildMonth",
   "lead": [],
   "depends_note": null,
-  "findings_note": "MainScreen.kt:395-416 (14 rows of LinearProgressIndicator with ISO dates); TrackerAnalytics.buildTrend",
-  "size": "L",
+  "findings_note": "TrackerAnalytics.kt:72-83 (14-day trend, MEASURE gaps become 0); no month view",
+  "size": "M",
   "flags": [],
   "trees_note": "ui",
   "trees_plural": false,
-  "boundary": "**Not in this slice:** zoom or pan, multi-tracker comparison, or any third-party chart dependency.",
+  "boundary": "**Not in this slice:** any Compose drawing. The bar and line charts are S41 and the calendar heatmap is S42. This slice only produces the data they draw.",
   "sections": [
     {
       "heading": "Why",
-      "body": "- The \"Recent trend\" section is 14 stacked progress bars labeled `2026-04-21` and takes about a full screen.\n- MEASURE trackers (weight, sleep) need a line chart to be useful.\n- There's no month view showing hits and misses, which is the main motivation signal for streaks."
+      "body": "- The trend covers 14 days, and for MEASURE trackers (weight, sleep) a day with no entry becomes 0, so a line chart would dive to zero.\n- There is no month view of hits and misses, which the calendar heatmap needs."
     },
     {
       "heading": "Files",
-      "body": "- TrackerAnalytics.kt (add `buildMonth`, extend trend window)\n- TrackerModels.kt\n- new `ui/charts/BarChart.kt`, `ui/charts/LineChart.kt`, `ui/charts/CalendarHeatmap.kt`\n- MainScreen.kt detail section"
+      "body": "- `app/src/main/java/com/squalor/consecutor/TrackerAnalytics.kt`\n- `app/src/main/java/com/squalor/consecutor/TrackerModels.kt`\n- `app/src/test/java/com/squalor/consecutor/TrackerAnalyticsTest.kt`\n- `app/src/main/java/com/squalor/consecutor/MainScreen.kt` (or `ui/TrackerDetailScreen.kt`): only the compile fix in Implement step 5"
     },
     {
       "heading": "Failing tests",
-      "body": "JVM:\n- `buildMonth marks met days and padding for first weekday`, which respects `WeekFields.of(locale)`\n- `trend for MEASURE excludes days without entries` (null rather than 0, so lines don't dive to zero)"
+      "body": "JVM, in `TrackerAnalyticsTest`, with a fixed `today` and explicit `WeekFields`:\n- `trend covers the 30 days ending today`\n- `measure trend has null for days without an entry and uses the latest entry of a day`\n- `count and yes_no trend default missing days to zero`\n- `buildMonth pads leading blanks for Monday-start and for Sunday-start weeks`\n- `buildMonth marks MET PARTIAL MISSED OPEN and FUTURE days for a daily count target`\n- `buildMonth for a tracker without a target marks days with an entry as MET`\n- `buildMonth ignores entries dated after today` (they do not turn a FUTURE day into MET)"
     },
     {
       "heading": "Implement",
-      "body": "1. Analytics:\n   - Make `TrendPoint.value: Double?`. Use null for MEASURE days with no entry; COUNT and YES_NO days default to 0.\n   - Add `buildMonth(bundle, yearMonth, today): List<DayCell(date, value, met, isFuture)>`.\n   - Make the window 30 days for bars and lines.\n2. `BarChart` (COUNT/YES_NO): use a Compose `Canvas` with one bar per day in primary color, and an outline color when the target isn't met. Draw a dashed target line, and label only the first, middle, and last dates with a short localized format.\n3. `LineChart` (MEASURE): use a Canvas path that skips nulls, with dots, min and max labels, and the unit.\n4. `CalendarHeatmap`: a 7-column month grid. Fill met days with primary, partial days at 40% alpha, and missed past days with outline only; future days are blank. Add month back/forward arrows. Tapping a day opens the entry dialog prefilled with that date, or the existing entry if there's one.\n5. Accessibility: every chart has `Modifier.semantics { contentDescription = \"Last 30 days: 22 of 30 days met target, average 6.2 glasses\" }`. Calendar cells are individually focusable, with labels like \"April 3, target met\".\n6. Use theme colors only (S11). Gold/tertiary is for streak highlights."
+      "body": "1. `TrendPoint.value` becomes `Double?`. In `buildTrend`, use a 30-day window (`29 downTo 0`). For MEASURE, a day with no active entry has `value = null` and the value for a day with entries is the one with the highest `occurredAtEpochMs`. For COUNT and YES_NO use the S34 per-day aggregation, with missing days as `0.0`. `metTarget` keeps its meaning: against the target if there is one, otherwise \"has a value\".\n2. Add to `TrackerModels.kt`:\n   - `enum class DayState { MET, PARTIAL, MISSED, OPEN, FUTURE }`\n   - `data class DayCell(val date: LocalDate, val value: Double, val state: DayState)`\n   - `data class MonthGrid(val month: YearMonth, val leadingBlanks: Int, val cells: List<DayCell>)`\n3. Add a pure `fun buildMonth(type: TrackerType, target: TargetEntity?, entries: List<EntryItem>, month: YearMonth, today: LocalDate, weekFields: WeekFields): MonthGrid` to `TrackerAnalytics`. It takes `EntryItem`s (what `TrackerDetail.entries` holds), so the UI can call it with the detail. Reuse the S34 aggregation: make that function generic over `(date, value?)` pairs, or convert `EntryItem`s into pairs.\n   - `leadingBlanks = firstOfMonth.get(weekFields.dayOfWeek()) - 1`.\n   - One `DayCell` per day of the month. Dates after `today` are `FUTURE`.\n   - For a tracker with a target (DAILY or WEEKLY, evaluated per day against the daily value for DAILY, and for WEEKLY against \"has an entry that day\"): value at or above the daily target is `MET`, above zero but below it is `PARTIAL`, zero on a past day is `MISSED`, and zero on `today` is `OPEN`.\n   - For a tracker with no target, and for MEASURE: a day with an entry is `MET`, a past day without one is `MISSED`, and today without one is `OPEN`.\n4. Extend `TrackerDetail` only if the UI needs it. It already carries `entries`, `target` and `tracker`, which is enough for `buildMonth`.\n5. Keep the app compiling: the detail screen's trend code uses `point.value` as a non-null `Double`. Use `point.value ?: 0.0` there for now. S41 replaces that code.\n6. Document the day states in `DEVELOPERS.md` under \"Streak rules\" (added by S34) in two lines."
     },
     {
       "heading": "Check",
-      "body": "- The unit tests pass.\n- Manual: COUNT shows bars and a target line, and MEASURE shows a gapped line.\n- Calendar tap-to-log works.\n- TalkBack reads the chart summaries."
+      "body": "- `./gradlew testDebugUnitTest lintDebug assembleDebug` passes.\n- Existing trend and streak tests still pass."
     },
     {
       "heading": "Git",

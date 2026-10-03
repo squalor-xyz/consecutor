@@ -1,0 +1,39 @@
+{
+  "id": "S40",
+  "title": "Material3 date and time pickers; no future dates",
+  "lead": [],
+  "depends_note": null,
+  "findings_note": "MainScreen.kt:728-741 (date typed as YYYY-MM-DD), :614-628 (reminder hour and minute as text)",
+  "size": "M",
+  "flags": [],
+  "trees_note": "ui",
+  "trees_plural": false,
+  "boundary": "**Not in this slice:** field validation messages and numeric keyboards (S14 builds those). This slice replaces only the date and time inputs.",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "- Dates are typed as `YYYY-MM-DD` and reminder time as two free-text fields. Mistakes are easy and S14's validation would be awkward without real pickers.\n- Future dates must not be pickable, because they inflate streaks."
+    },
+    {
+      "heading": "Files",
+      "body": "- `app/src/main/java/com/squalor/consecutor/ui/EntryEditorDialog.kt`\n- `app/src/main/java/com/squalor/consecutor/ui/TrackerEditorDialog.kt`\n- New `app/src/main/java/com/squalor/consecutor/ui/PickerConversions.kt`\n- `app/src/test/java/com/squalor/consecutor/PickerConversionsTest.kt` (new)"
+    },
+    {
+      "heading": "Failing tests",
+      "body": "JVM, in `PickerConversionsTest`:\n- `localDate to utc millis and back is identity in any default timezone` (run it with `TimeZone.setDefault` set to `Pacific/Kiritimati` and `Pacific/Pago_Pago`, restoring the original afterwards)\n- `isSelectable allows today and earlier and rejects tomorrow`"
+    },
+    {
+      "heading": "Implement",
+      "body": "1. `PickerConversions.kt`: `fun LocalDate.toPickerMillis(): Long = atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()` and `fun Long.fromPickerMillis(): LocalDate = Instant.ofEpochMilli(this).atZone(ZoneOffset.UTC).toLocalDate()`. The date picker works in UTC, so never use the default zone. Add `fun isSelectable(utcMillis: Long, today: LocalDate): Boolean`.\n2. Entry date: replace the text field with an `OutlinedButton` showing the date in `DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)`. Tapping it opens a Material3 `DatePickerDialog` containing a `DatePicker(state)`, where `state = rememberDatePickerState(initialSelectedDateMillis = date.toPickerMillis(), selectableDates = object : SelectableDates { override fun isSelectableDate(utcTimeMillis: Long) = isSelectable(utcTimeMillis, today) })`. Add \"Today\" and \"Yesterday\" `FilterChip`s above the button. Opt in to `@ExperimentalMaterial3Api`.\n3. Reminder time: a single `OutlinedButton` showing `LocalTime.of(h, m)` formatted with `DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)`. Tapping it opens an `AlertDialog` containing `TimePicker(state)`, where `state = rememberTimePickerState(h, m, is24Hour = DateFormat.is24HourFormat(context))`. On confirm, store `state.hour` and `state.minute` as ints.\n4. Remove the hour and minute text fields and the `toIntOrNull() ?: 20` fallbacks. The editor now holds hour and minute as `Int`s.\n5. Material3 1.2.1 pickers are experimental. That is acceptable here. Only bump the library if a needed API is missing, and ask first."
+    },
+    {
+      "heading": "Check",
+      "body": "- `./gradlew testDebugUnitTest` passes.\n- Manual: tomorrow cannot be selected, the Today and Yesterday chips work, and the reminder time shows in 12 or 24-hour form matching the system setting.\n- Change the device timezone to a far-east zone and confirm the chosen date is the date shown."
+    },
+    {
+      "heading": "Git",
+      "body": "Commit on `first`, message `S40: <summary>`."
+    }
+  ],
+  "notes": []
+}

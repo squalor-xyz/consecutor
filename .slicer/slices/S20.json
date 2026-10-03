@@ -1,22 +1,22 @@
 {
   "id": "S20",
-  "title": "Store metadata, privacy policy and user docs",
+  "title": "Docs refresh: PRIVACY, README, DEVELOPERS, Play data-safety draft, docs/ site",
   "lead": [],
   "depends_note": null,
-  "findings_note": "",
+  "findings_note": "PRIVACY.md; DEVELOPERS.md; docs/index.html",
   "size": "M",
   "flags": [],
   "trees_note": "docs",
   "trees_plural": false,
-  "boundary": "**Not in this slice:**",
+  "boundary": "**Not in this slice:** fastlane listing text and screenshots (S49), publishing GitHub Pages or submitting to F-Droid or Google Play (owner actions), and any code change.",
   "sections": [
     {
       "heading": "Why",
-      "body": "- F-Droid and Play both need a listing: title, short and full description, screenshots, a changelog per versionCode, and an icon.\n- Play also needs a data-safety form and a privacy policy URL.\n- PRIVACY.md exists, but it predates the reminder, export, and import changes."
+      "body": "- Play needs a privacy-policy URL and a data-safety form, and F-Droid needs accurate documentation. PRIVACY.md and the developer docs describe the MVP before the later slices changed behaviour.\n- Documentation must match the shipped behaviour exactly, because the privacy policy is a promise to users."
     },
     {
       "heading": "Files",
-      "body": "- fastlane/metadata/android/en-US/{title.txt,short_description.txt,full_description.txt,changelogs/<versionCode>.txt,images/icon.png,images/phoneScreenshots/*}\n- PRIVACY.md, README.md, DEVELOPERS.md, docs/index.html\n- CHANGELOG.md (new)"
+      "body": "- `PRIVACY.md`, `README.md`, `BUILDING.md`, `DEVELOPERS.md`\n- `docs/index.html`\n- `CHANGELOG.md` (new)"
     },
     {
       "heading": "Failing tests",
@@ -24,11 +24,11 @@
     },
     {
       "heading": "Implement",
-      "body": "1. Use the fastlane directory layout, which F-Droid reads directly and Play can consume via `fastlane supply` or manual upload. Keep the short description within 80 characters.\n2. Take screenshots on an emulator in light and dark mode: dashboard, detail with chart and calendar, editor, and settings.\n3. Update PRIVACY.md:\n   - No network permission is requested.\n   - Reminders are local.\n   - Exports are unencrypted and user-managed.\n   - Android auto-backup is disabled (`allowBackup=false`).\n   - Delete-tracker semantics.\n4. Draft the Play data-safety answers (no data collected or shared) in DEVELOPERS.md under \"Release checklist\".\n5. Publish the privacy policy at the `docs/` GitHub Pages site (`docs/index.html`) so Play has a URL.\n6. F-Droid inclusion is a request PR to fdroiddata by the owner. Document the steps; don't perform them."
+      "body": "Do this last in the release sequence, after the behaviour it describes is merged.\n\n1. `PRIVACY.md`: state only what is true when the slice is done, and check each line against the code and the merged manifest:\n   - The app requests no network permission (confirm the merged manifest lists only `POST_NOTIFICATIONS` and `RECEIVE_BOOT_COMPLETED`).\n   - Reminders are local notifications and may arrive a few minutes late.\n   - Exports are unencrypted, written where the user chooses, and not tracked by the app.\n   - Importing a backup first saves your previous data to the app's private storage (the last three copies are kept there) and replaces the current data.\n   - Deleting a tracker permanently removes its entries and reminder.\n   - Automatic Android backup and device transfer are disabled.\n   - No accounts, analytics or ads.\n   - Update the \"Last updated\" date.\n2. `README.md`: update the feature list to what exists (today-first dashboard with one-tap logging and undo, charts, calendar, archive and delete, save-to-file export).\n3. `BUILDING.md` and `DEVELOPERS.md`: update the SDK version numbers, the test commands (`./gradlew testDebugUnitTest lintDebug assembleDebug`, and `./gradlew connectedDebugAndroidTest` on a device or emulator), the \"Persistence Notes\" (schema version 1 with exported schemas, from S05), and the Manual QA checklist (point to S22's table).\n4. `DEVELOPERS.md`, \"Release checklist\": version rules (S19), signing (S47), the tag and release workflow (S21), and a draft of the Google Play data-safety answers: no data collected, no data shared, no data transferred off the device by the app, and data removed by uninstalling.\n5. `docs/index.html`: make it a self-contained page (plain HTML and CSS, no scripts, no external requests) containing the privacy policy text from `PRIVACY.md`, so GitHub Pages can serve it as the policy URL. Do not enable Pages. Record in `DEVELOPERS.md` that the owner turns it on and what the resulting URL will be.\n6. `CHANGELOG.md`: Keep a Changelog format, with an initial `1.0.0` entry listing the features. This text also seeds the fastlane changelog in S49.\n7. Re-read the F-Droid section of `DEVELOPERS.md` and remove anything that is no longer accurate."
     },
     {
       "heading": "Check",
-      "body": "- `fastlane/metadata` validates against the F-Droid metadata layout docs.\n- A review of PRIVACY.md against the manifest permissions matches."
+      "body": "- Every claim in `PRIVACY.md` matches the merged manifest and the code. List the permissions from the built APK (`aapt dump permissions`) and compare.\n- All relative links in the Markdown files resolve to real files: `rg -o '\\]\\(([^)]+)\\)' README.md BUILDING.md DEVELOPERS.md PRIVACY.md` and check each local target exists.\n- `docs/index.html` opens in a browser with no network access and shows the policy."
     },
     {
       "heading": "Git",

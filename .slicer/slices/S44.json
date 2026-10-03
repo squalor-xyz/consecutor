@@ -1,0 +1,39 @@
+{
+  "id": "S44",
+  "title": "Import confirmation with preview, safety backup and exportedAt",
+  "lead": [],
+  "depends_note": null,
+  "findings_note": "TrackerViewModel.kt:85-100 and TrackerRepository.kt:138-184 (import wipes all data as soon as a file is picked)",
+  "size": "M",
+  "flags": [],
+  "trees_note": "data",
+  "trees_plural": false,
+  "boundary": "**Not in this slice:** encrypting backups (a later item), merging instead of replacing, and the export side (S43).",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "- Importing replaces all data the moment the user picks a file. There is no preview and no way back if it was the wrong file.\n- The backup records no date, so the user cannot tell which backup they picked."
+    },
+    {
+      "heading": "Files",
+      "body": "- `app/src/main/java/com/squalor/consecutor/BackupCodec.kt`\n- `app/src/main/java/com/squalor/consecutor/TrackerRepository.kt`, `TrackerDao.kt`\n- `app/src/main/java/com/squalor/consecutor/TrackerViewModel.kt`\n- New `app/src/main/java/com/squalor/consecutor/BackupFiles.kt`\n- `app/src/main/java/com/squalor/consecutor/ui/SettingsScreen.kt`, `MainScreen.kt`\n- `app/src/test/java/com/squalor/consecutor/BackupCodecTest.kt`, new `BackupFilesTest.kt`"
+    },
+    {
+      "heading": "Failing tests",
+      "body": "JVM:\n- `exportedAt round-trips through encode and decode`\n- `decode of a backup without exportedAt gives null`\n- `prune keeps the newest three safety backups by file name` (in `BackupFilesTest`, with a `TemporaryFolder`)"
+    },
+    {
+      "heading": "Implement",
+      "body": "1. `BackupCodec.encode(bundles, exportedAtEpochMs: Long? = null)` writes `exportedAtEpochMs` at the top level when given. `decode` reads it as optional into `ImportPayload.exportedAtEpochMs: Long?`. The format version stays 1. Production export passes `System.currentTimeMillis()`.\n2. `BackupFiles.prune(dir: File, keep: Int = 3)` deletes all but the newest `keep` files named `pre-import-*.json`, sorted by name (names contain a sortable timestamp).\n3. ViewModel: `prepareImport(context, uri)` reads the file on `Dispatchers.IO` (refuse anything over 20 MB with \"That file is too large to be a backup.\") and decodes it on `Dispatchers.Default`. On success it sets `pendingImport` (a `StateFlow<PendingImport?>` holding the raw text, tracker count, active entry count and exported date). A `BackupFormatException` shows its message and sets nothing.\n4. `MainScreen` shows an `AlertDialog` when `pendingImport != null`: \"Replace all data? This backup has {N} trackers and {M} entries (exported {date}). Your current {N'} trackers will be removed.\" The current tracker count comes from a new DAO query `SELECT COUNT(*) FROM trackers`. Buttons are \"Replace\" (destructive colour) and \"Cancel\". Cancel clears `pendingImport` and touches nothing.\n5. `confirmImport()`: if the database has any trackers, first write the current data with `BackupCodec.encode` to `filesDir/backups/pre-import-yyyyMMdd-HHmmss.json` on IO, then call `BackupFiles.prune`. If writing the safety copy fails, stop and show an error without importing. Then cancel the existing reminders (S08's `cancelAll`), run `repository.importBackup(raw)`, reschedule reminders, and show \"Backup imported. A copy of your previous data was saved in the app's private storage.\"\n6. Do not change what `importBackup` does inside its transaction."
+    },
+    {
+      "heading": "Check",
+      "body": "- `./gradlew testDebugUnitTest` passes.\n- Manual: pick a backup and the dialog shows the right counts and date, and Cancel changes nothing. Replace imports it, and a `pre-import-*.json` file appears under `files/backups` (debug build, `run-as`). After four imports only the newest three remain. A non-backup file shows the format error and nothing is replaced."
+    },
+    {
+      "heading": "Git",
+      "body": "Commit on `first`, message `S44: <summary>`."
+    }
+  ],
+  "notes": []
+}

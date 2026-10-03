@@ -1,0 +1,39 @@
+{
+  "id": "S43",
+  "title": "Export to file and share, with cache cleanup and a narrowed FileProvider",
+  "lead": [],
+  "depends_note": null,
+  "findings_note": "TrackerRepository.kt:124-136 (exports written to cacheDir and never deleted); res/xml/file_paths.xml (whole cache dir and external files exposed); MainScreen.kt:244-246 (share sheet only)",
+  "size": "M",
+  "flags": [],
+  "trees_note": "data",
+  "trees_plural": false,
+  "boundary": "**Not in this slice:** the CSV format (S17), the import flow (S44), and encrypting exports (a later item).",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "- Export is share-sheet only. A user who wants \"save a backup to Downloads or Drive\" depends on the share targets.\n- Exported files hold the user's whole history and are left in the app cache forever.\n- `file_paths.xml` exposes the entire cache directory and the external files dir through the `FileProvider`, which is wider than needed.\n- Disk writes happen on the main thread today (S06 fixes that in the repository; this slice must not reintroduce it)."
+    },
+    {
+      "heading": "Files",
+      "body": "- `app/src/main/java/com/squalor/consecutor/TrackerRepository.kt`\n- `app/src/main/java/com/squalor/consecutor/TrackerViewModel.kt`\n- `app/src/main/java/com/squalor/consecutor/ConsecutorApp.kt`\n- New `app/src/main/java/com/squalor/consecutor/ExportCache.kt`\n- `app/src/main/java/com/squalor/consecutor/ui/SettingsScreen.kt`, `MainScreen.kt`\n- `app/src/main/res/xml/file_paths.xml`\n- `app/src/test/java/com/squalor/consecutor/ExportCacheTest.kt` (new)"
+    },
+    {
+      "heading": "Failing tests",
+      "body": "JVM, in `ExportCacheTest`, using a JUnit `TemporaryFolder`:\n- `clear deletes every file in the exports directory and keeps the directory`\n- `clear on a missing directory does nothing`"
+    },
+    {
+      "heading": "Implement",
+      "body": "1. Repository: replace `exportCsv(context)` and `exportBackup(context)` (which return cache `File`s) with `suspend fun backupJson(): String` and `suspend fun entriesCsv(): String` (using S17's `CsvExport.build`). They do no file IO.\n2. `ExportCache`: `fun exportsDir(context): File = File(context.cacheDir, \"exports\").apply { mkdirs() }` and `fun clear(dir: File)` which deletes the files inside it. Call `clear` from `ConsecutorApp.onCreate` on `Dispatchers.IO`, and before writing any new share file.\n3. ViewModel: `exportTo(context, uri, kind)` runs on `Dispatchers.IO` and writes with `context.contentResolver.openOutputStream(uri, \"wt\")?.use { it.write(text.toByteArray()) }`, reporting success or failure through the message flow. `share(context, kind)` writes to `exportsDir`, builds the `FileProvider` URI and starts the chooser, as `shareFile` does today.\n4. Settings UI: each export card (CSV and backup) gets a primary \"Save to file…\" button and a secondary \"Share…\" text button. Use `rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument(\"application/json\"))` for the backup and `CreateDocument(\"text/csv\")` for the CSV. Launch with the default names `consecutor-backup-YYYY-MM-DD.json` and `consecutor-entries-YYYY-MM-DD.csv` (date from the ViewModel's `today`).\n5. Add one line of copy on each export card: \"Exports are unencrypted and contain your full history. Store them somewhere private.\"\n6. `file_paths.xml` becomes just `<cache-path name=\"exports\" path=\"exports/\" />`. Remove the `external-files-path` entry after checking with `rg` that nothing writes there."
+    },
+    {
+      "heading": "Check",
+      "body": "- `./gradlew testDebugUnitTest` passes.\n- Manual: save a backup to Downloads and open the file. Share a CSV to another app. After restarting the app, `adb shell run-as com.squalor.consecutor ls cache/exports` shows no leftover files (debug build).\n- Cancelling the save dialog does nothing and shows no error."
+    },
+    {
+      "heading": "Git",
+      "body": "Commit on `first`, message `S43: <summary>`."
+    }
+  ],
+  "notes": []
+}

@@ -1,0 +1,39 @@
+{
+  "id": "S34",
+  "title": "Analytics correctness: YES_NO once per day, ignore future entries, injectable week start",
+  "lead": [],
+  "depends_note": null,
+  "findings_note": "TrackerAnalytics.kt:85-95 (sums YES_NO entries), :125-130 (future entries), :200-203 (Locale.getDefault)",
+  "size": "S",
+  "flags": [],
+  "trees_note": "data",
+  "trees_plural": false,
+  "boundary": "**Not in this slice:** the dashboard fields (S13) and trend and month analytics (S16). Those slices build on the rules written here.",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "- Owner decision: a YES_NO tracker counts at most once per day. Today a second entry on the same day sums to 2, so a weekly target of \"3 per week\" can be met in one day, and `totalValue` double-counts.\n- An entry dated after today (from an import, or a clock or timezone change) counts towards the current streak. `distanceFrom` goes negative, so the `> 1` check never zeroes the streak.\n- `startOfWeek` calls `Locale.getDefault()` inside the analytics object. Streaks change with the device locale, and tests cannot pin the week start."
+    },
+    {
+      "heading": "Files",
+      "body": "- `app/src/main/java/com/squalor/consecutor/TrackerAnalytics.kt`\n- `app/src/test/java/com/squalor/consecutor/TrackerAnalyticsTest.kt`\n- `DEVELOPERS.md` (new \"Streak rules\" section)"
+    },
+    {
+      "heading": "Failing tests",
+      "body": "JVM, in `TrackerAnalyticsTest`. Remember 2026-04-19 is a Sunday and 2026-04-20 a Monday.\n- `yes_no weekly target of 3 is not met by three entries on one day`\n- `yes_no two entries on one day count once in total and in the daily streak`\n- `entry dated after today does not extend the streak or total or last entry date`\n- `weekly target uses Monday-start weeks when given WeekFields.ISO` (a COUNT tracker with weekly target 2, one entry of value 1 on 2026-04-19 and one on 2026-04-20: not met)\n- `weekly target uses Sunday-start weeks when given WeekFields.SUNDAY_START` (same data: met)"
+    },
+    {
+      "heading": "Implement",
+      "body": "1. Add a parameter `weekFields: WeekFields = WeekFields.of(Locale.getDefault())` to `toSummary` and `toDetail`, and thread it through `computeStreakStats` and `startOfWeek`. Production callers keep the default, and tests pass it explicitly.\n2. In `toSummary` and `buildTrend`, drop entries whose date is after `today` before aggregating. Keep them in `toDetail`'s `entries` list so the user can still see and fix them.\n3. Make `aggregateEntries` take the tracker type. For YES_NO, each date with any active entry has the value `1.0`. COUNT keeps the sum (`entry.value ?: 1.0`). MEASURE keeps its current behaviour.\n4. `totalValue` for YES_NO is the number of distinct dates. COUNT and MEASURE keep summing `entryValue`. Entries after `today` are excluded in all cases.\n5. `lastEntryDate` is the latest date that is not after `today`.\n6. Document the rules in `DEVELOPERS.md` under \"Streak rules\": one per day for YES_NO, future entries ignored, week start follows the device locale, the streak continues if yesterday (or last week) was met and the current period is still open.\n7. Existing tests must still pass unchanged."
+    },
+    {
+      "heading": "Check",
+      "body": "- `./gradlew testDebugUnitTest` passes.\n- Read the new \"Streak rules\" section against the code once."
+    },
+    {
+      "heading": "Git",
+      "body": "Commit on `first`, message `S34: <summary>`."
+    }
+  ],
+  "notes": []
+}

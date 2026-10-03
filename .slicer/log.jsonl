@@ -44,3 +44,115 @@
 {"when": "2026-10-02T16:35:18Z", "item": "S04", "action": "status", "from": "open", "to": "started", "note": "", "by": "Jon R"}
 {"when": "2026-10-02T16:36:29Z", "item": "S04", "action": "note", "from": "", "to": "", "note": "Ready for review: workflow triggers on push+pull_request, ch"}
 {"when": "2026-10-02T16:36:29Z", "item": "S04", "action": "handoff", "from": "started", "to": "review", "note": "claim Jon R cleared", "by": "Jon R"}
+{"when": "2026-10-03T21:16:47Z", "item": "S32", "action": "add", "from": "", "to": "open", "note": "Split MainScreen.kt into per-screen files (no behaviour change)"}
+{"when": "2026-10-03T21:16:47Z", "item": "S33", "action": "add", "from": "", "to": "open", "note": "Numeric input and display rules: finite, bounded, locale-aware"}
+{"when": "2026-10-03T21:16:47Z", "item": "S34", "action": "add", "from": "", "to": "open", "note": "Analytics correctness: YES_NO once per day, ignore future entries, injectable week start"}
+{"when": "2026-10-03T21:16:47Z", "item": "S35", "action": "add", "from": "", "to": "open", "note": "Repository: YES_NO add is idempotent per date; addEntry returns the entry id"}
+{"when": "2026-10-03T21:16:47Z", "item": "S36", "action": "add", "from": "", "to": "open", "note": "Reminder receiver reads fresh data: skip when done, deleted, archived or disabled"}
+{"when": "2026-10-03T21:16:47Z", "item": "S37", "action": "add", "from": "", "to": "open", "note": "Notification tap opens the tracker"}
+{"when": "2026-10-03T21:16:47Z", "item": "S38", "action": "add", "from": "", "to": "open", "note": "Dashboard cards: status line, streak line, stable order, no no-op chips"}
+{"when": "2026-10-03T21:16:47Z", "item": "S39", "action": "add", "from": "", "to": "open", "note": "One-tap logging with undo (UiEvent and snackbar)"}
+{"when": "2026-10-03T21:16:47Z", "item": "S40", "action": "add", "from": "", "to": "open", "note": "Material3 date and time pickers; no future dates"}
+{"when": "2026-10-03T21:16:47Z", "item": "S41", "action": "add", "from": "", "to": "open", "note": "Bar and line charts on Canvas for the detail screen"}
+{"when": "2026-10-03T21:16:47Z", "item": "S42", "action": "add", "from": "", "to": "open", "note": "Calendar heatmap with tap-to-log"}
+{"when": "2026-10-03T21:16:47Z", "item": "S43", "action": "add", "from": "", "to": "open", "note": "Export to file and share, with cache cleanup and a narrowed FileProvider"}
+{"when": "2026-10-03T21:16:47Z", "item": "S44", "action": "add", "from": "", "to": "open", "note": "Import confirmation with preview, safety backup and exportedAt"}
+{"when": "2026-10-03T21:16:47Z", "item": "S45", "action": "add", "from": "", "to": "open", "note": "Accessibility: merged semantics, 48dp targets, 200% font scale"}
+{"when": "2026-10-03T21:16:47Z", "item": "S46", "action": "add", "from": "", "to": "open", "note": "Dependency trim and version alignment (no new dependencies)"}
+{"when": "2026-10-03T21:16:47Z", "item": "S47", "action": "add", "from": "", "to": "open", "note": "Release signing from environment or keystore.properties, unsigned fallback"}
+{"when": "2026-10-03T21:16:47Z", "item": "S48", "action": "add", "from": "", "to": "open", "note": "Raise compile and target SDK to the current Play requirement"}
+{"when": "2026-10-03T21:16:47Z", "item": "S49", "action": "add", "from": "", "to": "open", "note": "Store listing: fastlane metadata and screenshots"}
+{"when": "2026-10-03T21:16:47Z", "item": "S50", "action": "add", "from": "", "to": "open", "note": "Remove the ai-output sample dump"}
+{"when": "2026-10-03T21:16:47Z", "item": "S51", "action": "add", "from": "", "to": "open", "note": "Make auto-backup exclusion explicit"}
+{"when": "2026-10-03T21:16:47Z", "item": "S52", "action": "add", "from": "", "to": "later", "note": "Dashboard performance with years of history"}
+{"when": "2026-10-03T21:19:32Z", "item": "S08", "action": "promote", "from": "", "to": "", "note": ""}
+{"when": "2026-10-03T21:19:33Z", "item": "S13", "action": "promote", "from": "", "to": "", "note": ""}
+{"when": "2026-10-03T21:19:33Z", "item": "S14", "action": "promote", "from": "", "to": "", "note": ""}
+{"when": "2026-10-03T21:19:34Z", "item": "S16", "action": "promote", "from": "", "to": "", "note": ""}
+{"when": "2026-10-03T21:19:34Z", "item": "S17", "action": "promote", "from": "", "to": "", "note": ""}
+{"when": "2026-10-03T21:19:35Z", "item": "S18", "action": "promote", "from": "", "to": "", "note": ""}
+{"when": "2026-10-03T21:19:35Z", "item": "S19", "action": "promote", "from": "", "to": "", "note": ""}
+{"when": "2026-10-03T21:19:36Z", "item": "S20", "action": "promote", "from": "", "to": "", "note": ""}
+{"when": "2026-10-03T21:19:49Z", "item": "S08", "action": "set", "from": "", "to": "", "note": "title Reminder reliability: inexact alarms; stale-alarm cleanup; time changes; tap-to-open→Reminder reliability: inexact alarms and stale-alarm cleanup; size M→S; findings ReminderScheduler.kt:39; AndroidManifest.xml SCHEDULE_EXACT_ALARM; TrackerRepository.importBackup→ReminderScheduler.kt:26-52,107-109; AndroidManifest.xml SCHEDULE_EXACT_ALARM; TrackerViewModel.kt:85-100; effort 2→1; short_title Reminder reliability: inexact alarms; stale-alarm cleanup; time changes; tap-to-open→Reminder reliability: inexact alarms and stale-alarm cleanup"}
+{"when": "2026-10-03T21:19:50Z", "item": "S13", "action": "set", "from": "", "to": "", "note": "title Today-first dashboard with one-tap logging and undo→Dashboard analytics: today and period progress on TrackerSummary; size L→M; findings TrackerDao.kt:14; MainScreen.kt:277-343; TrackerRepository.kt:111→TrackerModels.kt:114-129; TrackerAnalytics.kt:38-70; effort 3→2; short_title Today-first dashboard with one-tap logging and undo→Dashboard analytics: today and period progress on TrackerSummary"}
+{"when": "2026-10-03T21:19:50Z", "item": "S14", "action": "set", "from": "", "to": "", "note": "title Date and time pickers with inline validation in editors→Editor validation: inline errors, numeric input, type lock, emoji limit; short_title Date and time pickers with inline validation in editors→Editor validation: inline errors, numeric input, type lock, emoji limit"}
+{"when": "2026-10-03T21:19:51Z", "item": "S16", "action": "set", "from": "", "to": "", "note": "title Detail charts and calendar heatmap without a chart library→Trend analytics: nullable MEASURE points, 30-day window, buildMonth; size L→M; findings MainScreen.kt:395-416 (14 rows of LinearProgressIndicator with ISO dates); TrackerAnalytics.buildTrend→TrackerAnalytics.kt:72-83 (14-day trend, MEASURE gaps become 0); no month view; effort 3→2; short_title Detail charts and calendar heatmap without a chart library→Trend analytics: nullable MEASURE points, 30-day window, buildMonth"}
+{"when": "2026-10-03T21:19:51Z", "item": "S17", "action": "set", "from": "", "to": "", "note": "title Export and import UX: save to file; confirm before replace; flat CSV→Flat CSV export as a pure function (with formula-injection guard); size M→S; findings TrackerRepository.kt:124-136,227-282; MainScreen.kt:242-252,462-478→TrackerRepository.kt:230-289 (buildCsv); effort 2→1; short_title Export and import UX: save to file; confirm before replace; flat CSV→Flat CSV export as a pure function (with formula-injection guard)"}
+{"when": "2026-10-03T21:19:52Z", "item": "S18", "action": "set", "from": "", "to": "", "note": "title Accessibility and string resources pass→Move UI strings to resources and plurals; findings all UI strings hardcoded in MainScreen.kt; Icon(…, null) on reminder chip→all UI strings hardcoded in Kotlin; TrackerAnalytics.kt:172-190 English labels; short_title Accessibility and string resources pass→Move UI strings to resources and plurals"}
+{"when": "2026-10-03T21:19:52Z", "item": "S19", "action": "set", "from": "", "to": "", "note": "title Release build hardening: R8; signing; target SDK; dependency trim→Release build: R8, shrinkResources, versioning scheme, dependenciesInfo; size M→S; findings app/build.gradle:14,19,27; dependencies block→app/build.gradle:20-21,25-30; effort 2→1; short_title Release build hardening: R8; signing; target SDK; dependency trim→Release build: R8, shrinkResources, versioning scheme, dependenciesInfo"}
+{"when": "2026-10-03T21:19:53Z", "item": "S20", "action": "set", "from": "", "to": "", "note": "title Store metadata, privacy policy and user docs→Docs refresh: PRIVACY, README, DEVELOPERS, Play data-safety draft, docs/ site; findings -→PRIVACY.md; DEVELOPERS.md; docs/index.html; short_title Store metadata, privacy policy and user docs→Docs refresh: PRIVACY, README, DEVELOPERS, Play data-safety draft, docs/ site"}
+{"when": "2026-10-03T21:20:18Z", "item": "S08", "action": "set", "from": "", "to": "", "note": "depends_on"}
+{"when": "2026-10-03T21:20:18Z", "item": "S09", "action": "set", "from": "", "to": "", "note": "depends_on S08→S08,S32"}
+{"when": "2026-10-03T21:20:19Z", "item": "S10", "action": "set", "from": "", "to": "", "note": "depends_on S07→S07,S32"}
+{"when": "2026-10-03T21:20:19Z", "item": "S13", "action": "set", "from": "", "to": "", "note": "depends_on S05,S07→S07,S34"}
+{"when": "2026-10-03T21:20:20Z", "item": "S14", "action": "set", "from": "", "to": "", "note": "depends_on S10→S33,S10,S32,S34"}
+{"when": "2026-10-03T21:20:20Z", "item": "S15", "action": "set", "from": "", "to": "", "note": "depends_on S05,S08→S05,S08,S10,S32,S39"}
+{"when": "2026-10-03T21:20:21Z", "item": "S16", "action": "set", "from": "", "to": "", "note": "depends_on S07→S07,S34"}
+{"when": "2026-10-03T21:20:21Z", "item": "S17", "action": "set", "from": "", "to": "", "note": "depends_on S03,S06→S03"}
+{"when": "2026-10-03T21:20:22Z", "item": "S18", "action": "set", "from": "", "to": "", "note": "depends_on S13,S14,S15,S16→S38,S39,S14,S40,S15,S41,S42,S43,S44,S37"}
+{"when": "2026-10-03T21:20:22Z", "item": "S19", "action": "set", "from": "", "to": "", "note": "depends_on S04→S04,S47"}
+{"when": "2026-10-03T21:20:23Z", "item": "S20", "action": "set", "from": "", "to": "", "note": "depends_on S19,S12→S19,S44,S51,S15"}
+{"when": "2026-10-03T21:20:23Z", "item": "S21", "action": "set", "from": "", "to": "", "note": "depends_on S19→S19,S47"}
+{"when": "2026-10-03T21:20:24Z", "item": "S22", "action": "set", "from": "", "to": "", "note": "depends_on S18,S09,S17,S19→S09,S19,S36,S45,S47,S48,S50,S51,S12"}
+{"when": "2026-10-03T21:20:24Z", "item": "S32", "action": "set", "from": "", "to": "", "note": "depends_on -→S07"}
+{"when": "2026-10-03T21:20:25Z", "item": "S33", "action": "set", "from": "", "to": "", "note": "depends_on -→S01"}
+{"when": "2026-10-03T21:20:25Z", "item": "S34", "action": "set", "from": "", "to": "", "note": "depends_on -→S01"}
+{"when": "2026-10-03T21:20:26Z", "item": "S35", "action": "set", "from": "", "to": "", "note": "depends_on -→S05,S34"}
+{"when": "2026-10-03T21:20:26Z", "item": "S36", "action": "set", "from": "", "to": "", "note": "depends_on -→S08,S13,S34"}
+{"when": "2026-10-03T21:20:26Z", "item": "S37", "action": "set", "from": "", "to": "", "note": "depends_on -→S08,S07,S10"}
+{"when": "2026-10-03T21:20:27Z", "item": "S38", "action": "set", "from": "", "to": "", "note": "depends_on -→S13,S32,S33"}
+{"when": "2026-10-03T21:20:27Z", "item": "S39", "action": "set", "from": "", "to": "", "note": "depends_on -→S38,S35,S06,S10"}
+{"when": "2026-10-03T21:20:28Z", "item": "S40", "action": "set", "from": "", "to": "", "note": "depends_on -→S14"}
+{"when": "2026-10-03T21:20:28Z", "item": "S41", "action": "set", "from": "", "to": "", "note": "depends_on -→S16,S11,S32,S33"}
+{"when": "2026-10-03T21:20:29Z", "item": "S42", "action": "set", "from": "", "to": "", "note": "depends_on -→S16,S11,S32,S14"}
+{"when": "2026-10-03T21:20:29Z", "item": "S43", "action": "set", "from": "", "to": "", "note": "depends_on -→S06,S17"}
+{"when": "2026-10-03T21:20:30Z", "item": "S44", "action": "set", "from": "", "to": "", "note": "depends_on -→S06,S43,S08"}
+{"when": "2026-10-03T21:20:30Z", "item": "S45", "action": "set", "from": "", "to": "", "note": "depends_on -→S18"}
+{"when": "2026-10-03T21:20:31Z", "item": "S46", "action": "set", "from": "", "to": "", "note": "depends_on -→S11,S04"}
+{"when": "2026-10-03T21:20:31Z", "item": "S47", "action": "set", "from": "", "to": "", "note": "depends_on -→S04"}
+{"when": "2026-10-03T21:20:32Z", "item": "S48", "action": "set", "from": "", "to": "", "note": "depends_on -→S46,S11,S10"}
+{"when": "2026-10-03T21:20:32Z", "item": "S49", "action": "set", "from": "", "to": "", "note": "depends_on -→S12,S19,S11,S41,S42,S38"}
+{"when": "2026-10-03T21:21:53Z", "item": "S05", "action": "edit", "from": "", "to": "", "note": "Files"}
+{"when": "2026-10-03T21:21:53Z", "item": "S05", "action": "edit", "from": "", "to": "", "note": "Failing tests"}
+{"when": "2026-10-03T21:21:54Z", "item": "S05", "action": "edit", "from": "", "to": "", "note": "Implement"}
+{"when": "2026-10-03T21:21:54Z", "item": "S05", "action": "edit", "from": "", "to": "", "note": "Check"}
+{"when": "2026-10-03T21:21:55Z", "item": "S06", "action": "edit", "from": "", "to": "", "note": "Why"}
+{"when": "2026-10-03T21:21:55Z", "item": "S06", "action": "edit", "from": "", "to": "", "note": "Implement"}
+{"when": "2026-10-03T21:21:56Z", "item": "S06", "action": "edit", "from": "", "to": "", "note": "Check"}
+{"when": "2026-10-03T21:22:12Z", "item": "S07", "action": "edit", "from": "", "to": "", "note": "Why"}
+{"when": "2026-10-03T21:22:12Z", "item": "S07", "action": "edit", "from": "", "to": "", "note": "Files"}
+{"when": "2026-10-03T21:22:13Z", "item": "S07", "action": "edit", "from": "", "to": "", "note": "Failing tests"}
+{"when": "2026-10-03T21:22:13Z", "item": "S07", "action": "edit", "from": "", "to": "", "note": "Implement"}
+{"when": "2026-10-03T21:22:13Z", "item": "S07", "action": "edit", "from": "", "to": "", "note": "Check"}
+{"when": "2026-10-03T21:22:31Z", "item": "S09", "action": "edit", "from": "", "to": "", "note": "Files"}
+{"when": "2026-10-03T21:22:31Z", "item": "S09", "action": "edit", "from": "", "to": "", "note": "Implement"}
+{"when": "2026-10-03T21:22:32Z", "item": "S10", "action": "edit", "from": "", "to": "", "note": "Why"}
+{"when": "2026-10-03T21:22:32Z", "item": "S10", "action": "edit", "from": "", "to": "", "note": "Files"}
+{"when": "2026-10-03T21:22:33Z", "item": "S10", "action": "edit", "from": "", "to": "", "note": "Failing tests"}
+{"when": "2026-10-03T21:22:33Z", "item": "S10", "action": "edit", "from": "", "to": "", "note": "Implement"}
+{"when": "2026-10-03T21:22:34Z", "item": "S10", "action": "edit", "from": "", "to": "", "note": "Check"}
+{"when": "2026-10-03T21:22:51Z", "item": "S11", "action": "edit", "from": "", "to": "", "note": "Why"}
+{"when": "2026-10-03T21:22:51Z", "item": "S11", "action": "edit", "from": "", "to": "", "note": "Files"}
+{"when": "2026-10-03T21:22:52Z", "item": "S11", "action": "edit", "from": "", "to": "", "note": "Failing tests"}
+{"when": "2026-10-03T21:22:52Z", "item": "S12", "action": "edit", "from": "", "to": "", "note": "Files"}
+{"when": "2026-10-03T21:22:53Z", "item": "S12", "action": "edit", "from": "", "to": "", "note": "Implement"}
+{"when": "2026-10-03T21:22:53Z", "item": "S15", "action": "edit", "from": "", "to": "", "note": "Files"}
+{"when": "2026-10-03T21:22:54Z", "item": "S15", "action": "edit", "from": "", "to": "", "note": "Implement"}
+{"when": "2026-10-03T21:23:19Z", "item": "S21", "action": "edit", "from": "", "to": "", "note": "Implement"}
+{"when": "2026-10-03T21:23:19Z", "item": "S21", "action": "edit", "from": "", "to": "", "note": "Check"}
+{"when": "2026-10-03T21:23:20Z", "item": "S22", "action": "edit", "from": "", "to": "", "note": "Implement"}
+{"when": "2026-10-03T21:23:20Z", "item": "S22", "action": "edit", "from": "", "to": "", "note": "Check"}
+{"when": "2026-10-03T21:23:21Z", "item": "S42", "action": "edit", "from": "", "to": "", "note": "Implement"}
+{"when": "2026-10-03T21:23:21Z", "item": "S37", "action": "edit", "from": "", "to": "", "note": "Implement"}
+{"when": "2026-10-03T21:23:30Z", "item": "S05", "action": "edit", "from": "", "to": "", "note": "boundary"}
+{"when": "2026-10-03T21:23:31Z", "item": "S06", "action": "edit", "from": "", "to": "", "note": "boundary"}
+{"when": "2026-10-03T21:23:31Z", "item": "S07", "action": "edit", "from": "", "to": "", "note": "boundary"}
+{"when": "2026-10-03T21:23:32Z", "item": "S09", "action": "edit", "from": "", "to": "", "note": "boundary"}
+{"when": "2026-10-03T21:23:32Z", "item": "S10", "action": "edit", "from": "", "to": "", "note": "boundary"}
+{"when": "2026-10-03T21:23:33Z", "item": "S12", "action": "edit", "from": "", "to": "", "note": "boundary"}
+{"when": "2026-10-03T21:23:33Z", "item": "S15", "action": "edit", "from": "", "to": "", "note": "boundary"}
+{"when": "2026-10-03T21:23:34Z", "item": "S21", "action": "edit", "from": "", "to": "", "note": "boundary"}
+{"when": "2026-10-03T21:23:34Z", "item": "S22", "action": "edit", "from": "", "to": "", "note": "boundary"}
+{"when": "2026-10-03T21:24:15Z", "item": "S52", "action": "set", "from": "", "to": "", "note": "importance 1→2"}
+{"when": "2026-10-03T21:45:44Z", "item": "S52", "action": "set", "from": "", "to": "", "note": "importance 2→1"}
+{"when": "2026-10-03T21:46:40Z", "item": "S46", "action": "note", "from": "", "to": "", "note": "S04's review note says lintDebug reports 52 version/catalog "}

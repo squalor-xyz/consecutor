@@ -1,0 +1,39 @@
+{
+  "id": "S32",
+  "title": "Split MainScreen.kt into per-screen files (no behaviour change)",
+  "lead": [],
+  "depends_note": null,
+  "findings_note": "MainScreen.kt (one file of ~800 lines holding every screen and dialog)",
+  "size": "S",
+  "flags": [],
+  "trees_note": "ui",
+  "trees_plural": false,
+  "boundary": "**Not in this slice:** any behaviour, text, layout or dependency change. If the app looks or acts differently afterwards, the slice is wrong.",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "- `MainScreen.kt` holds the dashboard, detail, settings, both editor dialogs and the helpers. Eight later slices (S09, S10, S14, S15, S38, S39, S41, S42) all edit it, so parallel work would constantly conflict and a junior has to read 800 lines to change one card.\n- A pure move is cheap to verify. Doing it once, before those slices, is cheaper than resolving conflicts later."
+    },
+    {
+      "heading": "Files",
+      "body": "- `app/src/main/java/com/squalor/consecutor/MainScreen.kt` (shrinks)\n- New, all in package `com.squalor.consecutor.ui` under `app/src/main/java/com/squalor/consecutor/ui/`:\n  - `DashboardScreen.kt` (`DashboardScreen`, `TrackerSummaryCard`, `MetricChip`)\n  - `TrackerDetailScreen.kt` (`TrackerDetailScreen`)\n  - `SettingsScreen.kt` (`SettingsScreen`, `SettingsCard`)\n  - `TrackerEditorDialog.kt` (`TrackerEditorDialog`)\n  - `EntryEditorDialog.kt` (`EntryEditorState` and `EntryEditorDialog`)\n  - `Components.kt` (`EmptyState`, `formatValue`, `formatEntryValue`)"
+    },
+    {
+      "heading": "Failing tests",
+      "body": "- None. This slice must not change behaviour, so the existing unit tests are the check."
+    },
+    {
+      "heading": "Implement",
+      "body": "1. Start from the current `MainScreen.kt` after S07 has landed (its line numbers will have moved; find things by name).\n2. Create each new file with `package com.squalor.consecutor.ui`. Cut the named functions and classes out of `MainScreen.kt` and paste them unchanged.\n3. Change `private` to `internal` on everything you moved, so `MainScreen` can call it. Keep `private enum class Screen` and `maybeRequestNotifications` in `MainScreen.kt`.\n4. Add the imports each file needs. Types such as `TrackerSummary`, `TrackerDetail`, `TrackerType` and `TrackerDraft` live in `com.squalor.consecutor`, so import them explicitly (`import com.squalor.consecutor.TrackerSummary`, and so on). Do not use wildcard imports.\n5. Add `import com.squalor.consecutor.ui.*` equivalents (explicit names) to `MainScreen.kt`. `MainActivity.kt` keeps importing `MainScreen` from `com.squalor.consecutor` and needs no change.\n6. Do not rename anything, reorder parameters, or fix anything you notice. Note problems with `slicer note`, not in this diff."
+    },
+    {
+      "heading": "Check",
+      "body": "- `./gradlew testDebugUnitTest lintDebug assembleDebug` passes.\n- `git diff --color-moved=dimmed-zebra` shows the changes as moved blocks, apart from `private` to `internal` and imports.\n- Smoke test on a device or emulator: dashboard, open a tracker, add an entry, open Settings. Everything works as before."
+    },
+    {
+      "heading": "Git",
+      "body": "Commit on `first`, message `S32: <summary>`."
+    }
+  ],
+  "notes": []
+}

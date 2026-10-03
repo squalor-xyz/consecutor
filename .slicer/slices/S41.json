@@ -1,0 +1,39 @@
+{
+  "id": "S41",
+  "title": "Bar and line charts on Canvas for the detail screen",
+  "lead": [],
+  "depends_note": null,
+  "findings_note": "MainScreen.kt:395-416 (14 stacked LinearProgressIndicator rows labelled with ISO dates)",
+  "size": "M",
+  "flags": [],
+  "trees_note": "ui",
+  "trees_plural": false,
+  "boundary": "**Not in this slice:** the calendar heatmap (S42), zoom or pan, comparing trackers, and any chart library.",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "- The \"Recent trend\" card is 14 stacked progress bars labelled `2026-04-21` and takes about a screen.\n- MEASURE trackers (weight, sleep) need a line chart to be useful."
+    },
+    {
+      "heading": "Files",
+      "body": "- New `app/src/main/java/com/squalor/consecutor/ui/charts/BarChart.kt`\n- New `app/src/main/java/com/squalor/consecutor/ui/charts/LineChart.kt`\n- New `app/src/main/java/com/squalor/consecutor/ui/charts/ChartMath.kt` (pure helpers)\n- `app/src/main/java/com/squalor/consecutor/ui/TrackerDetailScreen.kt`\n- `app/src/test/java/com/squalor/consecutor/ChartMathTest.kt` (new)"
+    },
+    {
+      "heading": "Failing tests",
+      "body": "JVM, in `ChartMathTest`:\n- `summarize counts met days and averages only non-null values`\n- `yRange pads the range when all values are equal`\n- `barHeight is clamped to the chart height`\n- `summary text for a chart with no data says so`"
+    },
+    {
+      "heading": "Implement",
+      "body": "1. Data comes from S16: `detail.trend` is a list of `TrendPoint(date, value: Double?, metTarget)` covering 30 days.\n2. `ChartMath.kt` (no Compose or Android imports): `summarize(points, target): ChartSummary(daysMet, daysWithData, average)`, `yRange(values): ClosedFloatingPointRange<Double>` (if min == max, pad by 1; otherwise by 10% of the span), `barHeight(value, maxY, chartHeightPx)` clamped to `0..chartHeightPx`.\n3. `BarChart(points, targetValue: Double?, modifier)` for COUNT and YES_NO. Use `Canvas(Modifier.fillMaxWidth().height(160.dp))`. One bar per day with a 2dp gap. `maxY = max(highest value, target, 1.0)`. A day that meets the target is filled with `colorScheme.primary`. Other days are drawn as an outline (`Stroke`) in `colorScheme.outline`. Days with value 0 draw only a 1dp baseline tick. If there is a target, draw a dashed line (`PathEffect.dashPathEffect(floatArrayOf(8f, 8f))`) in `outline`. Label the first, middle and last dates below the chart, using `rememberTextMeasurer()` and `drawText`, with `DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)`.\n4. `LineChart(points, unit, modifier)` for MEASURE. Draw a `Path` through consecutive non-null points. Start a new subpath (`moveTo`) after every null so gaps stay gaps. Draw a 3dp dot on each point. Label the min and max values with `NumberRules.formatNumber` and the unit. If there are fewer than two non-null points, draw dots only. If all values are null show \"No measurements in the last 30 days.\"\n5. In `TrackerDetailScreen`, replace the \"Recent trend\" card contents: MEASURE shows `LineChart`, other types show `BarChart`. Give each chart `Modifier.semantics { contentDescription = ... }` from `ChartMath.summarize`, for example \"Last 30 days: 22 of 30 days met target, average 6.2 glasses\".\n6. Use only theme colours (`MaterialTheme.colorScheme`). Use `tertiary` only for streak highlights, not here.\n7. Give the detail `LazyColumn` a bottom `contentPadding` of 88dp so the FAB does not cover the last history row."
+    },
+    {
+      "heading": "Check",
+      "body": "- `./gradlew testDebugUnitTest` passes.\n- Manual: a COUNT tracker shows bars and a dashed target line. A MEASURE tracker with missing days shows a line with gaps, not dives to zero. Both charts look right in light and dark mode.\n- TalkBack reads the chart summary."
+    },
+    {
+      "heading": "Git",
+      "body": "Commit on `first`, message `S41: <summary>`."
+    }
+  ],
+  "notes": []
+}

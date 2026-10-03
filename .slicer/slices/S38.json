@@ -1,0 +1,39 @@
+{
+  "id": "S38",
+  "title": "Dashboard cards: status line, streak line, stable order, no no-op chips",
+  "lead": [],
+  "depends_note": null,
+  "findings_note": "TrackerDao.kt:14 (order by updatedAt); MainScreen.kt:277-343 (marketing header, no-op AssistChips, completion bar always shown)",
+  "size": "M",
+  "flags": [],
+  "trees_note": "ui",
+  "trees_plural": false,
+  "boundary": "**Not in this slice:** the one-tap buttons and undo (S39), string resources (S18), accessibility semantics (S45). Keep the existing \"Quick log\" button as it is until S39 replaces it.",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "- The order is `updatedAtEpochMs DESC`, so every log moves that card to the top and the list reshuffles under the thumb.\n- Nothing says what is done today or what is left.\n- \"Recent completion 0%\" and its bar show for trackers with no target.\n- The header copy wastes the first screen, and the `AssistChip(onClick = {})` elements are focusable buttons that do nothing.\n- The last card is hidden behind the FAB, and `EmptyState` ignores the Scaffold padding."
+    },
+    {
+      "heading": "Files",
+      "body": "- `app/src/main/java/com/squalor/consecutor/TrackerDao.kt`\n- `app/src/main/java/com/squalor/consecutor/ui/DashboardScreen.kt` (or `MainScreen.kt` if S32 has not landed)\n- `app/src/main/java/com/squalor/consecutor/ui/Components.kt` (`EmptyState`)"
+    },
+    {
+      "heading": "Failing tests",
+      "body": "- None on the JVM (layout work). The data fields it reads are tested in S13."
+    },
+    {
+      "heading": "Implement",
+      "body": "1. DAO: change the dashboard query to `ORDER BY isArchived ASC, createdAtEpochMs ASC, id ASC` so the order is stable.\n2. Delete the header `item { ... }` with the marketing copy. Replace the empty state text with \"No trackers yet.\" and a `Button(\"Create tracker\")` that opens the new-tracker dialog (pass an `onCreate` lambda).\n3. Rebuild `TrackerSummaryCard` from the S13 fields, in this order:\n   - Title row: emoji and name (keep the existing \"Quick log\" button for non-MEASURE trackers).\n   - Status line (`bodyMedium`):\n     - YES_NO: \"Done today\" or \"Not logged today\". With a weekly target, append \" · {periodValue} / {periodTarget} this week\".\n     - COUNT with a daily target: \"{todayValue} / {target} {unit} today\". With a weekly target: \"{periodValue} / {target} {unit} this week\". With no target: \"{todayValue} {unit} today\".\n     - MEASURE: \"Last: {date}\" or \"Not logged yet\".\n   - Streak line, only when the tracker has a target: \"{n}-day streak · best {m}\" (\"week\" for weekly targets). With a streak of zero: \"No streak yet · best {m}\".\n   - Completion bar and a \"Last 14 days: 71%\" / \"Last 8 weeks: 50%\" label, only when `completionRate != null`.\n   - Reminder label as plain text (keep S09's warning marker if it has landed).\n4. Remove `MetricChip`, the target `AssistChip`, and the \"Last entry\" and \"Recent completion\" lines.\n5. Colour: a card with `doneToday == true` uses `CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)`. Do not reorder done cards.\n6. Dates use `DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)`, and numbers use `NumberRules.formatNumber` (S33).\n7. Give the dashboard `LazyColumn` `contentPadding = PaddingValues(16.dp, 16.dp, 16.dp, 88.dp)` so the FAB never covers the last card. Make `EmptyState` accept and apply the Scaffold `padding`."
+    },
+    {
+      "heading": "Check",
+      "body": "- Manual: log a tracker and the card order does not change. A tracker with no target shows no completion bar. The last card is fully visible above the FAB.\n- `./gradlew testDebugUnitTest lintDebug assembleDebug` passes."
+    },
+    {
+      "heading": "Git",
+      "body": "Commit on `first`, message `S38: <summary>`."
+    }
+  ],
+  "notes": []
+}

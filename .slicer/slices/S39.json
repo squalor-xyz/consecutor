@@ -1,0 +1,39 @@
+{
+  "id": "S39",
+  "title": "One-tap logging with undo (UiEvent and snackbar)",
+  "lead": [],
+  "depends_note": null,
+  "findings_note": "TrackerViewModel.kt:23-63 (message String? loses events, no undo); TrackerRepository.kt:111-122 (quickLog uses LocalDate.now())",
+  "size": "M",
+  "flags": [],
+  "trees_note": "ui",
+  "trees_plural": false,
+  "boundary": "**Not in this slice:** the card layout (S38), the date picker (S40), and string resources (S18 moves these strings out later).",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "- Quick-log on YES_NO currently adds a duplicate entry if tapped twice, and there is no undo.\n- MEASURE trackers have no fast path: the user must open the detail screen and then the dialog.\n- `message: StateFlow<String?>` can drop a message if two arrive together, and it cannot carry an action such as Undo."
+    },
+    {
+      "heading": "Files",
+      "body": "- New `app/src/main/java/com/squalor/consecutor/UiEvent.kt`\n- `app/src/main/java/com/squalor/consecutor/TrackerViewModel.kt`\n- `app/src/main/java/com/squalor/consecutor/TrackerRepository.kt`, `TrackerDao.kt`\n- `app/src/main/java/com/squalor/consecutor/MainScreen.kt`\n- `app/src/main/java/com/squalor/consecutor/ui/DashboardScreen.kt`, `ui/EntryEditorDialog.kt`\n- `app/src/androidTest/java/com/squalor/consecutor/TrackerDaoTest.kt`"
+    },
+    {
+      "heading": "Failing tests",
+      "body": "Instrumented, on an in-memory Room database:\n- `restoreEntries un-deletes only the given entry ids`"
+    },
+    {
+      "heading": "Implement",
+      "body": "1. `UiEvent.kt`: `sealed interface UiEvent` with\n   - `data class Message(val text: String)`\n   - `data class Logged(val text: String, val trackerId: Long, val entryId: Long)` (Undo soft-deletes that entry)\n   - `data class Cleared(val text: String, val trackerId: Long, val entryIds: List<Long>)` (Undo restores those entries)\n2. ViewModel: replace `message`/`clearMessage` with a `Channel<UiEvent>(Channel.BUFFERED)` exposed as `val events: Flow<UiEvent> = channel.receiveAsFlow()`. Convert every existing `_message.value = \"...\"` to `Message(...)`.\n3. Repository: add `restoreEntries(trackerId, ids)` (sets `isDeleted = false` and bumps the tracker, in one transaction), and `softDeleteEntries(trackerId, ids)`. Delete `quickLog`. ViewModel actions take `today` from the `today` StateFlow added in S07.\n4. ViewModel actions, each through S06's `launchAction`:\n   - `logToday(summary)`: call `addEntry(summary.id, summary.type, EntryDraft(today, 1.0, null))` and emit `Logged(\"Logged {name}\", id, entryId)`. For COUNT the message is \"Logged {name} (+1)\".\n   - `clearToday(summary)`: soft-delete `summary.todayEntryIds` and emit `Cleared(\"Cleared {name}\", ...)`.\n   - `undo(event)`: for `Logged` call `deleteEntry`, for `Cleared` call `restoreEntries`.\n5. `MainScreen`: collect `viewModel.events` in a `LaunchedEffect(Unit)`. For each event, call `snackbarHostState.currentSnackbarData?.dismiss()` first. `Message` shows a plain snackbar. `Logged` and `Cleared` show one with `actionLabel = \"Undo\"`, and call `viewModel.undo(event)` when the result is `SnackbarResult.ActionPerformed`.\n6. Card actions (each at least 48dp):\n   - YES_NO: a check toggle. If not done today call `logToday`. If done, call `clearToday` (the Undo snackbar replaces a confirmation dialog).\n   - COUNT: a `+1` button that calls `logToday`. A long-press (use `combinedClickable` with `onLongClickLabel`) opens the entry dialog for a custom amount, prefilled with today.\n   - MEASURE: a \"Log\" button that opens the entry dialog prefilled with today. Add `EntryEditorState.forToday(summary, today)` for this.\n7. Remove the old \"Quick log\" text button."
+    },
+    {
+      "heading": "Check",
+      "body": "- Manual: tap a YES_NO check twice and you end up with no entry, and Undo brings it back. Rapid taps never create two entries for one day. COUNT `+1` updates \"x / target\". Long-press opens the dialog. Undo works on every action, and a new action dismisses the previous snackbar.\n- `./gradlew connectedDebugAndroidTest` and `./gradlew testDebugUnitTest` pass."
+    },
+    {
+      "heading": "Git",
+      "body": "Commit on `first`, message `S39: <summary>`."
+    }
+  ],
+  "notes": []
+}

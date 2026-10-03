@@ -1,0 +1,39 @@
+{
+  "id": "S51",
+  "title": "Make auto-backup exclusion explicit",
+  "lead": [],
+  "depends_note": null,
+  "findings_note": "res/xml/backup_rules.xml and res/xml/data_extraction_rules.xml (template files with TODOs); AndroidManifest.xml (allowBackup=false)",
+  "size": "S",
+  "flags": [],
+  "trees_note": "release",
+  "trees_plural": false,
+  "boundary": "**Not in this slice:** enabling any form of Android backup or device transfer. The owner decided it stays disabled.",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "The manifest sets `allowBackup=\"false\"` but still points at the Android Studio template rule files, which are comments and a TODO. The behaviour is correct, but it relies on a single flag and the files look unfinished. Explicit rules make the intent deterministic and lint-clean."
+    },
+    {
+      "heading": "Files",
+      "body": "- `app/src/main/res/xml/backup_rules.xml`\n- `app/src/main/res/xml/data_extraction_rules.xml`\n- `app/src/main/AndroidManifest.xml` (read only: keep `allowBackup=\"false\"`)"
+    },
+    {
+      "heading": "Failing tests",
+      "body": "- None. Lint is the check."
+    },
+    {
+      "heading": "Implement",
+      "body": "1. `backup_rules.xml`:\n   ```xml\n   <?xml version=\"1.0\" encoding=\"utf-8\"?>\n   <full-backup-content>\n       <exclude domain=\"root\" path=\".\" />\n       <exclude domain=\"file\" path=\".\" />\n       <exclude domain=\"database\" path=\".\" />\n       <exclude domain=\"sharedpref\" path=\".\" />\n       <exclude domain=\"external\" path=\".\" />\n   </full-backup-content>\n   ```\n2. `data_extraction_rules.xml`: put the same five `<exclude>` lines inside both `<cloud-backup>` and `<device-transfer>`.\n3. Keep `allowBackup=\"false\"` and both attributes in the manifest.\n4. `PRIVACY.md` already says automatic Android backup is disabled, so it needs no change."
+    },
+    {
+      "heading": "Check",
+      "body": "- `./gradlew lintDebug` reports no new warnings, and none about backup or data extraction rules.\n- `./gradlew assembleDebug` passes and the app launches."
+    },
+    {
+      "heading": "Git",
+      "body": "Commit on `first`, message `S51: <summary>`."
+    }
+  ],
+  "notes": []
+}

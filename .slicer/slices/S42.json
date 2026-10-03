@@ -1,0 +1,39 @@
+{
+  "id": "S42",
+  "title": "Calendar heatmap with tap-to-log",
+  "lead": [],
+  "depends_note": null,
+  "findings_note": "TrackerAnalytics.kt (no month view); detail screen has no way to see hits and misses over a month",
+  "size": "M",
+  "flags": [],
+  "trees_note": "ui",
+  "trees_plural": false,
+  "boundary": "**Not in this slice:** the bar and line charts (S41), editing the target from the calendar, and multi-month views.",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "A month grid of hits and misses is the main motivation signal for streaks, and tapping a past day is the natural way to fix a forgotten entry."
+    },
+    {
+      "heading": "Files",
+      "body": "- New `app/src/main/java/com/squalor/consecutor/ui/charts/CalendarHeatmap.kt`\n- `app/src/main/java/com/squalor/consecutor/ui/TrackerDetailScreen.kt`\n- `app/src/main/java/com/squalor/consecutor/ui/EntryEditorDialog.kt` (a way to open it for a given date)"
+    },
+    {
+      "heading": "Failing tests",
+      "body": "- None beyond S16's `buildMonth` tests. This slice is layout and interaction, checked manually."
+    },
+    {
+      "heading": "Implement",
+      "body": "1. Data: call S16's `buildMonth(type, target, entries, month, today, weekFields)` with `detail.tracker.type`, `detail.target`, `detail.entries`, the displayed `YearMonth`, the ViewModel's `today` and `WeekFields.of(Locale.getDefault())`. It returns `MonthGrid(month, leadingBlanks, cells)`; each `DayCell(date, value, state)` has `state` one of `MET`, `PARTIAL`, `MISSED`, `OPEN`, `FUTURE`.\n2. The composable keeps `var month by rememberSaveable { mutableStateOf(YearMonth.from(today).toString()) }` (store the string and parse it) and renders:\n   - A header row: previous arrow, \"April 2026\" (`DateTimeFormatter.ofPattern(\"LLLL yyyy\", locale)`), next arrow. The next arrow is disabled at the current month. The previous arrow is disabled before the month of the tracker's oldest entry.\n   - A weekday header starting at `weekFields.firstDayOfWeek`, using `DayOfWeek.getDisplayName(TextStyle.NARROW, locale)`.\n   - The grid as a `Column` of `Row`s of 7 equal-weight cells (do not use `LazyVerticalGrid` inside a `LazyColumn`). Each cell is square (`aspectRatio(1f)`) and shows the day number. Skip `leadingBlanks` empty cells first.\n3. Cell look, theme colours only: `MET` filled `primary` with `onPrimary` text; `PARTIAL` `primary` at 40% alpha; `MISSED` outline only; `OPEN` (today, not met yet) a 2dp `primary` border; `FUTURE` no fill, text at 38% alpha.\n4. Tapping a non-future cell: if the date has an active entry, open the entry editor for the most recent one on that date (for YES_NO there is only one). Otherwise open the entry editor as a new entry with that date preselected. Future cells ignore taps. This needs the entry dialog state to accept a date (`EntryEditorState.forDate(detail, date)`).\n5. Accessibility: each cell is a button (`Modifier.clickable` with `role = Role.Button`) with `semantics(mergeDescendants = true) { contentDescription = \"April 3, target met\" }` (use \"partly met\", \"missed\", \"today, not yet met\", \"no entry\" as appropriate).\n6. Place it under the charts on the detail screen."
+    },
+    {
+      "heading": "Check",
+      "body": "- Manual: marks match the history list, months before the first entry cannot be reached, and the week starts on the locale's first day (check with a US and a German locale).\n- Tapping a past empty day opens the dialog on that date. Tapping a logged day opens that entry for editing.\n- TalkBack reads each cell."
+    },
+    {
+      "heading": "Git",
+      "body": "Commit on `first`, message `S42: <summary>`."
+    }
+  ],
+  "notes": []
+}

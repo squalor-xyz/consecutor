@@ -8,27 +8,27 @@
   "flags": [],
   "trees_note": "ui",
   "trees_plural": false,
-  "boundary": "**Not in this slice:**",
+  "boundary": "**Not in this slice:** navigation-compose or any new screen, and the notification tap target (S37).",
   "sections": [
     {
       "heading": "Why",
-      "body": "- Navigation is a hand-rolled `Screen` enum with no `BackHandler`. Pressing system back or using the predictive back gesture on Detail or Settings exits the app instead of returning to the dashboard.\n- Dialog visibility and in-progress form fields use `remember`, so rotation or a dark-mode toggle loses half-typed input."
+      "body": "- Navigation is a hand-rolled `Screen` enum with no `BackHandler`. Pressing system back, or using the predictive back gesture, on Detail or Settings exits the app instead of returning to the dashboard.\n- `screen` and `selectedTrackerId` already use `rememberSaveable` (MainScreen.kt:80-81), but dialog visibility and every in-progress form field use plain `remember`, so a rotation or a dark-mode toggle loses half-typed input."
     },
     {
       "heading": "Files",
-      "body": "- MainScreen.kt"
+      "body": "- `app/src/main/java/com/squalor/consecutor/MainScreen.kt`, `ui/TrackerEditorDialog.kt`, `ui/EntryEditorDialog.kt` (after S32)\n- `app/src/main/AndroidManifest.xml`\n- New `app/src/androidTest/java/com/squalor/consecutor/NavigationTest.kt`"
     },
     {
       "heading": "Failing tests",
-      "body": "- Compose UI test (androidTest, `ui-test-junit4` is already declared): `back from detail returns to dashboard`, using `Espresso.pressBack()`."
+      "body": "Compose UI tests in `NavigationTest`, using `createAndroidComposeRule<MainActivity>()` (it launches our own activity, so no `ui-test-manifest` dependency is needed; `ui-test-junit4` is already declared). In a `@Before`, clear the database with `runBlocking(Dispatchers.IO) { (application as ConsecutorApp).database.clearAllTables() }` and seed one tracker through `app.repository.createTracker(...)`:\n- `back from detail returns to the dashboard` (click the tracker card, `Espresso.pressBack()`, assert the \"Add tracker\" button is shown)\n- `back from settings returns to the dashboard`\n- `typed tracker name survives recreation` (open the new-tracker dialog, type a name, call `composeRule.activityRule.scenario.recreate()`, assert the text is still there)"
     },
     {
       "heading": "Implement",
-      "body": "1. Add `BackHandler(enabled = screen != Screen.DASHBOARD) { screen = DASHBOARD; viewModel.select(null) }` from `androidx.activity.compose`, which is already a dependency.\n2. Don't add navigation-compose. With three screens, the enum plus BackHandler is enough; revisit if more screens arrive.\n3. Make dialog-open flags `rememberSaveable`. Make the editor fields `rememberSaveable`, using a `listSaver` for `Set<DayOfWeek>`. `TrackerDetail` isn't saveable, so store `editingTrackerId: Long?` rather than the object.\n4. Add `android:enableOnBackInvokedCallback=\"true\"` to `<application>` for predictive back on API 33+."
+      "body": "1. Add `BackHandler(enabled = screen != Screen.DASHBOARD) { screen = Screen.DASHBOARD; viewModel.select(null) }` (from `androidx.activity.compose`, already a dependency). Make the top-bar back arrow call the same code.\n2. Do not add navigation-compose. With a handful of screens the enum plus `BackHandler` is enough; revisit if more screens arrive.\n3. Make UI state survive recreation with `rememberSaveable`:\n   - `showNewTrackerDialog` becomes `rememberSaveable { mutableStateOf(false) }`.\n   - `showTrackerEditor: TrackerDetail?` is not saveable. Store `editingTrackerId: Long?` with `rememberSaveable` and look the detail up from the loaded detail state.\n   - `entryEditorState` becomes `rememberSaveable(stateSaver = EntryEditorStateSaver)` where the saver is a `listSaver` over its fields (`trackerId`, `trackerType.name`, `unit`, `entryId`, `existingDate.toString()`, `existingValue`, `existingNote`).\n   - Every field inside `TrackerEditorDialog` and `EntryEditorDialog` becomes `rememberSaveable`. Enums and strings save as they are. For `Set<DayOfWeek>` use `rememberSaveable(stateSaver = listSaver(save = { it.map(DayOfWeek::getValue) }, restore = { it.map(DayOfWeek::of).toSet() })) { mutableStateOf(...) }`.\n4. Add `android:enableOnBackInvokedCallback=\"true\"` to the `<application>` element for the predictive back gesture on API 33+."
     },
     {
       "heading": "Check",
-      "body": "- On both Detail and Settings, back returns to the dashboard, and back on the dashboard exits.\n- Rotate mid-edit → the field values persist."
+      "body": "- `./gradlew connectedDebugAndroidTest` passes on a device or emulator (CI does not run instrumented tests).\n- Manual: on both Detail and Settings, back returns to the dashboard, and back on the dashboard exits. Rotate mid-edit in both dialogs and the typed values persist. On an API 33+ device the back gesture previews the dashboard.\n- `./gradlew testDebugUnitTest lintDebug assembleDebug` passes."
     },
     {
       "heading": "Git",

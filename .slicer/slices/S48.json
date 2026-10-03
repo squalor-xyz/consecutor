@@ -1,0 +1,39 @@
+{
+  "id": "S48",
+  "title": "Raise compile and target SDK to the current Play requirement",
+  "lead": [],
+  "depends_note": null,
+  "findings_note": "app/build.gradle:14,19 (compileSdk 34, targetSdk 34)",
+  "size": "S",
+  "flags": [],
+  "trees_note": "release",
+  "trees_plural": false,
+  "boundary": "**Not in this slice:** upgrading Kotlin, Compose or AGP beyond what the SDK bump forces, and new features.",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "Google Play only accepts new apps and updates targeting a recent API level. The requirement changes every year, so it must be looked up when releasing."
+    },
+    {
+      "heading": "Files",
+      "body": "- `app/build.gradle`\n- `app/src/main/AndroidManifest.xml` (`tools:targetApi`)\n- `gradle/libs.versions.toml`\n- `DEVELOPERS.md` (\"Requirements\" section)"
+    },
+    {
+      "heading": "Failing tests",
+      "body": "- None. The existing tests and a device walkthrough are the check."
+    },
+    {
+      "heading": "Implement",
+      "body": "1. Look up Google Play's current target API requirement in the Play Console help or the Android developer documentation, for new apps and for updates. Record the source and the value with `slicer note S48`. (The earlier note in this roadmap says at least API 35 for new apps since August 2025. Confirm it rather than trusting that.)\n2. Set `compileSdk` and `targetSdk` to that level. Install the matching SDK platform. Update the \"Android SDK 34\" lines in `DEVELOPERS.md` and `BUILDING.md`.\n3. If the new `compileSdk` allows it, `androidx.core:core-ktx` may move to the version in the catalog. Otherwise leave it.\n4. Re-test on an emulator at that API level:\n   - Edge-to-edge is enforced from API 35: no content may sit under the status or navigation bars, and the Scaffold insets must apply.\n   - Notification permission and a delivered reminder.\n   - The predictive back gesture from the detail and settings screens (needs S10).\n   - Backup export and import.\n5. Fix only what the bump breaks."
+    },
+    {
+      "heading": "Check",
+      "body": "- `./gradlew testDebugUnitTest lintDebug assembleDebug assembleRelease` passes.\n- The device walkthrough above is done and recorded with `slicer note S48`."
+    },
+    {
+      "heading": "Git",
+      "body": "Commit on `first`, message `S48: <summary>`."
+    }
+  ],
+  "notes": []
+}

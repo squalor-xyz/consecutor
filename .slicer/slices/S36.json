@@ -1,0 +1,39 @@
+{
+  "id": "S36",
+  "title": "Reminder receiver reads fresh data: skip when done, deleted, archived or disabled",
+  "lead": [],
+  "depends_note": null,
+  "findings_note": "ReminderScheduler.kt:133-156 (receiver trusts extras, always notifies); AndroidManifest.xml (no time-change actions)",
+  "size": "M",
+  "flags": [],
+  "trees_note": "reminders",
+  "trees_plural": false,
+  "boundary": "**Not in this slice:** inexact alarms and stale-alarm cleanup (S08), tap-to-open (S37), and the \"Mark done\" action (a later item).",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "- `ReminderReceiver` posts the notification from the tracker name and emoji captured when the alarm was scheduled. A deleted or archived tracker, or a renamed one, still notifies with stale data.\n- It notifies even when the tracker is already satisfied for the period, which is noise.\n- There are no receivers for clock, timezone or locale changes, so reminders drift after travel or a manual time change."
+    },
+    {
+      "heading": "Files",
+      "body": "- `app/src/main/java/com/squalor/consecutor/ReminderScheduler.kt`\n- New `app/src/main/java/com/squalor/consecutor/ReminderPolicy.kt`\n- `app/src/main/java/com/squalor/consecutor/TrackerDao.kt`, `TrackerRepository.kt`\n- `app/src/main/AndroidManifest.xml`\n- `app/src/test/java/com/squalor/consecutor/ReminderPolicyTest.kt` (new)"
+    },
+    {
+      "heading": "Failing tests",
+      "body": "JVM, in `ReminderPolicyTest`, for `shouldNotify(bundle: TrackerBundle, today: LocalDate): Boolean`:\n- `notifies when nothing is logged today`\n- `skips a daily yes_no that is done today`\n- `skips a daily count whose target is met and notifies when it is not`\n- `skips a weekly target already met this week and notifies otherwise`\n- `notifies a tracker without a target only when nothing is logged today`\n- `measure tracker notifies until a value is logged today`\n- `skips archived trackers and trackers without an enabled reminder`"
+    },
+    {
+      "heading": "Implement",
+      "body": "1. DAO: add `@Transaction @Query(\"SELECT * FROM trackers WHERE id = :id\") suspend fun getTrackerBundle(id: Long): TrackerBundle?` and a repository wrapper.\n2. Create `internal fun shouldNotify(bundle, today)` in `ReminderPolicy.kt`. Use `TrackerAnalytics.toSummary(bundle, today)` and the S13 fields: if the summary has a period target, notify only when `!periodMet`, otherwise notify only when `!doneToday`. Return false for an archived tracker or one whose reminder is missing or disabled.\n3. Rewrite `ReminderReceiver.onReceive`. Keep `goAsync()`, and do the work on `Dispatchers.IO`. Load the bundle by the `EXTRA_TRACKER_ID`. If it is null, archived, or has no enabled reminder, call `cancelTracker(id)` and finish. Otherwise, if `shouldNotify(bundle, LocalDate.now())`, post the notification using `bundle.tracker.name` and `emoji` (not the extras). Then reschedule via `scheduleTracker(bundle)` and `pendingResult.finish()`. Wrap the body in `try/finally` so `finish()` always runs.\n4. Extend `ReminderBootReceiver` to also handle `Intent.ACTION_TIME_CHANGED`, `Intent.ACTION_TIMEZONE_CHANGED` and `Intent.ACTION_LOCALE_CHANGED`, and add those actions to its intent-filter in the manifest.\n5. Keep `EXTRA_TRACKER_NAME` and `EXTRA_TRACKER_EMOJI` only if something still reads them. Otherwise remove them from the schedule intent."
+    },
+    {
+      "heading": "Check",
+      "body": "- `./gradlew testDebugUnitTest` passes.\n- Manual, on a device: set a reminder 2 minutes ahead and it arrives. Log the tracker first and it does not. Delete or archive the tracker (once S15 lands) and no notification arrives.\n- Change the device timezone and confirm the reminder moves to the new local time. Confirm on an emulator that the receiver actually fires for these broadcasts, because manifest delivery of system broadcasts has restrictions on newer Android versions."
+    },
+    {
+      "heading": "Git",
+      "body": "Commit on `first`, message `S36: <summary>`."
+    }
+  ],
+  "notes": []
+}

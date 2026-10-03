@@ -1,0 +1,39 @@
+{
+  "id": "S33",
+  "title": "Numeric input and display rules: finite, bounded, locale-aware",
+  "lead": [],
+  "depends_note": null,
+  "findings_note": "MainScreen.kt:651,764-765 (toDoubleOrNull accepts NaN and Infinity); BackupCodec.kt:51; MainScreen.kt:793 (formatValue prints 3.0E9)",
+  "size": "S",
+  "flags": [],
+  "trees_note": "data",
+  "trees_plural": false,
+  "boundary": "**Not in this slice:** the editor dialogs' inline error messages and keyboards (S14 uses the rules built here), and string resources (S18).",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "- `\"Infinity\".toDoubleOrNull()`, `\"NaN\".toDoubleOrNull()` and `\"1e999\".toDoubleOrNull()` all succeed, so an entry or target with a non-finite value can be saved. `org.json` refuses non-finite doubles when encoding, so the next backup export would likely fail permanently. Step 0 below confirms this.\n- `formatValue` prints `3.0E9` for large numbers and long tails such as `82.50000001`, and ignores the device locale. Users in comma-decimal locales cannot type `2,5`.\n- Nothing bounds a value, so `1e300` is accepted.\n- Several later slices (S14, S38, S41) need one shared parse and format helper."
+    },
+    {
+      "heading": "Files",
+      "body": "- `app/src/main/java/com/squalor/consecutor/NumberRules.kt` (new)\n- `app/src/main/java/com/squalor/consecutor/TrackerRepository.kt`\n- `app/src/main/java/com/squalor/consecutor/BackupCodec.kt`\n- `app/src/main/java/com/squalor/consecutor/ui/Components.kt` (or `MainScreen.kt` if S32 has not landed): `formatValue` / `formatEntryValue`\n- `app/src/test/java/com/squalor/consecutor/NumberRulesTest.kt` (new)\n- `app/src/test/java/com/squalor/consecutor/BackupCodecTest.kt`"
+    },
+    {
+      "heading": "Failing tests",
+      "body": "JVM, in `NumberRulesTest`:\n- `parseDecimal accepts 2.5 in en-US and 2,5 in de-DE`\n- `parseDecimal rejects NaN Infinity 1e999 and trailing junk like 12abc`\n- `parseDecimal rejects blank`\n- `isValidValue rejects values beyond 1e9 in magnitude and non-finite values`\n- `formatNumber shows at most two decimals and never scientific notation` (3000000000.0 gives `3000000000`; 82.5 gives `82.5`; 0.333333 gives `0.33`)\n\nIn `BackupCodecTest`:\n- `decode rejects an entry value that is not finite` (use a JSON string value `\"1e999\"`; `getDouble` converts it to Infinity)\n- `decode rejects a target value above the maximum`"
+    },
+    {
+      "heading": "Implement",
+      "body": "0. Write a throwaway test that calls `BackupCodec.encode` with an entry whose `value` is `Double.POSITIVE_INFINITY` and see what happens. If it throws `JSONException`, keep it as `encode fails loudly on non-finite values` and record the confirmed finding with `slicer note`. If it does not throw, record that instead and continue.\n1. Create `object NumberRules`:\n   - `const val MAX_VALUE = 1_000_000_000.0`\n   - `fun isValidValue(v: Double) = v.isFinite() && kotlin.math.abs(v) <= MAX_VALUE`\n   - `fun parseDecimal(text: String, locale: Locale = Locale.getDefault()): Double?`. Trim the text and return null if blank. Use `NumberFormat.getNumberInstance(locale)` with `isGroupingUsed = false` (so `1.5` in de-DE is rejected, not read as 15) and a `ParsePosition(0)`. Return null unless `pos.index == trimmed.length`. Return the parsed number only if `isValidValue`, else null.\n   - `fun formatNumber(value: Double, locale: Locale = Locale.getDefault()): String` using `NumberFormat.getNumberInstance(locale)` with `maximumFractionDigits = 2`, `minimumFractionDigits = 0`, `isGroupingUsed = false`.\n2. Repository: in `createTracker`, `updateTracker`, `addEntry` and `updateEntry`, `require(...)` that any non-null value (and `targetValue`) satisfies `isValidValue`, and that `targetValue > 0`. A failed `require` throws `IllegalArgumentException`; S06's `launchAction` turns it into a generic failure message.\n3. `BackupCodec.decode`: after `getDouble` for an entry value and the target value, call `ensure(NumberRules.isValidValue(v)) { \"$context: value out of range.\" }`.\n4. Replace the private `formatValue` number formatting in the UI with `NumberRules.formatNumber`. Keep the output shape `\"<number> <unit>\"`.\n5. Do not touch the editor dialogs here. S14 switches their parsing to `parseDecimal`."
+    },
+    {
+      "heading": "Check",
+      "body": "- `./gradlew testDebugUnitTest` passes with the new tests.\n- Manual: an entry of 3000000000 is rejected at the repository (no crash), and a COUNT of 2.5 shows as `2.5`.\n- Export a backup after adding normal entries and confirm it still works."
+    },
+    {
+      "heading": "Git",
+      "body": "Commit on `first`, message `S33: <summary>`."
+    }
+  ],
+  "notes": []
+}

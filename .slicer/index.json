@@ -2,7 +2,7 @@
   "version": 3,
   "id_prefix": "S",
   "id_width": 2,
-  "next_id": 32,
+  "next_id": 53,
   "preamble": "",
   "passes": [],
   "items": [
@@ -206,8 +206,8 @@
     },
     {
       "id": "S08",
-      "title": "Reminder reliability: inexact alarms; stale-alarm cleanup; time changes; tap-to-open",
-      "short_title": "Reminder reliability: inexact alarms; stale-alarm cleanup; time changes; tap-to-open",
+      "title": "Reminder reliability: inexact alarms and stale-alarm cleanup",
+      "short_title": "Reminder reliability: inexact alarms and stale-alarm cleanup",
       "status": "open",
       "has_slice": true,
       "depends_on": [
@@ -217,19 +217,19 @@
       "notes": [],
       "claim": null,
       "fields": {
-        "size": "M",
+        "size": "S",
         "flags": [],
         "trees": [
           "reminders"
         ],
         "trees_literal": false,
-        "findings": "ReminderScheduler.kt:39; AndroidManifest.xml SCHEDULE_EXACT_ALARM; TrackerRepository.importBackup",
+        "findings": "ReminderScheduler.kt:26-52,107-109; AndroidManifest.xml SCHEDULE_EXACT_ALARM; TrackerViewModel.kt:85-100",
         "pass": "",
         "group": "P1 Correctness",
         "reason": "",
         "importance": 3,
         "urgency": 2,
-        "effort": 2,
+        "effort": 1,
         "attempts": 0
       }
     },
@@ -240,7 +240,8 @@
       "status": "open",
       "has_slice": true,
       "depends_on": [
-        "S08"
+        "S08",
+        "S32"
       ],
       "notes": [],
       "claim": null,
@@ -268,7 +269,8 @@
       "status": "open",
       "has_slice": true,
       "depends_on": [
-        "S07"
+        "S07",
+        "S32"
       ],
       "notes": [],
       "claim": null,
@@ -345,41 +347,44 @@
     },
     {
       "id": "S13",
-      "title": "Today-first dashboard with one-tap logging and undo",
-      "short_title": "Today-first dashboard with one-tap logging and undo",
+      "title": "Dashboard analytics: today and period progress on TrackerSummary",
+      "short_title": "Dashboard analytics: today and period progress on TrackerSummary",
       "status": "open",
       "has_slice": true,
       "depends_on": [
-        "S05",
-        "S07"
+        "S07",
+        "S34"
       ],
       "notes": [],
       "claim": null,
       "fields": {
-        "size": "L",
+        "size": "M",
         "flags": [],
         "trees": [
           "ui"
         ],
         "trees_literal": false,
-        "findings": "TrackerDao.kt:14; MainScreen.kt:277-343; TrackerRepository.kt:111",
+        "findings": "TrackerModels.kt:114-129; TrackerAnalytics.kt:38-70",
         "pass": "",
         "group": "P2 MVP UX",
         "reason": "",
         "importance": 3,
         "urgency": 2,
-        "effort": 3,
+        "effort": 2,
         "attempts": 0
       }
     },
     {
       "id": "S14",
-      "title": "Date and time pickers with inline validation in editors",
-      "short_title": "Date and time pickers with inline validation in editors",
+      "title": "Editor validation: inline errors, numeric input, type lock, emoji limit",
+      "short_title": "Editor validation: inline errors, numeric input, type lock, emoji limit",
       "status": "open",
       "has_slice": true,
       "depends_on": [
-        "S10"
+        "S33",
+        "S10",
+        "S32",
+        "S34"
       ],
       "notes": [],
       "claim": null,
@@ -408,7 +413,10 @@
       "has_slice": true,
       "depends_on": [
         "S05",
-        "S08"
+        "S08",
+        "S10",
+        "S32",
+        "S39"
       ],
       "notes": [],
       "claim": null,
@@ -431,41 +439,13 @@
     },
     {
       "id": "S16",
-      "title": "Detail charts and calendar heatmap without a chart library",
-      "short_title": "Detail charts and calendar heatmap without a chart library",
+      "title": "Trend analytics: nullable MEASURE points, 30-day window, buildMonth",
+      "short_title": "Trend analytics: nullable MEASURE points, 30-day window, buildMonth",
       "status": "open",
       "has_slice": true,
       "depends_on": [
-        "S07"
-      ],
-      "notes": [],
-      "claim": null,
-      "fields": {
-        "size": "L",
-        "flags": [],
-        "trees": [
-          "ui"
-        ],
-        "trees_literal": false,
-        "findings": "MainScreen.kt:395-416 (14 rows of LinearProgressIndicator with ISO dates); TrackerAnalytics.buildTrend",
-        "pass": "",
-        "group": "P2 MVP UX",
-        "reason": "",
-        "importance": 2,
-        "urgency": 2,
-        "effort": 3,
-        "attempts": 0
-      }
-    },
-    {
-      "id": "S17",
-      "title": "Export and import UX: save to file; confirm before replace; flat CSV",
-      "short_title": "Export and import UX: save to file; confirm before replace; flat CSV",
-      "status": "open",
-      "has_slice": true,
-      "depends_on": [
-        "S03",
-        "S06"
+        "S07",
+        "S34"
       ],
       "notes": [],
       "claim": null,
@@ -473,10 +453,10 @@
         "size": "M",
         "flags": [],
         "trees": [
-          "data"
+          "ui"
         ],
         "trees_literal": false,
-        "findings": "TrackerRepository.kt:124-136,227-282; MainScreen.kt:242-252,462-478",
+        "findings": "TrackerAnalytics.kt:72-83 (14-day trend, MEASURE gaps become 0); no month view",
         "pass": "",
         "group": "P2 MVP UX",
         "reason": "",
@@ -487,16 +467,50 @@
       }
     },
     {
-      "id": "S18",
-      "title": "Accessibility and string resources pass",
-      "short_title": "Accessibility and string resources pass",
+      "id": "S17",
+      "title": "Flat CSV export as a pure function (with formula-injection guard)",
+      "short_title": "Flat CSV export as a pure function (with formula-injection guard)",
       "status": "open",
       "has_slice": true,
       "depends_on": [
-        "S13",
+        "S03"
+      ],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "S",
+        "flags": [],
+        "trees": [
+          "data"
+        ],
+        "trees_literal": false,
+        "findings": "TrackerRepository.kt:230-289 (buildCsv)",
+        "pass": "",
+        "group": "P2 MVP UX",
+        "reason": "",
+        "importance": 2,
+        "urgency": 2,
+        "effort": 1,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S18",
+      "title": "Move UI strings to resources and plurals",
+      "short_title": "Move UI strings to resources and plurals",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [
+        "S38",
+        "S39",
         "S14",
+        "S40",
         "S15",
-        "S16"
+        "S41",
+        "S42",
+        "S43",
+        "S44",
+        "S37"
       ],
       "notes": [],
       "claim": null,
@@ -507,7 +521,7 @@
           "ui"
         ],
         "trees_literal": false,
-        "findings": "all UI strings hardcoded in MainScreen.kt; Icon(…, null) on reminder chip",
+        "findings": "all UI strings hardcoded in Kotlin; TrackerAnalytics.kt:172-190 English labels",
         "pass": "",
         "group": "P2 MVP UX",
         "reason": "",
@@ -519,41 +533,44 @@
     },
     {
       "id": "S19",
-      "title": "Release build hardening: R8; signing; target SDK; dependency trim",
-      "short_title": "Release build hardening: R8; signing; target SDK; dependency trim",
+      "title": "Release build: R8, shrinkResources, versioning scheme, dependenciesInfo",
+      "short_title": "Release build: R8, shrinkResources, versioning scheme, dependenciesInfo",
       "status": "open",
       "has_slice": true,
       "depends_on": [
-        "S04"
+        "S04",
+        "S47"
       ],
       "notes": [],
       "claim": null,
       "fields": {
-        "size": "M",
+        "size": "S",
         "flags": [],
         "trees": [
           "release"
         ],
         "trees_literal": false,
-        "findings": "app/build.gradle:14,19,27; dependencies block",
+        "findings": "app/build.gradle:20-21,25-30",
         "pass": "",
         "group": "P3 Release",
         "reason": "",
         "importance": 3,
         "urgency": 1,
-        "effort": 2,
+        "effort": 1,
         "attempts": 0
       }
     },
     {
       "id": "S20",
-      "title": "Store metadata, privacy policy and user docs",
-      "short_title": "Store metadata, privacy policy and user docs",
+      "title": "Docs refresh: PRIVACY, README, DEVELOPERS, Play data-safety draft, docs/ site",
+      "short_title": "Docs refresh: PRIVACY, README, DEVELOPERS, Play data-safety draft, docs/ site",
       "status": "open",
       "has_slice": true,
       "depends_on": [
         "S19",
-        "S12"
+        "S44",
+        "S51",
+        "S15"
       ],
       "notes": [],
       "claim": null,
@@ -564,7 +581,7 @@
           "docs"
         ],
         "trees_literal": false,
-        "findings": "",
+        "findings": "PRIVACY.md; DEVELOPERS.md; docs/index.html",
         "pass": "",
         "group": "P3 Release",
         "reason": "",
@@ -581,7 +598,8 @@
       "status": "open",
       "has_slice": true,
       "depends_on": [
-        "S19"
+        "S19",
+        "S47"
       ],
       "notes": [],
       "claim": null,
@@ -609,10 +627,15 @@
       "status": "open",
       "has_slice": true,
       "depends_on": [
-        "S18",
         "S09",
-        "S17",
-        "S19"
+        "S19",
+        "S36",
+        "S45",
+        "S47",
+        "S48",
+        "S50",
+        "S51",
+        "S12"
       ],
       "notes": [],
       "claim": null,
@@ -857,6 +880,617 @@
         "flags": [],
         "trees": [
           "build"
+        ],
+        "trees_literal": false,
+        "findings": "",
+        "pass": "",
+        "group": "Later",
+        "reason": "",
+        "importance": 1,
+        "urgency": 1,
+        "effort": 3,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S32",
+      "title": "Split MainScreen.kt into per-screen files (no behaviour change)",
+      "short_title": "Split MainScreen.kt into per-screen files (no behaviour change)",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [
+        "S07"
+      ],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "S",
+        "flags": [],
+        "trees": [
+          "ui"
+        ],
+        "trees_literal": false,
+        "findings": "MainScreen.kt (one file of ~800 lines holding every screen and dialog)",
+        "pass": "",
+        "group": "P1 Correctness",
+        "reason": "",
+        "importance": 2,
+        "urgency": 3,
+        "effort": 1,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S33",
+      "title": "Numeric input and display rules: finite, bounded, locale-aware",
+      "short_title": "Numeric input and display rules: finite, bounded, locale-aware",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [
+        "S01"
+      ],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "S",
+        "flags": [],
+        "trees": [
+          "data"
+        ],
+        "trees_literal": false,
+        "findings": "MainScreen.kt:651,764-765 (toDoubleOrNull accepts NaN and Infinity); BackupCodec.kt:51; MainScreen.kt:793 (formatValue prints 3.0E9)",
+        "pass": "",
+        "group": "P1 Correctness",
+        "reason": "",
+        "importance": 3,
+        "urgency": 2,
+        "effort": 1,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S34",
+      "title": "Analytics correctness: YES_NO once per day, ignore future entries, injectable week start",
+      "short_title": "Analytics correctness: YES_NO once per day, ignore future entries, injectable week start",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [
+        "S01"
+      ],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "S",
+        "flags": [],
+        "trees": [
+          "data"
+        ],
+        "trees_literal": false,
+        "findings": "TrackerAnalytics.kt:85-95 (sums YES_NO entries), :125-130 (future entries), :200-203 (Locale.getDefault)",
+        "pass": "",
+        "group": "P1 Correctness",
+        "reason": "",
+        "importance": 3,
+        "urgency": 2,
+        "effort": 1,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S35",
+      "title": "Repository: YES_NO add is idempotent per date; addEntry returns the entry id",
+      "short_title": "Repository: YES_NO add is idempotent per date; addEntry returns the entry id",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [
+        "S05",
+        "S34"
+      ],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "S",
+        "flags": [],
+        "trees": [
+          "data"
+        ],
+        "trees_literal": false,
+        "findings": "TrackerRepository.kt:74-88 (addEntry returns Unit and always inserts)",
+        "pass": "",
+        "group": "P1 Correctness",
+        "reason": "",
+        "importance": 2,
+        "urgency": 2,
+        "effort": 1,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S36",
+      "title": "Reminder receiver reads fresh data: skip when done, deleted, archived or disabled",
+      "short_title": "Reminder receiver reads fresh data: skip when done, deleted, archived or disabled",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [
+        "S08",
+        "S13",
+        "S34"
+      ],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "M",
+        "flags": [],
+        "trees": [
+          "reminders"
+        ],
+        "trees_literal": false,
+        "findings": "ReminderScheduler.kt:133-156 (receiver trusts extras, always notifies); AndroidManifest.xml (no time-change actions)",
+        "pass": "",
+        "group": "P1 Correctness",
+        "reason": "",
+        "importance": 3,
+        "urgency": 2,
+        "effort": 2,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S37",
+      "title": "Notification tap opens the tracker",
+      "short_title": "Notification tap opens the tracker",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [
+        "S08",
+        "S07",
+        "S10"
+      ],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "S",
+        "flags": [],
+        "trees": [
+          "reminders"
+        ],
+        "trees_literal": false,
+        "findings": "ReminderScheduler.kt:78-84 (no contentIntent); MainActivity.kt (no intent handling)",
+        "pass": "",
+        "group": "P2 MVP UX",
+        "reason": "",
+        "importance": 2,
+        "urgency": 2,
+        "effort": 1,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S38",
+      "title": "Dashboard cards: status line, streak line, stable order, no no-op chips",
+      "short_title": "Dashboard cards: status line, streak line, stable order, no no-op chips",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [
+        "S13",
+        "S32",
+        "S33"
+      ],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "M",
+        "flags": [],
+        "trees": [
+          "ui"
+        ],
+        "trees_literal": false,
+        "findings": "TrackerDao.kt:14 (order by updatedAt); MainScreen.kt:277-343 (marketing header, no-op AssistChips, completion bar always shown)",
+        "pass": "",
+        "group": "P2 MVP UX",
+        "reason": "",
+        "importance": 3,
+        "urgency": 2,
+        "effort": 2,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S39",
+      "title": "One-tap logging with undo (UiEvent and snackbar)",
+      "short_title": "One-tap logging with undo (UiEvent and snackbar)",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [
+        "S38",
+        "S35",
+        "S06",
+        "S10"
+      ],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "M",
+        "flags": [],
+        "trees": [
+          "ui"
+        ],
+        "trees_literal": false,
+        "findings": "TrackerViewModel.kt:23-63 (message String? loses events, no undo); TrackerRepository.kt:111-122 (quickLog uses LocalDate.now())",
+        "pass": "",
+        "group": "P2 MVP UX",
+        "reason": "",
+        "importance": 3,
+        "urgency": 2,
+        "effort": 2,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S40",
+      "title": "Material3 date and time pickers; no future dates",
+      "short_title": "Material3 date and time pickers; no future dates",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [
+        "S14"
+      ],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "M",
+        "flags": [],
+        "trees": [
+          "ui"
+        ],
+        "trees_literal": false,
+        "findings": "MainScreen.kt:728-741 (date typed as YYYY-MM-DD), :614-628 (reminder hour and minute as text)",
+        "pass": "",
+        "group": "P2 MVP UX",
+        "reason": "",
+        "importance": 2,
+        "urgency": 2,
+        "effort": 2,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S41",
+      "title": "Bar and line charts on Canvas for the detail screen",
+      "short_title": "Bar and line charts on Canvas for the detail screen",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [
+        "S16",
+        "S11",
+        "S32",
+        "S33"
+      ],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "M",
+        "flags": [],
+        "trees": [
+          "ui"
+        ],
+        "trees_literal": false,
+        "findings": "MainScreen.kt:395-416 (14 stacked LinearProgressIndicator rows labelled with ISO dates)",
+        "pass": "",
+        "group": "P2 MVP UX",
+        "reason": "",
+        "importance": 2,
+        "urgency": 2,
+        "effort": 2,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S42",
+      "title": "Calendar heatmap with tap-to-log",
+      "short_title": "Calendar heatmap with tap-to-log",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [
+        "S16",
+        "S11",
+        "S32",
+        "S14"
+      ],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "M",
+        "flags": [],
+        "trees": [
+          "ui"
+        ],
+        "trees_literal": false,
+        "findings": "TrackerAnalytics.kt (no month view); detail screen has no way to see hits and misses over a month",
+        "pass": "",
+        "group": "P2 MVP UX",
+        "reason": "",
+        "importance": 2,
+        "urgency": 2,
+        "effort": 2,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S43",
+      "title": "Export to file and share, with cache cleanup and a narrowed FileProvider",
+      "short_title": "Export to file and share, with cache cleanup and a narrowed FileProvider",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [
+        "S06",
+        "S17"
+      ],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "M",
+        "flags": [],
+        "trees": [
+          "data"
+        ],
+        "trees_literal": false,
+        "findings": "TrackerRepository.kt:124-136 (exports written to cacheDir and never deleted); res/xml/file_paths.xml (whole cache dir and external files exposed); MainScreen.kt:244-246 (share sheet only)",
+        "pass": "",
+        "group": "P2 MVP UX",
+        "reason": "",
+        "importance": 3,
+        "urgency": 2,
+        "effort": 2,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S44",
+      "title": "Import confirmation with preview, safety backup and exportedAt",
+      "short_title": "Import confirmation with preview, safety backup and exportedAt",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [
+        "S06",
+        "S43",
+        "S08"
+      ],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "M",
+        "flags": [],
+        "trees": [
+          "data"
+        ],
+        "trees_literal": false,
+        "findings": "TrackerViewModel.kt:85-100 and TrackerRepository.kt:138-184 (import wipes all data as soon as a file is picked)",
+        "pass": "",
+        "group": "P2 MVP UX",
+        "reason": "",
+        "importance": 3,
+        "urgency": 2,
+        "effort": 2,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S45",
+      "title": "Accessibility: merged semantics, 48dp targets, 200% font scale",
+      "short_title": "Accessibility: merged semantics, 48dp targets, 200% font scale",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [
+        "S18"
+      ],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "M",
+        "flags": [],
+        "trees": [
+          "ui"
+        ],
+        "trees_literal": false,
+        "findings": "MainScreen.kt (icons with null descriptions, fixed widths such as width(110.dp))",
+        "pass": "",
+        "group": "P2 MVP UX",
+        "reason": "",
+        "importance": 2,
+        "urgency": 2,
+        "effort": 2,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S46",
+      "title": "Dependency trim and version alignment (no new dependencies)",
+      "short_title": "Dependency trim and version alignment (no new dependencies)",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [
+        "S11",
+        "S04"
+      ],
+      "notes": [
+        "**2026-10-03** — S04's review note says lintDebug reports 52 version/catalog warnings (0 errors), left for S19. After the roadmap split those belong here: run ./gradlew lintDebug before and after this slice, and record the warning count in the closing note (use the lint report under app/build/reports/ to see which are outdated-dependency warnings)."
+      ],
+      "claim": null,
+      "fields": {
+        "size": "S",
+        "flags": [],
+        "trees": [
+          "release"
+        ],
+        "trees_literal": false,
+        "findings": "app/build.gradle:51-61 (appcompat, material, compose material M2 unused; lifecycle 2.6.2 vs 2.8.2); app/build.gradle:1-5 (stale comment)",
+        "pass": "",
+        "group": "P3 Release",
+        "reason": "",
+        "importance": 2,
+        "urgency": 2,
+        "effort": 1,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S47",
+      "title": "Release signing from environment or keystore.properties, unsigned fallback",
+      "short_title": "Release signing from environment or keystore.properties, unsigned fallback",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [
+        "S04"
+      ],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "S",
+        "flags": [],
+        "trees": [
+          "release"
+        ],
+        "trees_literal": false,
+        "findings": "app/build.gradle:25-30 (no signingConfig); .gitignore (keystores ignored, keystore.properties is not)",
+        "pass": "",
+        "group": "P3 Release",
+        "reason": "",
+        "importance": 3,
+        "urgency": 2,
+        "effort": 1,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S48",
+      "title": "Raise compile and target SDK to the current Play requirement",
+      "short_title": "Raise compile and target SDK to the current Play requirement",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [
+        "S46",
+        "S11",
+        "S10"
+      ],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "S",
+        "flags": [],
+        "trees": [
+          "release"
+        ],
+        "trees_literal": false,
+        "findings": "app/build.gradle:14,19 (compileSdk 34, targetSdk 34)",
+        "pass": "",
+        "group": "P3 Release",
+        "reason": "",
+        "importance": 3,
+        "urgency": 2,
+        "effort": 1,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S49",
+      "title": "Store listing: fastlane metadata and screenshots",
+      "short_title": "Store listing: fastlane metadata and screenshots",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [
+        "S12",
+        "S19",
+        "S11",
+        "S41",
+        "S42",
+        "S38"
+      ],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "M",
+        "flags": [],
+        "trees": [
+          "docs"
+        ],
+        "trees_literal": false,
+        "findings": "no fastlane directory; no screenshots or listing text exist",
+        "pass": "",
+        "group": "P3 Release",
+        "reason": "",
+        "importance": 2,
+        "urgency": 2,
+        "effort": 2,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S50",
+      "title": "Remove the ai-output sample dump",
+      "short_title": "Remove the ai-output sample dump",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "S",
+        "flags": [],
+        "trees": [
+          "docs"
+        ],
+        "trees_literal": false,
+        "findings": "ai-output/chatgpt-output.md (1,167 lines of generated sample code and docs that mention an MIT licence, in an MPL-2.0 repo)",
+        "pass": "",
+        "group": "P3 Release",
+        "reason": "",
+        "importance": 1,
+        "urgency": 2,
+        "effort": 1,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S51",
+      "title": "Make auto-backup exclusion explicit",
+      "short_title": "Make auto-backup exclusion explicit",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "S",
+        "flags": [],
+        "trees": [
+          "release"
+        ],
+        "trees_literal": false,
+        "findings": "res/xml/backup_rules.xml and res/xml/data_extraction_rules.xml (template files with TODOs); AndroidManifest.xml (allowBackup=false)",
+        "pass": "",
+        "group": "P3 Release",
+        "reason": "",
+        "importance": 2,
+        "urgency": 2,
+        "effort": 1,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S52",
+      "title": "Dashboard performance with years of history",
+      "short_title": "Dashboard performance with years of history",
+      "status": "later",
+      "has_slice": false,
+      "depends_on": [],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "",
+        "flags": [],
+        "trees": [
+          "data"
         ],
         "trees_literal": false,
         "findings": "",
