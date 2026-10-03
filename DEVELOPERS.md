@@ -18,9 +18,11 @@ Future plans such as iOS support and shared-core extraction live in [ROADMAP.md]
 
 - Android Studio Koala or newer
 - JDK 17
-- Android SDK 34
+- Android SDK 36.1 (compile SDK; target SDK stays 34)
 - Android build-tools installed through the SDK manager
 - A device or emulator running Android 8.0+ for testing
+
+All dependency and plugin versions are managed in `gradle/libs.versions.toml`; `app/build.gradle` references them as `libs.…`.
 
 ## macOS Setup
 
@@ -28,7 +30,7 @@ Recommended:
 
 1. Install Android Studio.
 2. Install JDK 17 if Android Studio is not already using one.
-3. Install Android SDK Platform 34, Platform Tools, and Build Tools from Android Studio.
+3. Install Android SDK Platform 36.1, Platform Tools, and Build Tools from Android Studio.
 4. Accept Android SDK licenses.
 
 Typical package-manager path:
@@ -56,7 +58,7 @@ Recommended:
 
 1. Install Android Studio.
 2. Install OpenJDK 17.
-3. Install Android SDK Platform 34, Platform Tools, and Build Tools.
+3. Install Android SDK Platform 36.1, Platform Tools, and Build Tools.
 4. Accept Android SDK licenses.
 
 Typical package-manager commands vary by distribution, but common examples are:
