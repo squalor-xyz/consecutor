@@ -913,13 +913,15 @@
       "id": "S32",
       "title": "Split MainScreen.kt into per-screen files (no behaviour change)",
       "short_title": "Split MainScreen.kt into per-screen files (no behaviour change)",
-      "status": "open",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S07",
         "S53"
       ],
-      "notes": [],
+      "notes": [
+        "**2026-10-03** — Verification: 35 unit tests, lintDebug, and assembleDebug passed offline. All 15 top-level declaration blocks match the original after normalizing moved visibility. Device smoke test not run: adb devices reported no connected device or emulator."
+      ],
       "claim": null,
       "fields": {
         "size": "S",
@@ -935,7 +937,7 @@
         "importance": 2,
         "urgency": 3,
         "effort": 1,
-        "attempts": 0
+        "attempts": 1
       }
     },
     {
