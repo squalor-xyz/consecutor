@@ -37,7 +37,7 @@
 - Encrypted backups or at-rest encryption (tracked as later items).<br>
 - Advanced analytics suite.<br>
 - Squalor brand marks in the APK (brand marks are all-rights-reserved; the app icon is app-specific and MPL-2.0).</p></div></section>
-<p class="summary">59 items · — 43 · done 4 · later 11 · review 1</p>
+<p class="summary">59 items · — 42 · done 4 · later 11 · review 2</p>
 <table><thead><tr><th>#</th><th>ID</th><th>Title</th><th>Size</th><th>Effort</th><th>Trees</th><th>Findings</th><th>Status</th></tr></thead><tbody>
 <tr class="group"><td></td><td colspan="7"><strong>P0 Build green</strong></td></tr>
 <tr class="other"><td>1</td><td>S04</td><td>CI: build; unit test and lint on every push and PR</td><td>S</td><td>1</td><td>build</td><td>.github/workflows/build.yml</td><td class="status">review</td></tr>
@@ -92,7 +92,7 @@
 <tr class="open"><td>43</td><td>S47</td><td>Release signing from environment or keystore.properties, unsigned fallback</td><td>S</td><td>1</td><td>release</td><td>app/build.gradle:25-30 (no signingConfig); .gitignore (keystores ignored, keystore.properties is not)</td><td class="status">—</td></tr>
 <tr class="open"><td>44</td><td>S48</td><td>Raise compile and target SDK to the current Play requirement</td><td>S</td><td>1</td><td>release</td><td>app/build.gradle:14,19 (compileSdk 34, targetSdk 34)</td><td class="status">—</td></tr>
 <tr class="open"><td>45</td><td>S49</td><td>Store listing: fastlane metadata and screenshots</td><td>M</td><td>2</td><td>docs</td><td>no fastlane directory; no screenshots or listing text exist</td><td class="status">—</td></tr>
-<tr class="open"><td>46</td><td>S50</td><td>Remove the ai-output sample dump</td><td>S</td><td>1</td><td>docs</td><td>ai-output/chatgpt-output.md (1,167 lines of generated sample code and docs that mention an MIT licence, in an MPL-2.0 repo)</td><td class="status">—</td></tr>
+<tr class="other"><td>46</td><td>S50</td><td>Remove the ai-output sample dump</td><td>S</td><td>1</td><td>docs</td><td>ai-output/chatgpt-output.md (1,167 lines of generated sample code and docs that mention an MIT licence, in an MPL-2.0 repo)</td><td class="status">review</td></tr>
 <tr class="open"><td>47</td><td>S51</td><td>Make auto-backup exclusion explicit</td><td>S</td><td>1</td><td>release</td><td>res/xml/backup_rules.xml and res/xml/data_extraction_rules.xml (template files with TODOs); AndroidManifest.xml (allowBackup=false)</td><td class="status">—</td></tr>
 <tr class="group"><td></td><td colspan="7"><strong>Later</strong></td></tr>
 <tr class="other"><td>48</td><td>S52</td><td>Dashboard performance with years of history</td><td></td><td>3</td><td>data</td><td></td><td class="status">later</td></tr>

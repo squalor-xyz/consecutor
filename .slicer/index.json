@@ -1450,10 +1450,12 @@
       "id": "S50",
       "title": "Remove the ai-output sample dump",
       "short_title": "Remove the ai-output sample dump",
-      "status": "open",
+      "status": "review",
       "has_slice": true,
       "depends_on": [],
-      "notes": [],
+      "notes": [
+        "**2026-10-03** — Ready for review on s50-remove-ai-output in .worktrees/S50; merge target main. Removed ai-output/chatgpt-output.md. Reference search found no matches, specs-and-reqs.md is unchanged, git diff --check passed, and offline assembleDebug passed with Homebrew JDK 17. No application code or dependency changes."
+      ],
       "claim": null,
       "fields": {
         "size": "S",
@@ -1469,7 +1471,7 @@
         "importance": 1,
         "urgency": 2,
         "effort": 1,
-        "attempts": 0
+        "attempts": 1
       }
     },
     {

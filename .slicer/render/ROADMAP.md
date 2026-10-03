@@ -20,7 +20,7 @@
 - Advanced analytics suite.
 - Squalor brand marks in the APK (brand marks are all-rights-reserved; the app icon is app-specific and MPL-2.0).
 
-59 items · — 43 · done 4 · later 11 · review 1
+59 items · — 42 · done 4 · later 11 · review 2
 
 | # | Slice | Title | Size | Effort | Trees | Findings | Status |
 |---|---|---|---|---|---|---|---|
@@ -77,7 +77,7 @@
 | 43 | [S47](slices/S47.md) | Release signing from environment or keystore.properties, unsigned fallback | S | 1 | release | app/build.gradle:25-30 (no signingConfig); .gitignore (keystores ignored, keystore.properties is not) | — |
 | 44 | [S48](slices/S48.md) | Raise compile and target SDK to the current Play requirement | S | 1 | release | app/build.gradle:14,19 (compileSdk 34, targetSdk 34) | — |
 | 45 | [S49](slices/S49.md) | Store listing: fastlane metadata and screenshots | M | 2 | docs | no fastlane directory; no screenshots or listing text exist | — |
-| 46 | [S50](slices/S50.md) | Remove the ai-output sample dump | S | 1 | docs | ai-output/chatgpt-output.md (1,167 lines of generated sample code and docs that mention an MIT licence, in an MPL-2.0 repo) | — |
+| 46 | [S50](slices/S50.md) | Remove the ai-output sample dump | S | 1 | docs | ai-output/chatgpt-output.md (1,167 lines of generated sample code and docs that mention an MIT licence, in an MPL-2.0 repo) | review |
 | 47 | [S51](slices/S51.md) | Make auto-backup exclusion explicit | S | 1 | release | res/xml/backup_rules.xml and res/xml/data_extraction_rules.xml (template files with TODOs); AndroidManifest.xml (allowBackup=false) | — |
 | Later | | | | | | | |
 | 48 | S52 | Dashboard performance with years of history |  | 3 | data |  | later |
