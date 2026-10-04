@@ -1620,7 +1620,7 @@
       "id": "S55",
       "title": "CI: instrumented tests on a Gradle Managed Device",
       "short_title": "CI: instrumented tests on a Gradle Managed Device",
-      "status": "review",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S04",

@@ -37,7 +37,7 @@
 - Encrypted backups or at-rest encryption (tracked as later items).<br>
 - Advanced analytics suite.<br>
 - Squalor brand marks in the APK (brand marks are all-rights-reserved; the app icon is app-specific and MPL-2.0).</p></div></section>
-<p class="summary">60 items · — 19 · done 30 · later 11</p>
+<p class="summary">61 items · — 19 · done 31 · later 11</p>
 <table><thead><tr><th>#</th><th>ID</th><th>Title</th><th>Size</th><th>Effort</th><th>Trees</th><th>Findings</th><th>Status</th></tr></thead><tbody>
 <tr class="group"><td></td><td colspan="7"><strong>P1 Correctness</strong></td></tr>
 <tr class="open"><td>1</td><td>S09</td><td>Notification permission UX that reflects real state</td><td>S</td><td>1</td><td>ui</td><td>MainScreen.kt:111,123,247-251,514-521</td><td class="status">—</td></tr>
@@ -72,15 +72,15 @@
 <tr class="group"><td></td><td colspan="7"><strong>P2 MVP UX</strong></td></tr>
 <tr class="open"><td>24</td><td>S54</td><td>Resource-id UiEvents and structured target and reminder labels</td><td>M</td><td>2</td><td>ui</td><td>TrackerAnalytics.kt:172-190 (English formatTarget/formatReminder, 24-hour time); TrackerViewModel.kt (English messages); ReminderScheduler.kt:60-81 (English channel and notification text)</td><td class="status">—</td></tr>
 <tr class="group"><td></td><td colspan="7"><strong>P1 Correctness</strong></td></tr>
-<tr class="open"><td>25</td><td>S55</td><td>CI: instrumented tests on a Gradle Managed Device</td><td>M</td><td>2</td><td>build</td><td>.github/workflows/build.yml (unit tests only); S05, S10, S15, S35, S39 and S45 add instrumented tests that CI never runs</td><td class="status">—</td></tr>
-<tr class="open"><td>26</td><td>S56</td><td>Deleted entries: never exported, purged after 24 hours</td><td>S</td><td>1</td><td>data</td><td>BackupCodec.kt:46-57 (encode writes soft-deleted entries and their notes); TrackerRepository.kt:104-109 (soft delete only, never purged)</td><td class="status">—</td></tr>
+<tr class="open"><td>25</td><td>S56</td><td>Deleted entries: never exported, purged after 24 hours</td><td>S</td><td>1</td><td>data</td><td>BackupCodec.kt:46-57 (encode writes soft-deleted entries and their notes); TrackerRepository.kt:104-109 (soft delete only, never purged)</td><td class="status">—</td></tr>
 <tr class="group"><td></td><td colspan="7"><strong>P3 Release</strong></td></tr>
-<tr class="open"><td>27</td><td>S57</td><td>Settings About card: version, licence, source link and third-party notices</td><td>S</td><td>1</td><td>ui</td><td>MainScreen.kt:455-461 (&quot;Privacy-first defaults … in v1&quot; header); no version or licence information anywhere in the app</td><td class="status">—</td></tr>
+<tr class="open"><td>26</td><td>S57</td><td>Settings About card: version, licence, source link and third-party notices</td><td>S</td><td>1</td><td>ui</td><td>MainScreen.kt:455-461 (&quot;Privacy-first defaults … in v1&quot; header); no version or licence information anywhere in the app</td><td class="status">—</td></tr>
 <tr class="group"><td></td><td colspan="7"><strong>P2 MVP UX</strong></td></tr>
-<tr class="open"><td>28</td><td>S58</td><td>Cap content width on large screens and in landscape</td><td>S</td><td>1</td><td>ui</td><td>all screens use fillMaxSize LazyColumns that stretch edge to edge on tablets and in landscape</td><td class="status">—</td></tr>
+<tr class="open"><td>27</td><td>S58</td><td>Cap content width on large screens and in landscape</td><td>S</td><td>1</td><td>ui</td><td>all screens use fillMaxSize LazyColumns that stretch edge to edge on tablets and in landscape</td><td class="status">—</td></tr>
 <tr class="group"><td></td><td colspan="7"><strong>Later</strong></td></tr>
-<tr class="other"><td>29</td><td>S59</td><td>Optional scheduled backup to a user-chosen folder</td><td></td><td>2</td><td>data</td><td></td><td class="status">later</td></tr>
-<tr class="open"><td>30</td><td>S60</td><td>Editor dialogs keep Save and Cancel above the keyboard</td><td>S</td><td>1</td><td>ui</td><td>S48 walkthrough 2026-10-04: TrackerEditorDialog.kt:83-90 (AlertDialog with LazyColumn heightIn(max = 520.dp)); Save row partly under the IME on API 36, same at targetSdk 34</td><td class="status">—</td></tr>
+<tr class="other"><td>28</td><td>S59</td><td>Optional scheduled backup to a user-chosen folder</td><td></td><td>2</td><td>data</td><td></td><td class="status">later</td></tr>
+<tr class="open"><td>29</td><td>S60</td><td>Editor dialogs keep Save and Cancel above the keyboard</td><td>S</td><td>1</td><td>ui</td><td>S48 walkthrough 2026-10-04: TrackerEditorDialog.kt:83-90 (AlertDialog with LazyColumn heightIn(max = 520.dp)); Save row partly under the IME on API 36, same at targetSdk 34</td><td class="status">—</td></tr>
+<tr class="open"><td>30</td><td>S61</td><td>Fix NavigationTest failures</td><td>S</td><td>2</td><td>ui</td><td>S55 ran `./gradlew pixel6api34DebugAndroidTest` on `aosp-atd`: 29 tests, 5 failures, all in `NavigationTest`.</td><td class="status">—</td></tr>
 </tbody></table>
 <table><thead><tr><th>#</th><th>ID</th><th>Title</th><th>Size</th><th>Effort</th><th>Trees</th><th>Findings</th><th>Status</th></tr></thead><tbody>
 <tr class="group"><td></td><td colspan="7"><strong>P0 Build green</strong></td></tr>
@@ -120,6 +120,8 @@
 <tr class="done"><td>59</td><td>S51</td><td>Make auto-backup exclusion explicit</td><td>S</td><td>1</td><td>release</td><td>res/xml/backup_rules.xml and res/xml/data_extraction_rules.xml (template files with TODOs); AndroidManifest.xml (allowBackup=false)</td><td class="status">done</td></tr>
 <tr class="group"><td></td><td colspan="7"><strong>P0 Build green</strong></td></tr>
 <tr class="done"><td>60</td><td>S53</td><td>Toolchain refresh: Kotlin 2.x, Compose compiler plugin, Compose BOM, Material3 1.3, lifecycle, version catalog</td><td>M</td><td>2</td><td>build</td><td>app/build.gradle:1-5,35-61 (Kotlin 1.9.20, Compose 1.5.4, Material3 1.2.1, lifecycle 2.6.2 vs 2.8.2, versions inline); gradle/libs.versions.toml</td><td class="status">done</td></tr>
+<tr class="group"><td></td><td colspan="7"><strong>P1 Correctness</strong></td></tr>
+<tr class="done"><td>61</td><td>S55</td><td>CI: instrumented tests on a Gradle Managed Device</td><td>M</td><td>2</td><td>build</td><td>.github/workflows/build.yml (unit tests only); S05, S10, S15, S35, S39 and S45 add instrumented tests that CI never runs</td><td class="status">done</td></tr>
 </tbody></table>
 <div class="prose"><p>## Licensing</p>
 <p>- Repository license is `MPL-2.0`.<br>

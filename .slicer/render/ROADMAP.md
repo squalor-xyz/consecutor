@@ -20,7 +20,7 @@
 - Advanced analytics suite.
 - Squalor brand marks in the APK (brand marks are all-rights-reserved; the app icon is app-specific and MPL-2.0).
 
-60 items · — 19 · done 30 · later 11
+61 items · — 19 · done 31 · later 11
 
 | # | Slice | Title | Size | Effort | Trees | Findings | Status |
 |---|---|---|---|---|---|---|---|
@@ -57,15 +57,15 @@
 | P2 MVP UX | | | | | | | |
 | 24 | [S54](slices/S54.md) | Resource-id UiEvents and structured target and reminder labels | M | 2 | ui | TrackerAnalytics.kt:172-190 (English formatTarget/formatReminder, 24-hour time); TrackerViewModel.kt (English messages); ReminderScheduler.kt:60-81 (English channel and notification text) | — |
 | P1 Correctness | | | | | | | |
-| 25 | [S55](slices/S55.md) | CI: instrumented tests on a Gradle Managed Device | M | 2 | build | .github/workflows/build.yml (unit tests only); S05, S10, S15, S35, S39 and S45 add instrumented tests that CI never runs | — |
-| 26 | [S56](slices/S56.md) | Deleted entries: never exported, purged after 24 hours | S | 1 | data | BackupCodec.kt:46-57 (encode writes soft-deleted entries and their notes); TrackerRepository.kt:104-109 (soft delete only, never purged) | — |
+| 25 | [S56](slices/S56.md) | Deleted entries: never exported, purged after 24 hours | S | 1 | data | BackupCodec.kt:46-57 (encode writes soft-deleted entries and their notes); TrackerRepository.kt:104-109 (soft delete only, never purged) | — |
 | P3 Release | | | | | | | |
-| 27 | [S57](slices/S57.md) | Settings About card: version, licence, source link and third-party notices | S | 1 | ui | MainScreen.kt:455-461 ("Privacy-first defaults … in v1" header); no version or licence information anywhere in the app | — |
+| 26 | [S57](slices/S57.md) | Settings About card: version, licence, source link and third-party notices | S | 1 | ui | MainScreen.kt:455-461 ("Privacy-first defaults … in v1" header); no version or licence information anywhere in the app | — |
 | P2 MVP UX | | | | | | | |
-| 28 | [S58](slices/S58.md) | Cap content width on large screens and in landscape | S | 1 | ui | all screens use fillMaxSize LazyColumns that stretch edge to edge on tablets and in landscape | — |
+| 27 | [S58](slices/S58.md) | Cap content width on large screens and in landscape | S | 1 | ui | all screens use fillMaxSize LazyColumns that stretch edge to edge on tablets and in landscape | — |
 | Later | | | | | | | |
-| 29 | S59 | Optional scheduled backup to a user-chosen folder |  | 2 | data |  | later |
-| 30 | [S60](slices/S60.md) | Editor dialogs keep Save and Cancel above the keyboard | S | 1 | ui | S48 walkthrough 2026-10-04: TrackerEditorDialog.kt:83-90 (AlertDialog with LazyColumn heightIn(max = 520.dp)); Save row partly under the IME on API 36, same at targetSdk 34 | — |
+| 28 | S59 | Optional scheduled backup to a user-chosen folder |  | 2 | data |  | later |
+| 29 | [S60](slices/S60.md) | Editor dialogs keep Save and Cancel above the keyboard | S | 1 | ui | S48 walkthrough 2026-10-04: TrackerEditorDialog.kt:83-90 (AlertDialog with LazyColumn heightIn(max = 520.dp)); Save row partly under the IME on API 36, same at targetSdk 34 | — |
+| 30 | [S61](slices/S61.md) | Fix NavigationTest failures | S | 2 | ui | S55 ran `./gradlew pixel6api34DebugAndroidTest` on `aosp-atd`: 29 tests, 5 failures, all in `NavigationTest`. | — |
 
 ---
 
@@ -108,6 +108,8 @@
 | 59 | [S51](slices/S51.md) | Make auto-backup exclusion explicit | S | 1 | release | res/xml/backup_rules.xml and res/xml/data_extraction_rules.xml (template files with TODOs); AndroidManifest.xml (allowBackup=false) | done |
 | P0 Build green | | | | | | | |
 | 60 | [S53](slices/S53.md) | Toolchain refresh: Kotlin 2.x, Compose compiler plugin, Compose BOM, Material3 1.3, lifecycle, version catalog | M | 2 | build | app/build.gradle:1-5,35-61 (Kotlin 1.9.20, Compose 1.5.4, Material3 1.2.1, lifecycle 2.6.2 vs 2.8.2, versions inline); gradle/libs.versions.toml | done |
+| P1 Correctness | | | | | | | |
+| 61 | [S55](slices/S55.md) | CI: instrumented tests on a Gradle Managed Device | M | 2 | build | .github/workflows/build.yml (unit tests only); S05, S10, S15, S35, S39 and S45 add instrumented tests that CI never runs | done |
 
 ## Licensing
 
