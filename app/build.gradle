@@ -14,8 +14,10 @@ rootProject.file('keystore.properties').with { file ->
     if (file.exists()) file.withInputStream { keystoreProps.load(it) }
 }
 def signingValue = { String propKey, String envKey ->
-    def value = keystoreProps.getProperty(propKey) ?: System.getenv(envKey)
-    value?.trim() ? value.trim() : null
+    // A blank property is missing, so the environment variable can still supply it.
+    def fromFile = keystoreProps.getProperty(propKey)?.trim()
+    def value = fromFile ? fromFile : System.getenv(envKey)?.trim()
+    value ? value : null
 }
 def releaseStoreFile = signingValue('storeFile', 'CONSECUTOR_KEYSTORE')
 def releaseStorePassword = signingValue('storePassword', 'CONSECUTOR_KEYSTORE_PASSWORD')
