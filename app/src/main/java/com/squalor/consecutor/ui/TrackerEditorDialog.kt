@@ -14,15 +14,20 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -31,9 +36,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import android.text.format.DateFormat
 import java.time.DayOfWeek
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import com.squalor.consecutor.EditorLimits
 import com.squalor.consecutor.NumberRules
 import com.squalor.consecutor.TrackerField
@@ -50,7 +60,7 @@ internal val ReminderDaysSaver = listSaver<Set<DayOfWeek>, Int>(
     restore = { values -> values.drop(1).map(DayOfWeek::of).toSet() }
 )
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 internal fun TrackerEditorDialog(
     initial: TrackerDetail?,
@@ -67,8 +77,9 @@ internal fun TrackerEditorDialog(
     var targetValue by rememberSaveable { mutableStateOf(initial?.target?.targetValue?.let { NumberRules.formatForInput(it) } ?: "1") }
     val reminder = initial?.reminder
     var reminderEnabled by rememberSaveable { mutableStateOf(reminder?.enabled ?: false) }
-    var reminderHour by rememberSaveable { mutableStateOf(reminder?.hourOfDay?.toString() ?: "20") }
-    var reminderMinute by rememberSaveable { mutableStateOf(reminder?.minuteOfHour?.toString() ?: "00") }
+    var reminderHour by rememberSaveable { mutableIntStateOf(reminder?.hourOfDay ?: 20) }
+    var reminderMinute by rememberSaveable { mutableIntStateOf(reminder?.minuteOfHour ?: 0) }
+    var showTimePicker by rememberSaveable { mutableStateOf(false) }
     var reminderDays by rememberSaveable(
         stateSaver = ReminderDaysSaver
     ) { mutableStateOf(reminder?.daysOfWeek ?: emptySet()) }
@@ -190,18 +201,13 @@ internal fun TrackerEditorDialog(
                 }
                 if (reminderEnabled) {
                     item {
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            OutlinedTextField(
-                                value = reminderHour,
-                                onValueChange = { reminderHour = it },
-                                label = { Text("Hour") },
-                                modifier = Modifier.weight(1f)
-                            )
-                            OutlinedTextField(
-                                value = reminderMinute,
-                                onValueChange = { reminderMinute = it },
-                                label = { Text("Minute") },
-                                modifier = Modifier.weight(1f)
+                        OutlinedButton(
+                            onClick = { showTimePicker = true },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                LocalTime.of(reminderHour, reminderMinute)
+                                    .format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT))
                             )
                         }
                     }
@@ -218,6 +224,9 @@ internal fun TrackerEditorDialog(
                                 )
                             }
                         }
+                        if (reminderDays.isEmpty()) {
+                            Text("No days selected means every day.", style = MaterialTheme.typography.bodySmall)
+                        }
                     }
                 }
             }
@@ -228,8 +237,6 @@ internal fun TrackerEditorDialog(
                     showErrors = true
                     if (errors.isNotEmpty()) return@Button
                     val parsedTarget = resolveTargetValue(type, targetEnabled, targetPeriod, targetValue, locale)
-                    val parsedHour = reminderHour.toIntOrNull() ?: 20
-                    val parsedMinute = reminderMinute.toIntOrNull() ?: 0
                     onSave(
                         TrackerDraft(
                             name = name,
@@ -241,8 +248,8 @@ internal fun TrackerEditorDialog(
                             targetPeriod = if (targetEnabled && type != TrackerType.MEASURE) targetPeriod else null,
                             targetValue = parsedTarget,
                             reminderEnabled = reminderEnabled,
-                            reminderHour = parsedHour.coerceIn(0, 23),
-                            reminderMinute = parsedMinute.coerceIn(0, 59),
+                            reminderHour = reminderHour,
+                            reminderMinute = reminderMinute,
                             reminderDays = reminderDays
                         )
                     )
@@ -259,4 +266,29 @@ internal fun TrackerEditorDialog(
             }
         }
     )
+    if (showTimePicker) {
+        val timeState = rememberTimePickerState(
+            initialHour = reminderHour,
+            initialMinute = reminderMinute,
+            is24Hour = DateFormat.is24HourFormat(LocalContext.current)
+        )
+        AlertDialog(
+            onDismissRequest = { showTimePicker = false },
+            text = { TimePicker(state = timeState) },
+            confirmButton = {
+                TextButton(onClick = {
+                    reminderHour = timeState.hour
+                    reminderMinute = timeState.minute
+                    showTimePicker = false
+                }) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showTimePicker = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
 }
