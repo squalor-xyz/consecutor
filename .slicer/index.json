@@ -952,7 +952,7 @@
       "id": "S33",
       "title": "Numeric input and display rules: finite, bounded, locale-aware",
       "short_title": "Numeric input and display rules: finite, bounded, locale-aware",
-      "status": "open",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S01",
