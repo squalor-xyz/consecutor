@@ -20,14 +20,14 @@
 - Advanced analytics suite.
 - Squalor brand marks in the APK (brand marks are all-rights-reserved; the app icon is app-specific and MPL-2.0).
 
-59 items · — 27 · done 21 · later 11
+59 items · — 26 · done 21 · later 11 · review 1
 
 | # | Slice | Title | Size | Effort | Trees | Findings | Status |
 |---|---|---|---|---|---|---|---|
 | P1 Correctness | | | | | | | |
 | 1 | [S09](slices/S09.md) | Notification permission UX that reflects real state | S | 1 | ui | MainScreen.kt:111,123,247-251,514-521 | — |
 | P2 MVP UX | | | | | | | |
-| 2 | [S14](slices/S14.md) | Editor validation: inline errors, numeric input, type lock, emoji limit | M | 2 | ui | MainScreen.kt:523-790 (text fields for date/hour/minute; Save no-ops at :650,:656,:760,:764) | — |
+| 2 | [S14](slices/S14.md) | Editor validation: inline errors, numeric input, type lock, emoji limit | M | 2 | ui | MainScreen.kt:523-790 (text fields for date/hour/minute; Save no-ops at :650,:656,:760,:764) | review |
 | 3 | [S15](slices/S15.md) | Archive; restore and permanently delete trackers | M | 2 | ui | TrackerRepository.kt:16,68; MainScreen.kt:233-237,388 | — |
 | 4 | [S16](slices/S16.md) | Trend analytics: nullable MEASURE points, 30-day window, buildMonth | M | 2 | ui | TrackerAnalytics.kt:72-83 (14-day trend, MEASURE gaps become 0); no month view | — |
 | 5 | [S18](slices/S18.md) | Move UI strings to resources and plurals | M | 2 | ui | all UI strings hardcoded in Kotlin; TrackerAnalytics.kt:172-190 English labels | — |

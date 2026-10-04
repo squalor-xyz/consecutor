@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
@@ -16,8 +17,14 @@ import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import java.time.LocalDate
+import com.squalor.consecutor.EditorLimits
+import com.squalor.consecutor.EntryField
+import com.squalor.consecutor.NumberRules
+import com.squalor.consecutor.validateEntryForm
 import com.squalor.consecutor.TrackerDetail
 import com.squalor.consecutor.TrackerType
 import com.squalor.consecutor.EntryItem
@@ -85,13 +92,25 @@ internal val EntryEditorStateSaver = listSaver<EntryEditorState?, Any?>(
 @Composable
 internal fun EntryEditorDialog(
     state: EntryEditorState,
+    today: LocalDate,
+    otherYesNoDates: Set<LocalDate>,
     onDismiss: () -> Unit,
     onSave: (EntryDraft) -> Unit,
     onDelete: (() -> Unit)?
 ) {
     var dateText by rememberSaveable { mutableStateOf(state.existingDate.toString()) }
-    var valueText by rememberSaveable { mutableStateOf(state.existingValue?.toString().orEmpty()) }
+    var valueText by rememberSaveable {
+        mutableStateOf(
+            state.existingValue?.let { NumberRules.formatForInput(it) }
+                ?: if (state.trackerType == TrackerType.COUNT) "1" else ""
+        )
+    }
     var note by rememberSaveable { mutableStateOf(state.existingNote.orEmpty()) }
+    var showErrors by rememberSaveable { mutableStateOf(false) }
+    val locale = LocalConfiguration.current.locales[0]
+    val parsedDate = runCatching { LocalDate.parse(dateText.trim()) }.getOrNull()
+    val errors = validateEntryForm(state.trackerType, parsedDate, valueText, note, today, otherYesNoDates, locale)
+    fun errorFor(field: EntryField) = if (showErrors) errors[field] else null
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -102,6 +121,8 @@ internal fun EntryEditorDialog(
                     value = dateText,
                     onValueChange = { dateText = it },
                     label = { Text("Date (YYYY-MM-DD)") },
+                    isError = errorFor(EntryField.DATE) != null,
+                    supportingText = errorSupportingText(errorFor(EntryField.DATE)),
                     modifier = Modifier.fillMaxWidth()
                 )
                 if (state.trackerType != TrackerType.YES_NO) {
@@ -109,6 +130,9 @@ internal fun EntryEditorDialog(
                         value = valueText,
                         onValueChange = { valueText = it },
                         label = { Text("Value ${state.unit?.let { "($it)" } ?: ""}".trim()) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                        isError = errorFor(EntryField.VALUE) != null,
+                        supportingText = errorSupportingText(errorFor(EntryField.VALUE)),
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -116,17 +140,20 @@ internal fun EntryEditorDialog(
                     value = note,
                     onValueChange = { note = it },
                     label = { Text("Note") },
+                    isError = errorFor(EntryField.NOTE) != null,
+                    supportingText = errorSupportingText(errorFor(EntryField.NOTE), EditorLimits.NOTE),
                     modifier = Modifier.fillMaxWidth()
                 )
             }
         },
         confirmButton = {
             Button(onClick = {
-                val date = runCatching { LocalDate.parse(dateText) }.getOrNull() ?: return@Button
+                showErrors = true
+                if (errors.isNotEmpty() || parsedDate == null) return@Button
+                val date = parsedDate
                 val value = when (state.trackerType) {
                     TrackerType.YES_NO -> 1.0
-                    TrackerType.COUNT -> valueText.toDoubleOrNull()
-                    TrackerType.MEASURE -> valueText.toDoubleOrNull() ?: return@Button
+                    else -> NumberRules.parseDecimal(valueText, locale) ?: return@Button
                 }
                 onSave(
                     EntryDraft(

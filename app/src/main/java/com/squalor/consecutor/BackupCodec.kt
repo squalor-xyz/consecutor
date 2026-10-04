@@ -88,6 +88,7 @@ object BackupCodec {
             val name = trackerJson.getString("name").trim()
             ensure(name.isNotEmpty()) { "Tracker ${index + 1} has a blank name." }
             val context = "Tracker '$name'"
+            val trackerType = enumValue<TrackerType>(trackerJson.getString("type"), "$context: unknown tracker type")
             val targetJson = item.optJSONObject("target")
             val reminderJson = item.optJSONObject("reminder")
             val entriesJson = item.getJSONArray("entries")
@@ -119,7 +120,7 @@ object BackupCodec {
                     name = name,
                     emoji = trackerJson.nullableString("emoji"),
                     description = trackerJson.nullableString("description"),
-                    type = enumValue<TrackerType>(trackerJson.getString("type"), "$context: unknown tracker type"),
+                    type = trackerType,
                     unit = trackerJson.nullableString("unit"),
                     colorHex = trackerJson.nullableString("colorHex") ?: "#1F6FEB",
                     isArchived = trackerJson.optBoolean("isArchived", false),
@@ -130,10 +131,11 @@ object BackupCodec {
                     val targetValue = it.getDouble("targetValue")
                     ensure(targetValue > 0.0) { "$context: target must be greater than zero." }
                     ensure(NumberRules.isValidValue(targetValue)) { "$context: target value out of range." }
-                    ImportedTarget(
-                        period = enumValue<TargetPeriod>(it.getString("period"), "$context: unknown target period"),
-                        targetValue = targetValue
-                    )
+                    val period = enumValue<TargetPeriod>(it.getString("period"), "$context: unknown target period")
+                    ensure(trackerType != TrackerType.YES_NO || isValidYesNoTarget(period, targetValue)) {
+                        "$context: a yes/no target must be 1 per day or 1 to 7 per week."
+                    }
+                    ImportedTarget(period = period, targetValue = targetValue)
                 },
                 reminder = reminderJson?.let {
                     val hourOfDay = it.getInt("hourOfDay")
