@@ -34,6 +34,7 @@ import com.squalor.consecutor.TrackerType
 @Composable
 internal fun DashboardScreen(
     dashboard: List<TrackerSummary>,
+    notificationsEnabled: Boolean,
     archivedCount: Int,
     onOpenArchived: () -> Unit,
     padding: PaddingValues,
@@ -70,6 +71,7 @@ internal fun DashboardScreen(
         items(dashboard, key = { it.id }) { tracker ->
             TrackerSummaryCard(
                 tracker = tracker,
+                notificationsEnabled = notificationsEnabled,
                 onOpen = { onOpenTracker(tracker.id) },
                 onLogToday = { onLogToday(tracker) },
                 onToggleToday = { onToggleToday(tracker) },
@@ -89,6 +91,7 @@ internal fun DashboardScreen(
 @Composable
 internal fun TrackerSummaryCard(
     tracker: TrackerSummary,
+    notificationsEnabled: Boolean,
     onOpen: () -> Unit,
     onLogToday: () -> Unit,
     onToggleToday: () -> Unit,
@@ -154,8 +157,18 @@ internal fun TrackerSummaryCard(
                 LinearProgressIndicator(progress = { rate }, modifier = Modifier.fillMaxWidth())
             }
             tracker.reminderLabel?.let {
-                Text(it, style = MaterialTheme.typography.bodySmall)
+                ReminderLabel(it, notificationsEnabled)
             }
         }
     }
+}
+
+@Composable
+internal fun ReminderLabel(label: String, notificationsEnabled: Boolean) {
+    Text(
+        text = if (notificationsEnabled) label else "$label · Notifications off",
+        style = MaterialTheme.typography.bodySmall,
+        color = if (notificationsEnabled) MaterialTheme.colorScheme.onSurfaceVariant
+            else MaterialTheme.colorScheme.error
+    )
 }

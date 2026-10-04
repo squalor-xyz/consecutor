@@ -27,6 +27,8 @@ internal fun SettingsScreen(
     onSaveBackup: () -> Unit,
     onShareBackup: () -> Unit,
     onImportBackup: () -> Unit,
+    notificationsEnabled: Boolean,
+    canRequestNotifications: Boolean,
     onEnableNotifications: () -> Unit
 ) {
     LazyColumn(
@@ -68,11 +70,15 @@ internal fun SettingsScreen(
         }
         item {
             SettingsCard(
-                title = "Notifications",
-                body = "Reminders are local only. Android 13+ needs notification permission."
+                title = "Notifications: ${if (notificationsEnabled) "On" else "Off"}",
+                body = if (notificationsEnabled) {
+                    "Reminders are local only."
+                } else {
+                    "Reminders are local only. Enable notifications to receive your scheduled reminders."
+                }
             ) {
                 Button(onClick = onEnableNotifications) {
-                    Text("Allow notifications")
+                    Text(if (canRequestNotifications) "Allow notifications" else "Open settings")
                 }
             }
         }
