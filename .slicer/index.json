@@ -1653,7 +1653,7 @@
       "id": "S56",
       "title": "Deleted entries: never exported, purged after 24 hours",
       "short_title": "Deleted entries: never exported, purged after 24 hours",
-      "status": "review",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S05",
