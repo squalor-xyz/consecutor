@@ -77,6 +77,9 @@ interface TrackerDao {
     @Query("SELECT * FROM entries WHERE id = :entryId")
     suspend fun getEntryById(entryId: Long): EntryEntity?
 
+    @Query("DELETE FROM entries WHERE isDeleted = 1 AND updatedAtEpochMs < :cutoffEpochMs")
+    suspend fun purgeDeletedEntries(cutoffEpochMs: Long): Int
+
     @Query("DELETE FROM entries")
     suspend fun deleteAllEntries()
 
