@@ -40,7 +40,9 @@ Typical package-manager path:
 
 Homebrew's `openjdk@17` is keg-only and is not on `PATH` by default (macOS `/usr/bin/java` then reports "Unable to locate a Java Runtime"). Point Gradle at it with `JAVA_HOME` in your shell profile rather than in `gradle.properties`:
 
-- `export JAVA_HOME="$(brew --prefix openjdk@17)"`
+- `export JAVA_HOME="$(brew --prefix openjdk@17)/libexec/openjdk.jdk/Contents/Home"`
+
+The prefix itself is not a JDK home. It has `bin/java`, but no `release` file.
 
 Do not commit `org.gradle.java.home`; it is machine-specific and breaks CI. Verify with:
 
@@ -134,7 +136,7 @@ Unit tests:
 
 - `./gradlew test`
 
-Instrumented tests (need a device or emulator; CI does not run them, so run them locally before merging data-layer changes):
+Instrumented tests need an emulator. CI does not run them, so run them locally before merging data-layer changes. `NavigationTest` clears the app database and refuses to run unless the hardware is an emulator:
 
 - `./gradlew connectedDebugAndroidTest`
 
