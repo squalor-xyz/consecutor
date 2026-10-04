@@ -113,11 +113,12 @@ At minimum, changes should be verified against:
 - entry add/edit/delete behavior
 - backup export/import round-tripping
 - reminder scheduling behavior
-- CSV export formatting
+- CSV export formatting (`CsvExportTest`)
 
 Current unit coverage includes analytics logic in:
 
 - `app/src/test/java/com/squalor/consecutor/TrackerAnalyticsTest.kt`
+- `app/src/test/java/com/squalor/consecutor/CsvExportTest.kt` (CSV layout, number formatting, quoting and formula-injection guard)
 
 ## Local Test Runs
 
