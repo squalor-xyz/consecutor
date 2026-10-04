@@ -10,6 +10,11 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
@@ -73,8 +78,9 @@ class TrackerViewModel(
     val dashboard: StateFlow<List<TrackerSummary>> = repository.observeDashboard(today)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
-    private val _message = MutableStateFlow<String?>(null)
-    val message: StateFlow<String?> = _message
+    private val eventChannel = Channel<UiEvent>(Channel.BUFFERED)
+    val events: Flow<UiEvent> = eventChannel.receiveAsFlow()
+    private val toggleMutex = Mutex()
 
     private val _pendingImport = MutableStateFlow<PendingImport?>(null)
     val pendingImport: StateFlow<PendingImport?> = _pendingImport
@@ -101,10 +107,10 @@ class TrackerViewModel(
     private fun launchAction(success: String?, failure: String, block: suspend () -> Unit) {
         viewModelScope.launch {
             runCatching { block() }
-                .onSuccess { success?.let { _message.value = it } }
+                .onSuccess { success?.let { eventChannel.send(UiEvent.Message(it)) } }
                 .onFailure {
                     if (it is CancellationException) throw it
-                    _message.value = failure
+                    eventChannel.send(UiEvent.Message(failure))
                 }
         }
     }
@@ -137,14 +143,51 @@ class TrackerViewModel(
         }
 
     fun deleteEntry(entryId: Long, trackerId: Long) =
-        launchAction("Entry deleted.", "Unable to delete entry.") {
+        launchAction(null, "Unable to delete entry.") {
             repository.deleteEntry(entryId, trackerId)
+            eventChannel.send(UiEvent.Cleared("Entry deleted", trackerId, listOf(entryId)))
         }
 
-    fun quickLog(summary: TrackerSummary) =
-        launchAction("Logged ${summary.name}.", "Unable to log ${summary.name}.") {
-            repository.quickLog(summary, today.value)
+    fun logToday(summary: TrackerSummary) {
+        val date = today.value
+        launchAction(null, "Unable to log ${summary.name}.") {
+            val entryId = repository.addEntry(summary.id, summary.type, EntryDraft(date, 1.0, null))
+            eventChannel.send(loggedEvent(summary, entryId))
         }
+    }
+
+    fun clearToday(summary: TrackerSummary) = launchAction(null, "Unable to clear ${summary.name}.") {
+        repository.softDeleteEntries(summary.id, summary.todayEntryIds)
+        eventChannel.send(UiEvent.Cleared("Cleared ${summary.name}", summary.id, summary.todayEntryIds))
+    }
+
+    fun toggleToday(summary: TrackerSummary) {
+        val date = today.value
+        launchAction(null, "Unable to log ${summary.name}.") {
+            toggleMutex.withLock {
+                when (val result = repository.toggleToday(summary.id, date)) {
+                    is TrackerRepository.TodayToggleResult.Logged -> eventChannel.send(loggedEvent(summary, result.entryId))
+                    is TrackerRepository.TodayToggleResult.Cleared -> eventChannel.send(
+                        UiEvent.Cleared("Cleared ${summary.name}", summary.id, result.entryIds)
+                    )
+                }
+            }
+        }
+    }
+
+    private fun loggedEvent(summary: TrackerSummary, entryId: Long) = UiEvent.Logged(
+        "Logged ${summary.name}" + if (summary.type == TrackerType.COUNT) " (+1)" else "",
+        summary.id,
+        entryId
+    )
+
+    fun undo(event: UiEvent) = launchAction(null, "Unable to undo.") {
+        when (event) {
+            is UiEvent.Logged -> repository.deleteEntry(event.entryId, event.trackerId)
+            is UiEvent.Cleared -> repository.restoreEntries(event.trackerId, event.entryIds)
+            is UiEvent.Message -> Unit
+        }
+    }
 
     fun exportTo(context: Context, uri: Uri, kind: ExportKind) = viewModelScope.launch {
         runCatching {
@@ -155,10 +198,10 @@ class TrackerViewModel(
                 stream.use { it.write(bytes) }
             }
         }.onSuccess {
-            _message.value = "Saved ${kind.label}."
+            eventChannel.send(UiEvent.Message("Saved ${kind.label}."))
         }.onFailure {
             if (it is CancellationException) throw it
-            _message.value = "Unable to save ${kind.label}."
+            eventChannel.send(UiEvent.Message("Unable to save ${kind.label}."))
         }
     }
 
@@ -175,7 +218,7 @@ class TrackerViewModel(
             shareFile(context, file, kind.mimeType, kind.chooserTitle)
         }.onFailure {
             if (it is CancellationException) throw it
-            _message.value = "Unable to export ${kind.label}."
+            eventChannel.send(UiEvent.Message("Unable to export ${kind.label}."))
         }
     }
 
@@ -209,7 +252,8 @@ class TrackerViewModel(
                 _pendingImport.value = it
             }.onFailure {
                 if (it is CancellationException) throw it
-                _message.value = if (it is BackupFormatException) it.message else "Unable to read backup file."
+                val text = if (it is BackupFormatException) it.message else null
+                eventChannel.send(UiEvent.Message(text ?: "Unable to read backup file."))
             }
         }
     }
@@ -246,7 +290,7 @@ class TrackerViewModel(
                 }
             }.getOrElse {
                 if (it is CancellationException) throw it
-                _message.value = "Unable to save a safety backup. Your data was not replaced."
+                eventChannel.send(UiEvent.Message("Unable to save a safety backup. Your data was not replaced."))
                 return@launch
             }
             runCatching {
@@ -254,26 +298,22 @@ class TrackerViewModel(
                 withContext(Dispatchers.IO) { repository.importBackup(pending.raw) }
                 rescheduleReminders()
             }.onSuccess {
-                _message.value = if (savedCopy) {
+                eventChannel.send(UiEvent.Message(if (savedCopy) {
                     "Backup imported. A copy of your previous data was saved in the app's private storage."
                 } else {
                     "Backup imported."
-                }
+                }))
             }.onFailure {
                 // Re-arm the current database's reminders after a failed replacement.
                 withContext(NonCancellable) { runCatching { rescheduleReminders() } }
                 if (it is CancellationException) throw it
-                _message.value = if (it is BackupFormatException) {
+                eventChannel.send(UiEvent.Message(if (it is BackupFormatException) {
                     "Backup import failed: ${it.message}"
                 } else {
                     "Backup import failed."
-                }
+                }))
             }
         }
-    }
-
-    fun clearMessage() {
-        _message.value = null
     }
 
     fun ensureReminderChannel() {

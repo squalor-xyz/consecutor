@@ -21,6 +21,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.SnackbarDuration
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -62,7 +67,6 @@ private enum class Screen {
 @Composable
 fun MainScreen(viewModel: TrackerViewModel) {
     val dashboard by viewModel.dashboard.collectAsState()
-    val message by viewModel.message.collectAsState()
     val pendingImport by viewModel.pendingImport.collectAsState()
     val today by viewModel.today.collectAsState()
     val context = LocalContext.current
@@ -113,10 +117,29 @@ fun MainScreen(viewModel: TrackerViewModel) {
         }
     }
 
-    LaunchedEffect(message) {
-        message?.let {
-            snackbarHostState.showSnackbar(it)
-            viewModel.clearMessage()
+    LaunchedEffect(Unit) {
+        var snackbarJob: Job? = null
+        viewModel.events.collect { event ->
+            snackbarHostState.currentSnackbarData?.dismiss()
+            snackbarJob?.cancel()
+            // Start immediately so the next event can dismiss even a just-created snackbar.
+            snackbarJob = launch(start = CoroutineStart.UNDISPATCHED) {
+                when (event) {
+                    is UiEvent.Message -> snackbarHostState.showSnackbar(event.text)
+                    is UiEvent.Logged, is UiEvent.Cleared -> {
+                        val text = when (event) {
+                            is UiEvent.Logged -> event.text
+                            is UiEvent.Cleared -> event.text
+                        }
+                        val result = snackbarHostState.showSnackbar(
+                            message = text,
+                            actionLabel = "Undo",
+                            duration = SnackbarDuration.Short
+                        )
+                        if (result == SnackbarResult.ActionPerformed) viewModel.undo(event)
+                    }
+                }
+            }
         }
     }
 
@@ -267,7 +290,9 @@ fun MainScreen(viewModel: TrackerViewModel) {
                     viewModel.select(it)
                     screen = Screen.DETAIL
                 },
-                onQuickLog = { summary -> viewModel.quickLog(summary) },
+                onLogToday = { summary -> viewModel.logToday(summary) },
+                onToggleToday = { summary -> viewModel.toggleToday(summary) },
+                onEditToday = { summary -> entryEditorState = EntryEditorState.forToday(summary, today) },
                 onCreate = { showNewTrackerDialog = true }
             )
             Screen.DETAIL -> {

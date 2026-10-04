@@ -47,6 +47,12 @@ interface TrackerDao {
     @Query("SELECT id FROM entries WHERE trackerId = :trackerId AND effectiveDate = :date AND isDeleted = 0 LIMIT 1")
     suspend fun findActiveEntryId(trackerId: Long, date: String): Long?
 
+    @Query("SELECT id FROM entries WHERE trackerId = :trackerId AND effectiveDate = :date AND isDeleted = 0")
+    suspend fun findActiveEntryIds(trackerId: Long, date: String): List<Long>
+
+    @Query("UPDATE entries SET isDeleted = :deleted, updatedAtEpochMs = :now WHERE trackerId = :trackerId AND id IN (:ids)")
+    suspend fun setEntriesDeleted(trackerId: Long, ids: List<Long>, deleted: Boolean, now: Long)
+
     @Update
     suspend fun updateEntry(entry: EntryEntity)
 

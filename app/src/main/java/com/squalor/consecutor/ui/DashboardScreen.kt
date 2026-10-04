@@ -1,6 +1,13 @@
 package com.squalor.consecutor.ui
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.layout.Box
+import androidx.compose.material3.Checkbox
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -29,7 +36,9 @@ internal fun DashboardScreen(
     dashboard: List<TrackerSummary>,
     padding: PaddingValues,
     onOpenTracker: (Long) -> Unit,
-    onQuickLog: (TrackerSummary) -> Unit,
+    onLogToday: (TrackerSummary) -> Unit,
+    onToggleToday: (TrackerSummary) -> Unit,
+    onEditToday: (TrackerSummary) -> Unit,
     onCreate: () -> Unit
 ) {
     if (dashboard.isEmpty()) {
@@ -52,7 +61,9 @@ internal fun DashboardScreen(
             TrackerSummaryCard(
                 tracker = tracker,
                 onOpen = { onOpenTracker(tracker.id) },
-                onQuickLog = { onQuickLog(tracker) }
+                onLogToday = { onLogToday(tracker) },
+                onToggleToday = { onToggleToday(tracker) },
+                onEditToday = { onEditToday(tracker) }
             )
         }
     }
@@ -62,7 +73,9 @@ internal fun DashboardScreen(
 internal fun TrackerSummaryCard(
     tracker: TrackerSummary,
     onOpen: () -> Unit,
-    onQuickLog: () -> Unit
+    onLogToday: () -> Unit,
+    onToggleToday: () -> Unit,
+    onEditToday: () -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -82,9 +95,34 @@ internal fun TrackerSummaryCard(
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.weight(1f)
                 )
-                if (tracker.type != TrackerType.MEASURE) {
-                    TextButton(onClick = onQuickLog) {
-                        Text("Quick log")
+                when (tracker.type) {
+                    TrackerType.YES_NO -> Checkbox(
+                        checked = tracker.doneToday,
+                        onCheckedChange = { onToggleToday() },
+                        modifier = Modifier
+                            .sizeIn(minWidth = 48.dp, minHeight = 48.dp)
+                            .semantics {
+                                contentDescription = "${if (tracker.doneToday) "Clear" else "Log"} ${tracker.name} today"
+                            }
+                    )
+                    TrackerType.COUNT -> Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .sizeIn(minWidth = 48.dp, minHeight = 48.dp)
+                            .combinedClickable(
+                                role = Role.Button,
+                                onClick = onLogToday,
+                                onLongClickLabel = "Log custom amount",
+                                onLongClick = onEditToday
+                            )
+                    ) {
+                        Text("+1", color = MaterialTheme.colorScheme.primary)
+                    }
+                    TrackerType.MEASURE -> TextButton(
+                        onClick = onEditToday,
+                        modifier = Modifier.sizeIn(minWidth = 48.dp, minHeight = 48.dp)
+                    ) {
+                        Text("Log")
                     }
                 }
             }
