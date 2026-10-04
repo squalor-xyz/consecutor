@@ -1044,7 +1044,7 @@
       "id": "S36",
       "title": "Reminder receiver reads fresh data: skip when done, deleted, archived or disabled",
       "short_title": "Reminder receiver reads fresh data: skip when done, deleted, archived or disabled",
-      "status": "open",
+      "status": "review",
       "has_slice": true,
       "depends_on": [
         "S08",
@@ -1067,7 +1067,7 @@
         "importance": 3,
         "urgency": 2,
         "effort": 2,
-        "attempts": 0
+        "attempts": 1
       }
     },
     {

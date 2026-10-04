@@ -186,6 +186,8 @@ class TrackerRepository(
 
     suspend fun getReminderBundles(): List<TrackerBundle> = trackerDao.getTrackerBundles()
 
+    suspend fun getTrackerBundle(id: Long): TrackerBundle? = trackerDao.getTrackerBundle(id)
+
     private suspend fun upsertTarget(trackerId: Long, draft: TrackerDraft) {
         trackerDao.deleteTargetForTracker(trackerId)
         if (draft.type != TrackerType.MEASURE && draft.targetPeriod != null && draft.targetValue != null) {

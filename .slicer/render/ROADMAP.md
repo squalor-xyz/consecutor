@@ -20,7 +20,7 @@
 - Advanced analytics suite.
 - Squalor brand marks in the APK (brand marks are all-rights-reserved; the app icon is app-specific and MPL-2.0).
 
-59 items · — 26 · done 22 · later 11
+59 items · — 25 · done 22 · later 11 · review 1
 
 | # | Slice | Title | Size | Effort | Trees | Findings | Status |
 |---|---|---|---|---|---|---|---|
@@ -47,7 +47,7 @@
 | 17 | S31 | iOS client on the shared core |  | 3 | build |  | later |
 | P1 Correctness | | | | | | | |
 | 18 | [S35](slices/S35.md) | Repository: YES_NO add is idempotent per date; addEntry returns the entry id | S | 1 | data | TrackerRepository.kt:74-88 (addEntry returns Unit and always inserts) | — |
-| 19 | [S36](slices/S36.md) | Reminder receiver reads fresh data: skip when done, deleted, archived or disabled | M | 2 | reminders | ReminderScheduler.kt:133-156 (receiver trusts extras, always notifies); AndroidManifest.xml (no time-change actions) | — |
+| 19 | [S36](slices/S36.md) | Reminder receiver reads fresh data: skip when done, deleted, archived or disabled | M | 2 | reminders | ReminderScheduler.kt:133-156 (receiver trusts extras, always notifies); AndroidManifest.xml (no time-change actions) | review |
 | P2 MVP UX | | | | | | | |
 | 20 | [S37](slices/S37.md) | Notification tap opens the tracker | S | 1 | reminders | ReminderScheduler.kt:78-84 (no contentIntent); MainActivity.kt (no intent handling) | — |
 | 21 | [S38](slices/S38.md) | Dashboard cards: status line, streak line, stable order, no no-op chips | M | 2 | ui | TrackerDao.kt:14 (order by updatedAt); MainScreen.kt:277-343 (marketing header, no-op AssistChips, completion bar always shown) | — |
