@@ -11,8 +11,8 @@ import androidx.compose.ui.unit.dp
 import com.squalor.consecutor.TrackerType
 
 @Composable
-internal fun EmptyState(text: String) {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+internal fun EmptyState(text: String, modifier: Modifier = Modifier) {
+    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Text(text = text, modifier = Modifier.padding(24.dp))
     }
 }

@@ -294,3 +294,8 @@
 {"when": "2026-10-03T23:37:10Z", "item": "S10", "action": "status", "from": "open", "to": "started", "note": "", "by": "codex"}
 {"when": "2026-10-03T23:47:15Z", "item": "S10", "action": "note", "from": "", "to": "", "note": "Implemented system and toolbar back navigation, saveable dia"}
 {"when": "2026-10-03T23:47:15Z", "item": "S10", "action": "status", "from": "started", "to": "done", "note": "", "by": "Jon R"}
+{"when": "2026-10-03T23:53:48Z", "item": "S11", "action": "status", "from": "open", "to": "started", "note": "", "by": "Codex"}
+{"when": "2026-10-04T00:03:29Z", "item": "S11", "action": "note", "from": "", "to": "", "note": "Light tertiary adjusted from #b45309 to #a14808: original co"}
+{"when": "2026-10-04T00:06:05Z", "item": "S11", "action": "note", "from": "", "to": "", "note": "Implemented in .worktrees/S11 on slice/S11, based on main 87"}
+{"when": "2026-10-04T00:06:05Z", "item": "S11", "action": "handoff", "from": "started", "to": "review", "note": "claim Codex cleared", "by": "Codex"}
+{"when": "2026-10-04T00:09:10Z", "item": "S11", "action": "note", "from": "", "to": "", "note": "Device verification was subsequently authorized, but emulato"}

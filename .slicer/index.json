@@ -303,13 +303,17 @@
       "id": "S11",
       "title": "Brand theme: light and dark palettes following the system",
       "short_title": "Brand theme: light and dark palettes following the system",
-      "status": "open",
+      "status": "review",
       "has_slice": true,
       "depends_on": [
         "S01",
         "S53"
       ],
-      "notes": [],
+      "notes": [
+        "**2026-10-04** — Light tertiary adjusted from #b45309 to #a14808: original contrast is 4.381:1 on surfaceContainer #f3efe8 and 3.828:1 on surfaceContainerHighest #e6e0d7. The new color gives 4.646:1 on the latter. Added contrast checks for actual streak card surfaces and all fixed-role text pairs. Explicitly supplied all 48 Material3 1.4 color roles; the role table outline values take precedence over the earlier light outline prose.",
+        "**2026-10-04** — Implemented in .worktrees/S11 on slice/S11, based on main 8707560. Offline testDebugUnitTest lintDebug assembleDebug pass with JDK 17: 43 tests, zero failures/errors/skips; lint has 10 warnings and zero errors. Both schemes supply all 48 Material3 1.4 roles. Added dashboard title tracking, streak-only tertiary highlights, platform NoActionBar light/dark window backgrounds, enableEdgeToEdge, and Scaffold padding for empty states. No dependencies changed. Connected emulator-5554 is available, but installation/theme changes/temporary tracker creation require the requested device permission; screenshots and the dark cold-start visual check have not been performed. Handed off for review with those visual checks pending.",
+        "**2026-10-04** — Device verification was subsequently authorized, but emulator-5554 disconnected before the first UI-mode query. The verification script failed with device not found; a subsequent adb devices returned an empty list. No APK installation, theme change, or tracker creation occurred. Screenshots and dark cold-start visual verification remain incomplete because no device is connected."
+      ],
       "claim": null,
       "fields": {
         "size": "S",
@@ -325,7 +329,7 @@
         "importance": 2,
         "urgency": 2,
         "effort": 1,
-        "attempts": 0
+        "attempts": 1
       }
     },
     {
