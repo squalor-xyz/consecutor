@@ -104,6 +104,14 @@ Useful inspection commands:
 
 If Gradle fails immediately with a Java runtime error, the environment is missing a working JDK 17 configuration.
 
+## Streak rules
+
+- YES_NO trackers count at most once per effective date, regardless of the number or stored values of active entries. Daily values are 0 or 1; weekly values and totals count distinct logged dates.
+- Deleted entries and entries dated after today are ignored for streaks, totals, completion rates, trends, and the last entry date. Active future entries remain visible in detail history so the user can edit them.
+- Weekly periods start on the first day of the week for the device locale. Analytics callers can supply `WeekFields` explicitly to make this deterministic in tests.
+- A streak continues if yesterday (or last week) was satisfied while the current period is still open. It ends when the most recent satisfied period is more than one period behind the current period.
+- Targets apply retroactively: changing a target re-evaluates every past day or week, so current and longest streaks and completion rates can change.
+
 ## Testing Strategy
 
 At minimum, changes should be verified against:

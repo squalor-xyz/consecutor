@@ -8,8 +8,12 @@ import java.util.Locale
 import kotlin.math.roundToInt
 
 object TrackerAnalytics {
-    fun toDetail(bundle: TrackerBundle, today: LocalDate = LocalDate.now()): TrackerDetail {
-        val summary = toSummary(bundle, today)
+    fun toDetail(
+        bundle: TrackerBundle,
+        today: LocalDate = LocalDate.now(),
+        weekFields: WeekFields = WeekFields.of(Locale.getDefault())
+    ): TrackerDetail {
+        val summary = toSummary(bundle, today, weekFields)
         val target = bundle.target.firstOrNull()
         val trend = buildTrend(bundle, target, today)
         val reminder = bundle.reminder.firstOrNull()?.toConfig()
@@ -35,16 +39,22 @@ object TrackerAnalytics {
         )
     }
 
-    fun toSummary(bundle: TrackerBundle, today: LocalDate = LocalDate.now()): TrackerSummary {
+    fun toSummary(
+        bundle: TrackerBundle,
+        today: LocalDate = LocalDate.now(),
+        weekFields: WeekFields = WeekFields.of(Locale.getDefault())
+    ): TrackerSummary {
         val tracker = bundle.tracker
         val target = bundle.target.firstOrNull()
         val reminder = bundle.reminder.firstOrNull()
-        val activeEntries = bundle.entries.filterNot { it.isDeleted }
-        val aggregated = aggregateEntries(activeEntries)
+        val activeEntries = bundle.entries.filter {
+            !it.isDeleted && !LocalDate.parse(it.effectiveDate).isAfter(today)
+        }
+        val aggregated = aggregateEntries(activeEntries, tracker.type)
         val streak = if (target == null || tracker.type == TrackerType.MEASURE) {
             StreakStats(0, 0, 0f)
         } else {
-            computeStreakStats(aggregated, target, today)
+            computeStreakStats(aggregated, target, today, weekFields)
         }
         val lastEntryDate = activeEntries
             .maxByOrNull { LocalDate.parse(it.effectiveDate) }
@@ -60,7 +70,11 @@ object TrackerAnalytics {
             unit = tracker.unit,
             currentStreak = streak.current,
             longestStreak = streak.longest,
-            totalValue = activeEntries.sumOf { entryValue(tracker.type, it) },
+            totalValue = if (tracker.type == TrackerType.YES_NO) {
+                aggregated.size.toDouble()
+            } else {
+                activeEntries.sumOf { entryValue(tracker.type, it) }
+            },
             completionRate = streak.completionRate,
             lastEntryDate = lastEntryDate,
             targetLabel = target?.let { formatTarget(it, tracker.type, tracker.unit) },
@@ -70,7 +84,10 @@ object TrackerAnalytics {
     }
 
     private fun buildTrend(bundle: TrackerBundle, target: TargetEntity?, today: LocalDate): List<TrendPoint> {
-        val aggregated = aggregateEntries(bundle.entries.filterNot { it.isDeleted })
+        val activeEntries = bundle.entries.filter {
+            !it.isDeleted && !LocalDate.parse(it.effectiveDate).isAfter(today)
+        }
+        val aggregated = aggregateEntries(activeEntries, bundle.tracker.type)
         val last14Days = (13L downTo 0L).map { today.minusDays(it) }
         return last14Days.map { date ->
             val value = aggregated[date] ?: 0.0
@@ -82,14 +99,13 @@ object TrackerAnalytics {
         }
     }
 
-    private fun aggregateEntries(entries: List<EntryEntity>): Map<LocalDate, Double> {
+    private fun aggregateEntries(entries: List<EntryEntity>, type: TrackerType): Map<LocalDate, Double> {
         return entries.groupBy { LocalDate.parse(it.effectiveDate) }
             .mapValues { (_, dayEntries) ->
-                dayEntries.sumOf { entry ->
-                    when {
-                        entry.value != null -> entry.value
-                        else -> 1.0
-                    }
+                if (type == TrackerType.YES_NO) {
+                    1.0
+                } else {
+                    dayEntries.sumOf { it.value ?: 1.0 }
                 }
             }
     }
@@ -97,7 +113,8 @@ object TrackerAnalytics {
     private fun computeStreakStats(
         aggregatedByDate: Map<LocalDate, Double>,
         target: TargetEntity,
-        today: LocalDate
+        today: LocalDate,
+        weekFields: WeekFields
     ): StreakStats {
         val periodHits: Map<PeriodKey, Boolean> = when (target.period) {
             TargetPeriod.DAILY -> aggregatedByDate
@@ -105,7 +122,7 @@ object TrackerAnalytics {
                 .mapValues { targetMet(it.value, target) }
             TargetPeriod.WEEKLY -> aggregatedByDate
                 .entries
-                .groupBy { PeriodKey.Week(startOfWeek(it.key)) }
+                .groupBy { PeriodKey.Week(startOfWeek(it.key, weekFields)) }
                 .mapValues { (_, entries) -> targetMet(entries.sumOf { it.value }, target) }
         }
 
@@ -120,7 +137,7 @@ object TrackerAnalytics {
 
         val currentPeriod = when (target.period) {
             TargetPeriod.DAILY -> PeriodKey.Day(today)
-            TargetPeriod.WEEKLY -> PeriodKey.Week(startOfWeek(today))
+            TargetPeriod.WEEKLY -> PeriodKey.Week(startOfWeek(today, weekFields))
         }
         val lastSatisfied = satisfiedPeriods.last()
         val current = if (currentPeriod.distanceFrom(lastSatisfied) > 1) {
@@ -197,9 +214,8 @@ object TrackerAnalytics {
         }
     }
 
-    private fun startOfWeek(date: LocalDate): LocalDate {
-        val fields = WeekFields.of(Locale.getDefault())
-        return date.minusDays((date.get(fields.dayOfWeek()) - 1).toLong())
+    private fun startOfWeek(date: LocalDate, weekFields: WeekFields): LocalDate {
+        return date.minusDays((date.get(weekFields.dayOfWeek()) - 1).toLong())
     }
 
     fun ReminderEntity.toConfig(): ReminderConfig {

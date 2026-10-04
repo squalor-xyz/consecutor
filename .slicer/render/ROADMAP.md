@@ -20,7 +20,7 @@
 - Advanced analytics suite.
 - Squalor brand marks in the APK (brand marks are all-rights-reserved; the app icon is app-specific and MPL-2.0).
 
-59 items · — 32 · done 16 · later 11
+59 items · — 31 · done 16 · later 11 · review 1
 
 | # | Slice | Title | Size | Effort | Trees | Findings | Status |
 |---|---|---|---|---|---|---|---|
@@ -49,7 +49,7 @@
 | 19 | S31 | iOS client on the shared core |  | 3 | build |  | later |
 | P1 Correctness | | | | | | | |
 | 20 | [S33](slices/S33.md) | Numeric input and display rules: finite, bounded, locale-aware | S | 1 | data | MainScreen.kt:651,764-765 (toDoubleOrNull accepts NaN and Infinity); BackupCodec.kt:51; MainScreen.kt:793 (formatValue prints 3.0E9) | — |
-| 21 | [S34](slices/S34.md) | Analytics correctness: YES_NO once per day, ignore future entries, injectable week start | S | 1 | data | TrackerAnalytics.kt:85-95 (sums YES_NO entries), :125-130 (future entries), :200-203 (Locale.getDefault) | — |
+| 21 | [S34](slices/S34.md) | Analytics correctness: YES_NO once per day, ignore future entries, injectable week start | S | 1 | data | TrackerAnalytics.kt:85-95 (sums YES_NO entries), :125-130 (future entries), :200-203 (Locale.getDefault) | review |
 | 22 | [S35](slices/S35.md) | Repository: YES_NO add is idempotent per date; addEntry returns the entry id | S | 1 | data | TrackerRepository.kt:74-88 (addEntry returns Unit and always inserts) | — |
 | 23 | [S36](slices/S36.md) | Reminder receiver reads fresh data: skip when done, deleted, archived or disabled | M | 2 | reminders | ReminderScheduler.kt:133-156 (receiver trusts extras, always notifies); AndroidManifest.xml (no time-change actions) | — |
 | P2 MVP UX | | | | | | | |
