@@ -187,13 +187,14 @@ class BackupCodecTest {
         hourOfDay: Int = 20,
         minuteOfHour: Int = 0,
         daysOfWeekCsv: String = "1,3,5",
-        targetValue: Double = 8.0
+        targetValue: Double = 8.0,
+        entryValue: String = "2"
     ): String = """
         {"version":1,"trackers":[{
           "tracker":{"name":"$name","type":"$type","createdAtEpochMs":0,"updatedAtEpochMs":0},
           "target":{"period":"DAILY","targetValue":$targetValue},
           "reminder":{"enabled":true,"hourOfDay":$hourOfDay,"minuteOfHour":$minuteOfHour,"daysOfWeekCsv":"$daysOfWeekCsv"},
-          "entries":[{"effectiveDate":"$effectiveDate","occurredAtEpochMs":0,"value":2,"createdAtEpochMs":0,"updatedAtEpochMs":0}]
+          "entries":[{"effectiveDate":"$effectiveDate","occurredAtEpochMs":0,"value":$entryValue,"createdAtEpochMs":0,"updatedAtEpochMs":0}]
         }]}
     """.trimIndent()
 
@@ -238,6 +239,41 @@ class BackupCodecTest {
     @Test
     fun `decode rejects non-positive target`() {
         assertRejects(backupJson(targetValue = 0.0), "Water", "target")
+    }
+
+    @Test
+    fun `decode rejects an entry value that is not finite`() {
+        // getDouble converts a JSON string to a double, so "1e999" becomes Infinity.
+        assertRejects(backupJson(entryValue = "\"1e999\""), "Water", "out of range")
+    }
+
+    @Test
+    fun `decode rejects a target value above the maximum`() {
+        assertRejects(backupJson(targetValue = 2.0E9), "Water", "out of range")
+    }
+
+    @Test
+    fun `encode fails loudly on non-finite values`() {
+        val bundle = TrackerBundle(
+            tracker = TrackerEntity(
+                id = 1, name = "T", type = TrackerType.MEASURE,
+                createdAtEpochMs = 0, updatedAtEpochMs = 0
+            ),
+            entries = listOf(
+                EntryEntity(
+                    id = 1, trackerId = 1, effectiveDate = "2026-04-01", occurredAtEpochMs = 0,
+                    value = Double.POSITIVE_INFINITY, createdAtEpochMs = 0, updatedAtEpochMs = 0
+                )
+            ),
+            target = emptyList(),
+            reminder = emptyList()
+        )
+        try {
+            BackupCodec.encode(listOf(bundle))
+        } catch (e: org.json.JSONException) {
+            return
+        }
+        throw AssertionError("Expected JSONException")
     }
 
     @Test

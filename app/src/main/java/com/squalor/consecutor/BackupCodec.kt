@@ -99,10 +99,14 @@ object BackupCodec {
                 ensure(runCatching { LocalDate.parse(effectiveDate) }.isSuccess) {
                     "$context, entry ${entryIndex + 1}: invalid date '$effectiveDate'."
                 }
+                val entryValue = if (entryJson.isNull("value")) null else entryJson.getDouble("value")
+                ensure(entryValue == null || NumberRules.isValidValue(entryValue)) {
+                    "$context, entry ${entryIndex + 1}: value out of range."
+                }
                 entries += ImportedEntry(
                     effectiveDate = effectiveDate,
                     occurredAtEpochMs = entryJson.getLong("occurredAtEpochMs"),
-                    value = if (entryJson.isNull("value")) null else entryJson.getDouble("value"),
+                    value = entryValue,
                     note = entryJson.nullableString("note"),
                     createdAtEpochMs = entryJson.getLong("createdAtEpochMs"),
                     updatedAtEpochMs = entryJson.getLong("updatedAtEpochMs"),
@@ -125,6 +129,7 @@ object BackupCodec {
                 target = targetJson?.let {
                     val targetValue = it.getDouble("targetValue")
                     ensure(targetValue > 0.0) { "$context: target must be greater than zero." }
+                    ensure(NumberRules.isValidValue(targetValue)) { "$context: target value out of range." }
                     ImportedTarget(
                         period = enumValue<TargetPeriod>(it.getString("period"), "$context: unknown target period"),
                         targetValue = targetValue
