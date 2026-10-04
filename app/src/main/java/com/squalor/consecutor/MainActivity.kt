@@ -1,5 +1,6 @@
 package com.squalor.consecutor
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -25,6 +26,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (savedInstanceState == null) handleIntent(intent)
         enableEdgeToEdge()
         setContent {
             ConsecutorTheme {
@@ -33,5 +35,16 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleIntent(intent)
+    }
+
+    private fun handleIntent(intent: Intent?) {
+        val trackerId = intent?.getLongExtra(ReminderScheduler.EXTRA_TRACKER_ID, -1L) ?: -1L
+        if (trackerId != -1L) viewModel.select(trackerId)
     }
 }

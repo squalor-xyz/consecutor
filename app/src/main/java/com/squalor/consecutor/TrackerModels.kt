@@ -175,9 +175,9 @@ data class TrackerSummary(
     val periodTarget: Double?,
     val periodMet: Boolean,
     val targetPeriod: TargetPeriod?,
+    val targetValue: Double?,
     val lastEntryDate: LocalDate?,
-    val targetLabel: String?,
-    val reminderLabel: String?,
+    val reminder: ReminderConfig?,
     val isArchived: Boolean
 )
 

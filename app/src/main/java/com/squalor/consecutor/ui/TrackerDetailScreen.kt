@@ -59,8 +59,13 @@ internal fun TrackerDetailScreen(
                         detail.tracker.description?.let { Text(it) }
                         StatusLine(detail.summary)
                         StreakLine(detail.summary)
-                        detail.summary.targetLabel?.let { Text("Target: $it") }
-                        detail.summary.reminderLabel?.let { Text("Reminder: $it") }
+                        val summary = detail.summary
+                        val targetPeriod = summary.targetPeriod
+                        val targetValue = summary.targetValue
+                        if (targetPeriod != null && targetValue != null) {
+                            Text("Target: ${targetLabel(summary.type, targetPeriod, targetValue, summary.unit)}")
+                        }
+                        summary.reminder?.let { Text("Reminder: ${reminderLabel(it)}") }
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             Button(onClick = onAddEntry) {
                                 Icon(Icons.Default.Add, contentDescription = null)

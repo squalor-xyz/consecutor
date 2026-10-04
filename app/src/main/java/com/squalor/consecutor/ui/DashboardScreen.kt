@@ -156,8 +156,8 @@ internal fun TrackerSummaryCard(
                 Text("Last $window: ${(rate * 100).toInt()}%", style = MaterialTheme.typography.bodySmall)
                 LinearProgressIndicator(progress = { rate }, modifier = Modifier.fillMaxWidth())
             }
-            tracker.reminderLabel?.let {
-                ReminderLabel(it, notificationsEnabled)
+            tracker.reminder?.let {
+                ReminderLabel(reminderLabel(it), notificationsEnabled)
             }
         }
     }
