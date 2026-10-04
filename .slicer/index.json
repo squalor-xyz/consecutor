@@ -983,7 +983,7 @@
       "id": "S34",
       "title": "Analytics correctness: YES_NO once per day, ignore future entries, injectable week start",
       "short_title": "Analytics correctness: YES_NO once per day, ignore future entries, injectable week start",
-      "status": "review",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S01",
