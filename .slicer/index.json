@@ -1231,7 +1231,7 @@
       "id": "S42",
       "title": "Calendar heatmap with tap-to-log",
       "short_title": "Calendar heatmap with tap-to-log",
-      "status": "open",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S16",
