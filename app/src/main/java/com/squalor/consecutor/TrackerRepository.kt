@@ -135,7 +135,7 @@ class TrackerRepository(
         val bundles = trackerDao.getTrackerBundles()
         return withContext(Dispatchers.IO) {
             val file = File(context.cacheDir, "consecutor-trackers.csv")
-            file.writeText(buildCsv(bundles))
+            file.writeText(CsvExport.build(bundles))
             file
         }
     }
@@ -239,66 +239,5 @@ class TrackerRepository(
             TrackerType.COUNT -> rawValue ?: 1.0
             TrackerType.MEASURE -> rawValue
         }
-    }
-
-    private fun buildCsv(bundles: List<TrackerBundle>): String {
-        val lines = mutableListOf<String>()
-        lines += "record_type,tracker_id,entry_id,name,emoji,description,type,unit,is_archived,target_period,target_value,reminder_enabled,reminder_time,reminder_days,effective_date,value,note,is_deleted"
-        bundles.forEach { bundle ->
-            val target = bundle.target.firstOrNull()
-            val reminder = bundle.reminder.firstOrNull()
-            lines += listOf(
-                "tracker",
-                bundle.tracker.id.toString(),
-                "",
-                csv(bundle.tracker.name),
-                csv(bundle.tracker.emoji),
-                csv(bundle.tracker.description),
-                bundle.tracker.type.name,
-                csv(bundle.tracker.unit),
-                bundle.tracker.isArchived.toString(),
-                target?.period?.name ?: "",
-                target?.targetValue?.toString() ?: "",
-                reminder?.enabled?.toString() ?: "false",
-                reminder?.let { "%02d:%02d".format(it.hourOfDay, it.minuteOfHour) } ?: "",
-                csv(reminder?.daysOfWeekCsv),
-                "",
-                "",
-                "",
-                ""
-            ).joinToString(",")
-            bundle.entries.forEach { entry ->
-                lines += listOf(
-                    "entry",
-                    entry.trackerId.toString(),
-                    entry.id.toString(),
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    entry.effectiveDate,
-                    entry.value?.toString() ?: "",
-                    csv(entry.note),
-                    entry.isDeleted.toString()
-                ).joinToString(",")
-            }
-            lines += ""
-        }
-        return lines.joinToString("\n")
-    }
-
-    private fun csv(value: String?): String {
-        if (value == null) {
-            return ""
-        }
-        val escaped = value.replace("\"", "\"\"")
-        return "\"$escaped\""
     }
 }
