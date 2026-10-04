@@ -1,3 +1,56 @@
 <resources>
     <string name="app_name">Consecutor</string>
+
+    <string name="action_undo">Undo</string>
+
+    <string name="event_tracker_created">Tracker created.</string>
+    <string name="event_tracker_updated">Tracker updated.</string>
+    <string name="event_tracker_save_failed">Unable to save tracker.</string>
+    <string name="event_tracker_archived">Tracker archived.</string>
+    <string name="event_tracker_archive_failed">Unable to archive tracker.</string>
+    <string name="event_tracker_restored">Tracker restored.</string>
+    <string name="event_tracker_restore_failed">Unable to restore tracker.</string>
+    <string name="event_tracker_deleted">Tracker deleted.</string>
+    <string name="event_tracker_delete_failed">Unable to delete tracker.</string>
+    <string name="event_entry_count_failed">Unable to load tracker entry count.</string>
+    <string name="event_entry_added">Entry added.</string>
+    <string name="event_entry_add_failed">Unable to add entry.</string>
+    <string name="event_entry_updated">Entry updated.</string>
+    <string name="event_entry_update_failed">Unable to update entry.</string>
+    <string name="event_entry_deleted">Entry deleted</string>
+    <string name="event_entry_delete_failed">Unable to delete entry.</string>
+    <string name="event_logged">Logged %1$s</string>
+    <string name="event_logged_count">Logged %1$s (+1)</string>
+    <string name="event_log_failed">Unable to log %1$s.</string>
+    <string name="event_cleared">Cleared %1$s</string>
+    <string name="event_clear_failed">Unable to clear %1$s.</string>
+    <string name="event_undo_failed">Unable to undo.</string>
+    <string name="event_csv_saved">Saved CSV.</string>
+    <string name="event_csv_save_failed">Unable to save CSV.</string>
+    <string name="event_csv_export_failed">Unable to export CSV.</string>
+    <string name="event_backup_saved">Saved backup.</string>
+    <string name="event_backup_save_failed">Unable to save backup.</string>
+    <string name="event_backup_export_failed">Unable to export backup.</string>
+    <string name="event_backup_unreadable">Unable to read backup file.</string>
+    <!-- The argument is a BackupCodec message, which is English and not localized. -->
+    <string name="event_backup_unreadable_reason">%1$s</string>
+    <string name="event_safety_backup_failed">Unable to save a safety backup. Your data was not replaced.</string>
+    <string name="event_backup_imported">Backup imported.</string>
+    <string name="event_backup_imported_with_copy">Backup imported. A copy of your previous data was saved in the app\'s private storage.</string>
+    <string name="event_import_failed">Backup import failed: %1$s</string>
+    <string name="event_import_failed_generic">Backup import failed.</string>
+
+    <string name="label_target_per_day">%1$s per day</string>
+    <string name="label_target_per_week">%1$s per week</string>
+    <plurals name="label_target_days_per_week">
+        <item quantity="one">%1$s day per week</item>
+        <item quantity="other">%1$s days per week</item>
+    </plurals>
+    <string name="label_reminder_every_day">Every day at %1$s</string>
+    <string name="label_reminder_days_at">%1$s at %2$s</string>
+
+    <string name="notification_channel_name">Tracker reminders</string>
+    <string name="notification_channel_description">Reminders for scheduled trackers.</string>
+    <string name="notification_title_fallback">Tracker reminder</string>
+    <string name="notification_text">Log today\'s progress in Consecutor.</string>
 </resources>

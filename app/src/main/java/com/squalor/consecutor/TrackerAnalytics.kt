@@ -85,9 +85,9 @@ object TrackerAnalytics {
             periodTarget = progress.periodTarget,
             periodMet = progress.periodMet,
             targetPeriod = progress.targetPeriod,
+            targetValue = progress.periodTarget,
             lastEntryDate = lastEntryDate,
-            targetLabel = target?.let { formatTarget(it, tracker.type, tracker.unit) },
-            reminderLabel = reminder?.takeIf { it.enabled }?.let(::formatReminder),
+            reminder = reminder?.takeIf { it.enabled }?.toConfig(),
             isArchived = tracker.isArchived
         )
     }
@@ -296,26 +296,6 @@ object TrackerAnalytics {
     }
 
     private fun targetMet(value: Double, target: TargetEntity): Boolean = value >= target.targetValue
-
-    private fun formatTarget(target: TargetEntity, type: TrackerType, unit: String?): String {
-        val valueLabel = if (type == TrackerType.YES_NO) "1" else NumberRules.formatNumber(target.targetValue)
-        val suffix = when (target.period) {
-            TargetPeriod.DAILY -> "day"
-            TargetPeriod.WEEKLY -> "week"
-        }
-        val unitLabel = unit?.takeIf { it.isNotBlank() }?.let { " $it" } ?: ""
-        return "$valueLabel$unitLabel per $suffix"
-    }
-
-    private fun formatReminder(reminder: ReminderEntity): String {
-        val timeLabel = "%02d:%02d".format(reminder.hourOfDay, reminder.minuteOfHour)
-        val days = reminder.toConfig().daysOfWeek
-        if (days.isEmpty() || days.size == 7) {
-            return "Daily at $timeLabel"
-        }
-        val label = days.sortedBy { it.value }.joinToString(", ") { it.name.take(3).lowercase().replaceFirstChar(Char::titlecase) }
-        return "$label at $timeLabel"
-    }
 
     fun entryValue(type: TrackerType, entry: EntryEntity): Double {
         return when (type) {

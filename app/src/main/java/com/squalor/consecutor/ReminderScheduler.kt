@@ -50,10 +50,10 @@ class ReminderScheduler(private val context: Context) {
     fun ensureNotificationChannel() {
         val channel = NotificationChannel(
             CHANNEL_ID,
-            "Tracker reminders",
+            context.getString(R.string.notification_channel_name),
             NotificationManager.IMPORTANCE_DEFAULT
         ).apply {
-            description = "Reminders for scheduled trackers."
+            description = context.getString(R.string.notification_channel_description)
         }
         val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         manager.createNotificationChannel(channel)
@@ -76,8 +76,8 @@ class ReminderScheduler(private val context: Context) {
         )
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification)
-            .setContentTitle(if (title.isBlank()) "Tracker reminder" else title)
-            .setContentText("Log today's progress in Consecutor.")
+            .setContentTitle(if (title.isBlank()) context.getString(R.string.notification_title_fallback) else title)
+            .setContentText(context.getString(R.string.notification_text))
             .setContentIntent(contentIntent)
             .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
