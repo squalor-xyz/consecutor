@@ -296,3 +296,4 @@
 {"when": "2026-10-03T23:47:15Z", "item": "S10", "action": "status", "from": "started", "to": "done", "note": "", "by": "Jon R"}
 {"when": "2026-10-03T23:59:27Z", "item": "S08", "action": "note", "from": "", "to": "", "note": "Delivery window, alarm set ~12h ahead (dumpsys alarm, inexac"}
 {"when": "2026-10-04T00:05:28Z", "item": "S08", "action": "status", "from": "open", "to": "done", "note": "Merged to main. testDebugUnitTest (40), lintDebug, and assembleDebug passed. Debug APK requests POST_NOTIFICATIONS and RECEIVE_BOOT_COMPLETED, plus the AndroidX dynamic-receiver permission. SCHEDULE_EXACT_ALARM is gone. Delivery windows are in the earlier note.", "by": "Jon R"}
+{"when": "2026-10-04T00:10:44Z", "item": "S17", "action": "status", "from": "open", "to": "done", "note": "Merged to main. testDebugUnitTest passed (49, including CsvExportTest). Spreadsheet open of an exported file was not checked.", "by": "Jon R"}

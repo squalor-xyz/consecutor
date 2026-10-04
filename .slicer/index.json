@@ -483,7 +483,7 @@
       "id": "S17",
       "title": "Flat CSV export as a pure function (with formula-injection guard)",
       "short_title": "Flat CSV export as a pure function (with formula-injection guard)",
-      "status": "open",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S03",
