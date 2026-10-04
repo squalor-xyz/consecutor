@@ -70,11 +70,11 @@ internal fun TrackerDetailScreen(
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text("Recent trend", style = MaterialTheme.typography.titleMedium)
                     detail.trend.forEach { point ->
-                        val progress = (point.value / maxOf(detail.target?.targetValue ?: 1.0, 1.0)).toFloat().coerceIn(0f, 1f)
+                        val progress = ((point.value ?: 0.0) / maxOf(detail.target?.targetValue ?: 1.0, 1.0)).toFloat().coerceIn(0f, 1f)
                         Column {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(point.date.toString(), modifier = Modifier.width(110.dp), style = MaterialTheme.typography.bodySmall)
-                                Text(formatValue(point.value, detail.tracker.unit), style = MaterialTheme.typography.bodySmall)
+                                Text(formatValue(point.value ?: 0.0, detail.tracker.unit), style = MaterialTheme.typography.bodySmall)
                             }
                             LinearProgressIndicator(
                                 progress = { progress },
