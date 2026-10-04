@@ -7,6 +7,22 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 
+// Release signing: keystore.properties in the repo root, else CONSECUTOR_* environment variables.
+// If any of the four values is missing the release build stays unsigned. Never log these values.
+def keystoreProps = new Properties()
+rootProject.file('keystore.properties').with { file ->
+    if (file.exists()) file.withInputStream { keystoreProps.load(it) }
+}
+def signingValue = { String propKey, String envKey ->
+    def value = keystoreProps.getProperty(propKey) ?: System.getenv(envKey)
+    value?.trim() ? value.trim() : null
+}
+def releaseStoreFile = signingValue('storeFile', 'CONSECUTOR_KEYSTORE')
+def releaseStorePassword = signingValue('storePassword', 'CONSECUTOR_KEYSTORE_PASSWORD')
+def releaseKeyAlias = signingValue('keyAlias', 'CONSECUTOR_KEY_ALIAS')
+def releaseKeyPassword = signingValue('keyPassword', 'CONSECUTOR_KEY_PASSWORD')
+def hasReleaseSigning = releaseStoreFile && releaseStorePassword && releaseKeyAlias && releaseKeyPassword
+
 android {
     namespace 'com.squalor.consecutor'
     compileSdkVersion 'android-36.1'
@@ -20,10 +36,24 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    if (hasReleaseSigning) {
+        signingConfigs {
+            release {
+                storeFile rootProject.file(releaseStoreFile)
+                storePassword releaseStorePassword
+                keyAlias releaseKeyAlias
+                keyPassword releaseKeyPassword
+            }
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            if (hasReleaseSigning) {
+                signingConfig signingConfigs.release
+            }
         }
     }
 
