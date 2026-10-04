@@ -2,7 +2,7 @@
   "version": 3,
   "id_prefix": "S",
   "id_width": 2,
-  "next_id": 60,
+  "next_id": 61,
   "preamble": "",
   "passes": [],
   "items": [
@@ -1407,14 +1407,17 @@
       "id": "S48",
       "title": "Raise compile and target SDK to the current Play requirement",
       "short_title": "Raise compile and target SDK to the current Play requirement",
-      "status": "open",
+      "status": "review",
       "has_slice": true,
       "depends_on": [
         "S46",
         "S11",
         "S10"
       ],
-      "notes": [],
+      "notes": [
+        "**2026-10-04** — Play requirement checked 2026-10-04 at https://developer.android.com/google/play/requirements/target-sdk: since 2026-08-31, new apps and app updates must target API 36 (Android 16); existing apps must target 35+ to stay available to new users on newer devices. Target set to 36.",
+        "**2026-10-04** — Walkthrough 2026-10-04, debug build targetSdk=36 (dumpsys confirmed), AVDs s48_pixel6_api36 and s48_tablet_api36 (system-images;android-36;google_apis;arm64-v8a), driven via adb + uiautomator. Passed: edge-to-edge (top bar below status bar, FAB above gesture bar on dashboard, settings, detail); notification permission dialog -> POST_NOTIFICATIONS granted; reminder set 10:46 fired, notification posted on channel tracker_reminders by 10:47:41; back gesture settings->dashboard, detail->dashboard, dashboard->launcher; backup Save to file (valid JSON) and Import with preview + Replace, reminder alarm kept after import; Pixel Tablet landscape, portrait and split screen with Settings, same process, no crash. Not verified: the predictive back animation visually (adb swipes only); Archived screen (S15 not merged). Pre-existing, not caused by the bump (same on a targetSdk 34 build): with the keyboard open the tracker dialog's Save row sits partly behind the IME; Settings still shows 'Allow notifications' after granting (S09). gradlew testDebugUnitTest lintDebug assembleDebug assembleRelease: exit 0; lint at target 36 only drops OldTargetApi vs target 34, no new issues; tools:targetApi left unchanged."
+      ],
       "claim": null,
       "fields": {
         "size": "S",
@@ -1430,7 +1433,7 @@
         "importance": 3,
         "urgency": 2,
         "effort": 1,
-        "attempts": 0
+        "attempts": 1
       }
     },
     {
@@ -1756,6 +1759,34 @@
         "importance": 2,
         "urgency": 1,
         "effort": 2,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S60",
+      "title": "Editor dialogs keep Save and Cancel above the keyboard",
+      "short_title": "Editor dialogs keep Save and Cancel above the keyboard",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [
+        "S40"
+      ],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "S",
+        "flags": [],
+        "trees": [
+          "ui"
+        ],
+        "trees_literal": false,
+        "findings": "S48 walkthrough 2026-10-04: TrackerEditorDialog.kt:83-90 (AlertDialog with LazyColumn heightIn(max = 520.dp)); Save row partly under the IME on API 36, same at targetSdk 34",
+        "pass": "",
+        "group": "",
+        "reason": "",
+        "importance": 2,
+        "urgency": 2,
+        "effort": 1,
         "attempts": 0
       }
     }

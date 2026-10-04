@@ -18,7 +18,7 @@ Future plans such as iOS support and shared-core extraction live in [ROADMAP.md]
 
 - Android Studio Koala or newer
 - JDK 17
-- Android SDK 36.1 (compile SDK; target SDK stays 34)
+- Android SDK 36.1 (compile SDK; target SDK 36)
 - Android build-tools installed through the SDK manager
 - A device or emulator running Android 8.0+ for testing
 
