@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,29 +17,37 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.squalor.consecutor.TrackerDetail
 import com.squalor.consecutor.EntryItem
+import com.squalor.consecutor.TrackerType
+import com.squalor.consecutor.ui.charts.BarChart
+import com.squalor.consecutor.ui.charts.CalendarHeatmap
+import com.squalor.consecutor.ui.charts.ChartMath
+import com.squalor.consecutor.ui.charts.LineChart
+import java.time.LocalDate
 
 @Composable
 internal fun TrackerDetailScreen(
     detail: TrackerDetail,
     padding: PaddingValues,
+    today: LocalDate,
     onAddEntry: () -> Unit,
+    onAddEntryForDate: (LocalDate) -> Unit,
     onEditEntry: (EntryItem) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .padding(padding),
-        contentPadding = PaddingValues(16.dp),
+        contentPadding = PaddingValues(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 88.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item {
@@ -69,22 +76,33 @@ internal fun TrackerDetailScreen(
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text("Recent trend", style = MaterialTheme.typography.titleMedium)
-                    detail.trend.forEach { point ->
-                        val progress = (point.value / maxOf(detail.target?.targetValue ?: 1.0, 1.0)).toFloat().coerceIn(0f, 1f)
-                        Column {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(point.date.toString(), modifier = Modifier.width(110.dp), style = MaterialTheme.typography.bodySmall)
-                                Text(formatValue(point.value, detail.tracker.unit), style = MaterialTheme.typography.bodySmall)
-                            }
-                            LinearProgressIndicator(
-                                progress = { progress },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(8.dp)
-                            )
-                        }
+                    val summary = ChartMath.summarize(detail.trend)
+                    val chartModifier = Modifier.semantics {
+                        contentDescription = ChartMath.summaryText(summary, detail.target != null, detail.tracker.unit)
+                    }
+                    if (detail.tracker.type == TrackerType.MEASURE) {
+                        LineChart(detail.trend, detail.tracker.unit, chartModifier)
+                    } else {
+                        BarChart(detail.trend, detail.target?.targetValue, chartModifier)
                     }
                 }
+            }
+        }
+        item {
+            Card(modifier = Modifier.fillMaxWidth()) {
+                CalendarHeatmap(
+                    type = detail.tracker.type,
+                    target = detail.target,
+                    entries = detail.entries,
+                    today = today,
+                    onDayClick = { date ->
+                        val entry = detail.entries
+                            .filter { it.effectiveDate == date }
+                            .maxByOrNull { it.occurredAtEpochMs }
+                        if (entry != null) onEditEntry(entry) else onAddEntryForDate(date)
+                    },
+                    modifier = Modifier.padding(16.dp)
+                )
             }
         }
         item {

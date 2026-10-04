@@ -2,14 +2,23 @@ package com.squalor.consecutor.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,6 +30,8 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import com.squalor.consecutor.EditorLimits
 import com.squalor.consecutor.EntryField
 import com.squalor.consecutor.NumberRules
@@ -61,6 +72,8 @@ internal data class EntryEditorState(
             existingNote = null
         )
 
+        fun forDate(detail: TrackerDetail, date: LocalDate): EntryEditorState = new(detail).copy(existingDate = date)
+
         fun from(detail: TrackerDetail, entry: EntryItem): EntryEditorState = EntryEditorState(
             trackerId = detail.tracker.id,
             trackerType = detail.tracker.type,
@@ -100,6 +113,7 @@ internal val EntryEditorStateSaver = listSaver<EntryEditorState?, Any?>(
     }
 )
 
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 internal fun EntryEditorDialog(
     state: EntryEditorState,
@@ -110,6 +124,7 @@ internal fun EntryEditorDialog(
     onDelete: (() -> Unit)?
 ) {
     var dateText by rememberSaveable { mutableStateOf(state.existingDate.toString()) }
+    var showDatePicker by rememberSaveable { mutableStateOf(false) }
     var valueText by rememberSaveable {
         mutableStateOf(
             state.existingValue?.let { NumberRules.formatForInput(it) }
@@ -119,8 +134,8 @@ internal fun EntryEditorDialog(
     var note by rememberSaveable { mutableStateOf(state.existingNote.orEmpty()) }
     var showErrors by rememberSaveable { mutableStateOf(false) }
     val locale = LocalConfiguration.current.locales[0]
-    val parsedDate = runCatching { LocalDate.parse(dateText.trim()) }.getOrNull()
-    val errors = validateEntryForm(state.trackerType, parsedDate, valueText, note, today, otherYesNoDates, locale)
+    val date = LocalDate.parse(dateText)
+    val errors = validateEntryForm(state.trackerType, date, valueText, note, today, otherYesNoDates, locale)
     fun errorFor(field: EntryField) = if (showErrors) errors[field] else null
 
     AlertDialog(
@@ -128,14 +143,25 @@ internal fun EntryEditorDialog(
         title = { Text(if (state.entryId == null) "Log entry" else "Edit entry") },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedTextField(
-                    value = dateText,
-                    onValueChange = { dateText = it },
-                    label = { Text("Date (YYYY-MM-DD)") },
-                    isError = errorFor(EntryField.DATE) != null,
-                    supportingText = errorSupportingText(errorFor(EntryField.DATE)),
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    FilterChip(
+                        selected = date == today,
+                        onClick = { dateText = today.toString() },
+                        label = { Text("Today") }
+                    )
+                    FilterChip(
+                        selected = date == today.minusDays(1),
+                        onClick = { dateText = today.minusDays(1).toString() },
+                        label = { Text("Yesterday") }
+                    )
+                }
+                OutlinedButton(
+                    onClick = { showDatePicker = true },
                     modifier = Modifier.fillMaxWidth()
-                )
+                ) {
+                    Text(date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)))
+                }
+                errorSupportingText(errorFor(EntryField.DATE))?.invoke()
                 if (state.trackerType != TrackerType.YES_NO) {
                     OutlinedTextField(
                         value = valueText,
@@ -160,8 +186,7 @@ internal fun EntryEditorDialog(
         confirmButton = {
             Button(onClick = {
                 showErrors = true
-                if (errors.isNotEmpty() || parsedDate == null) return@Button
-                val date = parsedDate
+                if (errors.isNotEmpty()) return@Button
                 val value = when (state.trackerType) {
                     TrackerType.YES_NO -> 1.0
                     else -> NumberRules.parseDecimal(valueText, locale) ?: return@Button
@@ -190,4 +215,30 @@ internal fun EntryEditorDialog(
             }
         }
     )
+    if (showDatePicker) {
+        val pickerState = rememberDatePickerState(
+            initialSelectedDateMillis = date.toPickerMillis(),
+            selectableDates = object : SelectableDates {
+                override fun isSelectableDate(utcTimeMillis: Long) = isSelectable(utcTimeMillis, today)
+            }
+        )
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    pickerState.selectedDateMillis?.let { dateText = it.fromPickerMillis().toString() }
+                    showDatePicker = false
+                }) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDatePicker = false }) {
+                    Text("Cancel")
+                }
+            }
+        ) {
+            DatePicker(state = pickerState)
+        }
+    }
 }

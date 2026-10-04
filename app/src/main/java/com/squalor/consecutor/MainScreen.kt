@@ -400,7 +400,9 @@ fun MainScreen(viewModel: TrackerViewModel) {
                         TrackerDetailScreen(
                             detail = detail,
                             padding = padding,
+                            today = today,
                             onAddEntry = { entryEditorState = EntryEditorState.new(detail) },
+                            onAddEntryForDate = { date -> entryEditorState = EntryEditorState.forDate(detail, date) },
                             onEditEntry = { entry -> entryEditorState = EntryEditorState.from(detail, entry) }
                         )
                     }

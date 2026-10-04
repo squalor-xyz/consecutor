@@ -8,6 +8,7 @@ import androidx.room.PrimaryKey
 import androidx.room.Relation
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.YearMonth
 
 enum class TrackerType {
     YES_NO,
@@ -129,6 +130,26 @@ data class EntryDraft(
     val note: String?
 )
 
+enum class DayState {
+    MET,
+    PARTIAL,
+    MISSED,
+    OPEN,
+    FUTURE
+}
+
+data class DayCell(
+    val date: LocalDate,
+    val value: Double,
+    val state: DayState
+)
+
+data class MonthGrid(
+    val month: YearMonth,
+    val leadingBlanks: Int,
+    val cells: List<DayCell>
+)
+
 data class ReminderConfig(
     val enabled: Boolean,
     val hourOfDay: Int,
@@ -162,13 +183,14 @@ data class TrackerSummary(
 
 data class TrendPoint(
     val date: LocalDate,
-    val value: Double,
+    val value: Double?,
     val metTarget: Boolean
 )
 
 data class EntryItem(
     val id: Long,
     val effectiveDate: LocalDate,
+    val occurredAtEpochMs: Long,
     val value: Double?,
     val note: String?
 )

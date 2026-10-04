@@ -6,6 +6,7 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.time.LocalDate
+import java.time.YearMonth
 import java.time.temporal.WeekFields
 
 class TrackerAnalyticsTest {
@@ -239,7 +240,7 @@ class TrackerAnalyticsTest {
             assertEquals(summary, detail.summary)
             assertEquals(today.plusDays(1), detail.entries.first().effectiveDate)
             assertEquals(3, detail.entries.size)
-            assertEquals(14, detail.trend.size)
+            assertEquals(30, detail.trend.size)
             assertEquals(today, detail.trend.last().date)
             assertEquals(listOf(1.0, 1.0), detail.trend.takeLast(2).map { it.value })
         }
@@ -262,7 +263,8 @@ class TrackerAnalyticsTest {
                 assertEquals(type.name, 0f, detail.summary.completionRate!!, 0f)
             }
             assertNull(type.name, detail.summary.lastEntryDate)
-            assertTrue(type.name, detail.trend.all { it.value == 0.0 && !it.metTarget })
+            val emptyValue = if (type == TrackerType.MEASURE) null else 0.0
+            assertTrue(type.name, detail.trend.all { it.value == emptyValue && !it.metTarget })
             assertEquals(1, detail.entries.size)
             assertEquals(today.plusDays(1), detail.entries.single().effectiveDate)
         }
@@ -293,7 +295,7 @@ class TrackerAnalyticsTest {
                 type,
                 listOf(
                     entry(1, today.minusDays(1).toString(), 2.0),
-                    entry(1, today.minusDays(1).toString(), 3.0),
+                    entry(1, today.minusDays(1).toString(), 3.0).copy(occurredAtEpochMs = 1),
                     entry(1, today.toString()),
                     entry(1, today.toString(), 99.0).copy(isDeleted = true)
                 )
@@ -302,8 +304,9 @@ class TrackerAnalyticsTest {
             val detail = TrackerAnalytics.toDetail(bundle, today)
             val expectedTotal = if (type == TrackerType.COUNT) 6.0 else 5.0
             assertEquals(type.name, expectedTotal, detail.summary.totalValue, 0.0)
-            // Existing trends use 1.0 for a null entry, including MEASURE.
-            assertEquals(listOf(5.0, 1.0), detail.trend.takeLast(2).map { it.value })
+            // COUNT trends sum a day and use 1.0 for a null entry. MEASURE trends take the latest entry of a day, and a null value stays null.
+            val expectedTrend = if (type == TrackerType.COUNT) listOf(5.0, 1.0) else listOf(3.0, null)
+            assertEquals(type.name, expectedTrend, detail.trend.takeLast(2).map { it.value })
         }
     }
 
@@ -506,6 +509,138 @@ class TrackerAnalyticsTest {
         assertEquals(setOf(11L, 15L), summary.todayEntryIds.toSet())
         assertEquals(2, summary.todayEntryIds.size)
     }
+
+    @Test
+    fun `trend covers the 30 days ending today`() {
+        val today = LocalDate.of(2026, 4, 21)
+        val bundle = analyticsBundle(TrackerType.COUNT, listOf(entry(1, today.toString(), 2.0)))
+
+        val trend = TrackerAnalytics.toDetail(bundle, today).trend
+        assertEquals(30, trend.size)
+        assertEquals(today.minusDays(29), trend.first().date)
+        assertEquals(today, trend.last().date)
+        assertEquals((29L downTo 0L).map { today.minusDays(it) }, trend.map { it.date })
+    }
+
+    @Test
+    fun `measure trend has null for days without an entry and uses the latest entry of a day`() {
+        val today = LocalDate.of(2026, 4, 21)
+        val bundle = noTargetBundle(
+            TrackerType.MEASURE,
+            listOf(
+                entry(1, today.minusDays(3).toString(), 90.0).copy(isDeleted = true),
+                entry(1, today.minusDays(2).toString(), 70.0).copy(occurredAtEpochMs = 1),
+                entry(1, today.minusDays(2).toString(), 72.0).copy(occurredAtEpochMs = 5),
+                entry(1, today.minusDays(2).toString(), 71.0).copy(occurredAtEpochMs = 3),
+                entry(1, today.toString(), 80.5)
+            )
+        )
+
+        val trend = TrackerAnalytics.toDetail(bundle, today).trend
+        assertEquals(listOf(null, 72.0, null, 80.5), trend.takeLast(4).map { it.value })
+        assertEquals(listOf(false, true, false, true), trend.takeLast(4).map { it.metTarget })
+        assertTrue(trend.take(26).all { it.value == null })
+    }
+
+    @Test
+    fun `count and yes_no trend default missing days to zero`() {
+        val today = LocalDate.of(2026, 4, 21)
+        for (type in listOf(TrackerType.COUNT, TrackerType.YES_NO)) {
+            val bundle = analyticsBundle(type, listOf(entry(1, today.toString(), 2.0)))
+
+            val trend = TrackerAnalytics.toDetail(bundle, today).trend
+            assertTrue(type.name, trend.take(29).all { it.value == 0.0 && !it.metTarget })
+            assertEquals(type.name, if (type == TrackerType.COUNT) 2.0 else 1.0, trend.last().value!!, 0.0)
+        }
+    }
+
+    @Test
+    fun `buildMonth pads leading blanks for Monday-start and for Sunday-start weeks`() {
+        val today = LocalDate.of(2026, 4, 21)
+        val april = YearMonth.of(2026, 4)
+
+        val monday = TrackerAnalytics.buildMonth(TrackerType.COUNT, null, emptyList(), april, today, WeekFields.ISO)
+        val sunday = TrackerAnalytics.buildMonth(TrackerType.COUNT, null, emptyList(), april, today, WeekFields.SUNDAY_START)
+        // 1 April 2026 is a Wednesday.
+        assertEquals(2, monday.leadingBlanks)
+        assertEquals(3, sunday.leadingBlanks)
+        assertEquals(april, monday.month)
+        assertEquals(30, monday.cells.size)
+        assertEquals(april.atDay(1), monday.cells.first().date)
+        assertEquals(april.atDay(30), monday.cells.last().date)
+    }
+
+    @Test
+    fun `buildMonth marks MET PARTIAL MISSED OPEN and FUTURE days for a daily count target`() {
+        val today = LocalDate.of(2026, 4, 21)
+        val april = YearMonth.of(2026, 4)
+        val target = TargetEntity(trackerId = 1, period = TargetPeriod.DAILY, targetValue = 3.0)
+        val entries = listOf(
+            item(april.atDay(2), 3.0),
+            item(april.atDay(3), 1.0),
+            item(april.atDay(5), 2.0),
+            item(april.atDay(5), 1.0)
+        )
+
+        val grid = TrackerAnalytics.buildMonth(TrackerType.COUNT, target, entries, april, today, WeekFields.ISO)
+        fun cell(day: Int) = grid.cells[day - 1]
+        assertEquals(DayState.MET, cell(2).state)
+        assertEquals(3.0, cell(2).value, 0.0)
+        assertEquals(DayState.PARTIAL, cell(3).state)
+        assertEquals(1.0, cell(3).value, 0.0)
+        assertEquals(DayState.MISSED, cell(4).state)
+        assertEquals(DayState.MET, cell(5).state)
+        assertEquals(DayState.OPEN, cell(21).state)
+        assertEquals(DayState.FUTURE, cell(22).state)
+        assertEquals(DayState.FUTURE, cell(30).state)
+
+        val partialToday = TrackerAnalytics.buildMonth(
+            TrackerType.COUNT, target, entries + item(today, 1.0), april, today, WeekFields.ISO
+        )
+        assertEquals(DayState.PARTIAL, partialToday.cells[20].state)
+    }
+
+    @Test
+    fun `buildMonth for a tracker without a target marks days with an entry as MET`() {
+        val today = LocalDate.of(2026, 4, 21)
+        val april = YearMonth.of(2026, 4)
+        val entries = listOf(item(april.atDay(2), 1.0), item(april.atDay(3), null))
+
+        val grid = TrackerAnalytics.buildMonth(TrackerType.COUNT, null, entries, april, today, WeekFields.ISO)
+        assertEquals(DayState.MET, grid.cells[1].state)
+        assertEquals(DayState.MET, grid.cells[2].state)
+        assertEquals(DayState.MISSED, grid.cells[3].state)
+        assertEquals(DayState.OPEN, grid.cells[20].state)
+        assertEquals(DayState.FUTURE, grid.cells[21].state)
+
+        val measure = TrackerAnalytics.buildMonth(
+            TrackerType.MEASURE,
+            TargetEntity(trackerId = 1, period = TargetPeriod.DAILY, targetValue = 100.0),
+            listOf(item(april.atDay(2), 72.0, occurredAt = 1), item(april.atDay(2), 71.0, occurredAt = 2)),
+            april, today, WeekFields.ISO
+        )
+        assertEquals(DayState.MET, measure.cells[1].state)
+        assertEquals(71.0, measure.cells[1].value, 0.0)
+        assertEquals(DayState.MISSED, measure.cells[2].state)
+    }
+
+    @Test
+    fun `buildMonth ignores entries dated after today`() {
+        val today = LocalDate.of(2026, 4, 21)
+        val april = YearMonth.of(2026, 4)
+        val entries = listOf(item(today.plusDays(1), 5.0), item(today.plusDays(4), 5.0))
+
+        for (type in TrackerType.entries) {
+            val grid = TrackerAnalytics.buildMonth(type, null, entries, april, today, WeekFields.ISO)
+            assertEquals(type.name, DayState.FUTURE, grid.cells[21].state)
+            assertEquals(type.name, DayState.FUTURE, grid.cells[24].state)
+            assertEquals(type.name, 0.0, grid.cells[21].value, 0.0)
+            assertEquals(type.name, DayState.OPEN, grid.cells[20].state)
+        }
+    }
+
+    private fun item(date: LocalDate, value: Double?, occurredAt: Long = 0): EntryItem =
+        EntryItem(id = 0, effectiveDate = date, occurredAtEpochMs = occurredAt, value = value, note = null)
 
     private fun noTargetBundle(type: TrackerType, entries: List<EntryEntity>): TrackerBundle =
         analyticsBundle(type, entries).copy(target = emptyList())

@@ -113,6 +113,8 @@ If Gradle fails immediately with a Java runtime error, the environment is missin
 - Weekly periods start on the first day of the week for the device locale. Analytics callers can supply `WeekFields` explicitly to make this deterministic in tests.
 - A streak continues if yesterday (or last week) was satisfied while the current period is still open. It ends when the most recent satisfied period is more than one period behind the current period.
 - Targets apply retroactively: changing a target re-evaluates every past day or week, so current and longest streaks and completion rates can change.
+- `TrackerAnalytics.buildMonth` gives each day a `DayState`: `FUTURE` after today; with a DAILY target on a COUNT or YES_NO tracker, `MET` at or above the target, `PARTIAL` above zero, otherwise `MISSED` (a past day) or `OPEN` (today); for every other tracker, `MET` if the day has an entry, otherwise `MISSED` or `OPEN`.
+- Entries dated after today never count in `buildMonth`. MEASURE trends and months use the latest entry of a day by `occurredAtEpochMs`, and a day without a value is `null` in the trend rather than 0.
 
 ## Testing Strategy
 
@@ -348,7 +350,18 @@ Be aware:
 - users must trust your distribution path
 - updates are your responsibility
 
-## Deployment Checklist
+## Release checklist
+
+Keep `versionCode` and `versionName` as literals in `app/build.gradle` so F-Droid's
+checkupdates can read them. `versionName` uses semantic `MAJOR.MINOR.PATCH`, and
+`versionCode = MAJOR*10000 + MINOR*100 + PATCH`: `1.0.0` is `10000`, and `1.2.3`
+is `10203`. Keep MINOR and PATCH below 100 so the encoding remains unambiguous.
+Increase `versionCode` for every release and change both values in the same commit.
+
+Release builds enable R8 minification and resource shrinking, and omit dependency
+metadata from APKs and bundles. Smoke test a locally signed release APK using the
+Manual QA Checklist above. Add a ProGuard keep rule only for an observed failure,
+with a one-line comment describing the failure it fixes.
 
 Before shipping anywhere:
 
