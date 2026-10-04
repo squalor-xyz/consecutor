@@ -1,0 +1,39 @@
+{
+  "id": "S61",
+  "title": "Fix the five failing NavigationTest tests on the managed device",
+  "lead": [],
+  "depends_note": null,
+  "findings_note": "S55 ran `./gradlew pixel6api34DebugAndroidTest` on `aosp-atd`: 29 tests, 5 failures, all in `NavigationTest`.",
+  "size": "S",
+  "flags": [],
+  "trees_note": "ui",
+  "trees_plural": false,
+  "boundary": "**Not in this slice:** adding new instrumented tests, changing the `instrumented` CI job or the `pixel6api34` device from S55, and running on more than one API level.",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "- S55's `instrumented` CI job runs the `androidTest` suite on a Gradle Managed Device. It stays red until these five `NavigationTest` tests pass.\n- Three fail on assertions. `assertTextContains` defaults to `substring = false`, so one text item on the node must equal the expected string.\n- Two fail with `RootViewWithoutFocusException` from `Espresso.pressBack`."
+    },
+    {
+      "heading": "Files",
+      "body": "- `app/src/androidTest/java/com/squalor/consecutor/NavigationTest.kt`\n- `app/src/main/java/com/squalor/consecutor/ui/EntryEditorDialog.kt`, `ui/TrackerDetailScreen.kt`, `MainScreen.kt` (only if a fix has to change them)"
+    },
+    {
+      "heading": "Failing tests",
+      "body": "Instrumented tests in `NavigationTest`, all failing on `pixel6api34`:\n- `editingTrackerNameSurvivesRecreation`: `performTextInput(\" edited\")` runs at selection 0 on the prefilled name, so `EditableText` is ` editedNavigation tracker` and no item equals ` edited`.\n- `entryFieldsSurviveRecreation`: a new COUNT entry prefills Value with `1`, so `performTextInput(\"42\")` produces `421`. Passing sibling tests use `performTextReplacement`.\n- `selectedTrackerSurvivesRecreation`: `onNodeWithText(\"Navigation tracker\")` finds 2 nodes on the detail screen (top bar title and the `headlineSmall` text in the detail card).\n- `backFromDetailReturnsToDashboard` and `backFromSettingsReturnsToDashboard`: `Espresso.pressBack` waits 10 seconds and throws `RootViewWithoutFocusException` (`has-window-focus=false`). Clicks, text entry and `scenario.recreate()` complete in the other tests on the same image."
+    },
+    {
+      "heading": "Implement",
+      "body": "1. Fix the two text-input tests so they replace the prefilled value (`performTextReplacement`) and assert the string they actually expect.\n2. Resolve the duplicate name node in `selectedTrackerSurvivesRecreation`.\n3. Find why the application window has no focus for the two `pressBack` tests on the `aosp-atd` image, and fix it.\n4. Do not change `systemImageSource` in `app/build.gradle`."
+    },
+    {
+      "heading": "Check",
+      "body": "- `./gradlew pixel6api34DebugAndroidTest` passes: 29 tests, 0 failures.\n- The `instrumented` job on GitHub is green (owner pushes)."
+    },
+    {
+      "heading": "Git",
+      "body": "Commit on `main`, message `S61: <summary>`."
+    }
+  ],
+  "notes": []
+}

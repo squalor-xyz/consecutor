@@ -2,7 +2,7 @@
   "version": 3,
   "id_prefix": "S",
   "id_width": 2,
-  "next_id": 61,
+  "next_id": 62,
   "preamble": "",
   "passes": [],
   "items": [
@@ -1618,14 +1618,17 @@
       "id": "S55",
       "title": "CI: instrumented tests on a Gradle Managed Device",
       "short_title": "CI: instrumented tests on a Gradle Managed Device",
-      "status": "open",
+      "status": "review",
       "has_slice": true,
       "depends_on": [
         "S04",
         "S05",
         "S53"
       ],
-      "notes": [],
+      "notes": [
+        "**2026-10-04** — Local run: ./gradlew pixel6api34DebugAndroidTest on aosp-atd (arm64 image installed locally) ran 29 tests with 5 failures, all in NavigationTest (editingTrackerNameSurvivesRecreation, entryFieldsSurviveRecreation, selectedTrackerSurvivesRecreation, backFromDetailReturnsToDashboard, backFromSettingsReturnsToDashboard). aosp-atd stays because the API 34 image exists. Owner split the failures into S61. The GitHub run is not recorded yet; the local check is red, so this slice has not been handed off.",
+        "**2026-10-04** — Correction: handed off for review on 2026-10-04 with the local check still red, by owner decision. The 5 NavigationTest failures are tracked in S61 (depends on S55). Code commit 4567cba."
+      ],
       "claim": null,
       "fields": {
         "size": "M",
@@ -1641,7 +1644,7 @@
         "importance": 3,
         "urgency": 2,
         "effort": 2,
-        "attempts": 0
+        "attempts": 1
       }
     },
     {
@@ -1787,6 +1790,34 @@
         "importance": 2,
         "urgency": 2,
         "effort": 1,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S61",
+      "title": "Fix the five failing NavigationTest tests on the managed device",
+      "short_title": "Fix NavigationTest failures",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [
+        "S55"
+      ],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "S",
+        "flags": [],
+        "trees": [
+          "ui"
+        ],
+        "trees_literal": false,
+        "findings": "S55 ran `./gradlew pixel6api34DebugAndroidTest` on `aosp-atd`: 29 tests, 5 failures, all in `NavigationTest`.",
+        "pass": "",
+        "group": "",
+        "reason": "",
+        "importance": 3,
+        "urgency": 2,
+        "effort": 2,
         "attempts": 0
       }
     }

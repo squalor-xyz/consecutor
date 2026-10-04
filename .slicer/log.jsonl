@@ -341,3 +341,11 @@
 {"when": "2026-10-04T14:56:38Z", "item": "S45", "action": "edit", "from": "", "to": "", "note": "Implement"}
 {"when": "2026-10-04T14:56:38Z", "item": "S40", "action": "edit", "from": "", "to": "", "note": "Implement"}
 {"when": "2026-10-04T14:59:52Z", "item": "S48", "action": "status", "from": "review", "to": "done", "note": "Merged to main. Play's target requirement as of 2026-08-31 is API 36 (developer.android.com/google/play/requirements/target-sdk, checked 2026-10-04). testDebugUnitTest passed (116). lintDebug had 0 errors. assembleDebug and assembleRelease passed. The branch note records the API 36 emulator walkthrough; the predictive-back animation and the Archived screen were not rechecked here.", "by": "Jon R"}
+{"when": "2026-10-04T15:11:30Z", "item": "S55", "action": "status", "from": "open", "to": "started", "note": "", "by": "Jon R"}
+{"when": "2026-10-04T16:10:10Z", "item": "S61", "action": "add", "from": "", "to": "open", "note": "Fix the five failing NavigationTest tests on the managed device"}
+{"when": "2026-10-04T16:10:26Z", "item": "S61", "action": "set", "from": "", "to": "", "note": "size -→S; findings -→S55 ran `./gradlew pixel6api34DebugAndroidTest` on `aosp-atd`: 29 tests, 5 failures, all in `NavigationTest`."}
+{"when": "2026-10-04T16:10:26Z", "item": "S61", "action": "promote", "from": "", "to": "", "note": ""}
+{"when": "2026-10-04T16:10:33Z", "item": "S61", "action": "edit", "from": "", "to": "", "note": "boundary"}
+{"when": "2026-10-04T16:10:33Z", "item": "S55", "action": "note", "from": "", "to": "", "note": "Local run: ./gradlew pixel6api34DebugAndroidTest on aosp-atd"}
+{"when": "2026-10-04T16:13:09Z", "item": "S55", "action": "handoff", "from": "started", "to": "review", "note": "claim Jon R cleared", "by": "Jon R"}
+{"when": "2026-10-04T16:13:13Z", "item": "S55", "action": "note", "from": "", "to": "", "note": "Correction: handed off for review on 2026-10-04 with the loc"}
