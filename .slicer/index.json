@@ -1172,7 +1172,7 @@
       "id": "S40",
       "title": "Material3 date and time pickers; no future dates",
       "short_title": "Material3 date and time pickers; no future dates",
-      "status": "open",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S14"
