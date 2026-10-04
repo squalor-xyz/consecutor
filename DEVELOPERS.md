@@ -136,7 +136,7 @@ Unit tests:
 
 - `./gradlew test`
 
-Instrumented tests run in CI (the `instrumented` job) on a Gradle Managed Device, and you can run the same thing locally without a device. The first run downloads an emulator system image:
+Instrumented tests run in CI (the `instrumented` job) on a Gradle Managed Device, and you can run the same thing locally without a device. The first run downloads an emulator system image. The job stays red until S61.
 
 - `./gradlew pixel6api34DebugAndroidTest`
 
