@@ -1,13 +1,10 @@
 package com.squalor.consecutor
 
-import android.content.Context
 import androidx.room.withTransaction
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.withContext
-import java.io.File
 import java.time.LocalDate
 
 class TrackerRepository(
@@ -135,23 +132,9 @@ class TrackerRepository(
         )
     }
 
-    suspend fun exportCsv(context: Context): File {
-        val bundles = trackerDao.getTrackerBundles()
-        return withContext(Dispatchers.IO) {
-            val file = File(context.cacheDir, "consecutor-trackers.csv")
-            file.writeText(CsvExport.build(bundles))
-            file
-        }
-    }
+    suspend fun entriesCsv(): String = CsvExport.build(trackerDao.getTrackerBundles())
 
-    suspend fun exportBackup(context: Context): File {
-        val bundles = trackerDao.getTrackerBundles()
-        return withContext(Dispatchers.IO) {
-            val file = File(context.cacheDir, "consecutor-backup.json")
-            file.writeText(BackupCodec.encode(bundles))
-            file
-        }
-    }
+    suspend fun backupJson(): String = BackupCodec.encode(trackerDao.getTrackerBundles())
 
     suspend fun importBackup(rawBackup: String) {
         val payload = BackupCodec.decode(rawBackup)

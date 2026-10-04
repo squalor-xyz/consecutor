@@ -89,6 +89,16 @@ fun MainScreen(viewModel: TrackerViewModel) {
             viewModel.importBackup(context, uri)
         }
     }
+    val saveCsvLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument(ExportKind.CSV.mimeType)) { uri ->
+        if (uri != null) {
+            viewModel.exportTo(context, uri, ExportKind.CSV)
+        }
+    }
+    val saveBackupLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument(ExportKind.BACKUP.mimeType)) { uri ->
+        if (uri != null) {
+            viewModel.exportTo(context, uri, ExportKind.BACKUP)
+        }
+    }
     val permissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
         if (granted) {
             viewModel.ensureReminderChannel()
@@ -239,8 +249,10 @@ fun MainScreen(viewModel: TrackerViewModel) {
             }
             Screen.SETTINGS -> SettingsScreen(
                 padding = padding,
-                onExportCsv = { viewModel.exportCsv(context) },
-                onExportBackup = { viewModel.exportBackup(context) },
+                onSaveCsv = { saveCsvLauncher.launch(ExportKind.CSV.fileName(viewModel.today.value)) },
+                onShareCsv = { viewModel.share(context, ExportKind.CSV) },
+                onSaveBackup = { saveBackupLauncher.launch(ExportKind.BACKUP.fileName(viewModel.today.value)) },
+                onShareBackup = { viewModel.share(context, ExportKind.BACKUP) },
                 onImportBackup = { importLauncher.launch(arrayOf("application/json", "text/plain")) },
                 onEnableNotifications = {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
