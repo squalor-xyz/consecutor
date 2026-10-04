@@ -426,7 +426,7 @@
       "id": "S15",
       "title": "Archive; restore and permanently delete trackers",
       "short_title": "Archive; restore and permanently delete trackers",
-      "status": "open",
+      "status": "review",
       "has_slice": true,
       "depends_on": [
         "S05",
@@ -435,7 +435,9 @@
         "S32",
         "S39"
       ],
-      "notes": [],
+      "notes": [
+        "**2026-10-04** — Implemented archive Undo, reminder-preserving restore, archived dashboard entry/list, and permanent deletion with active-entry confirmation and cascades. Validation passed offline: 116 unit tests and 38 instrumented tests on API 34 (emulator-5554, headless read-only with host graphics). NavigationTest now uses the existing Compose v2 API to avoid reentrant layout failures; corrected existing recreation tests to replace and assert complete field values and select one of the duplicate title/card name nodes. No dependencies or schema changes."
+      ],
       "claim": null,
       "fields": {
         "size": "M",
@@ -451,7 +453,7 @@
         "importance": 3,
         "urgency": 2,
         "effort": 2,
-        "attempts": 0
+        "attempts": 1
       }
     },
     {

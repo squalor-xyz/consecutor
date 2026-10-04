@@ -333,3 +333,6 @@
 {"when": "2026-10-04T14:25:48Z", "item": "S39", "action": "status", "from": "open", "to": "started", "note": "", "by": "Jon R"}
 {"when": "2026-10-04T14:38:51Z", "item": "S39", "action": "handoff", "from": "started", "to": "review", "note": "Implemented one-tap logging and Undo. 116 unit tests pass; Android tests compile. connectedDebugAndroidTest blocked: No connected devices.; claim Jon R cleared", "by": "Jon R"}
 {"when": "2026-10-04T14:53:35Z", "item": "S39", "action": "status", "from": "review", "to": "done", "note": "Merged to main. testDebugUnitTest passed (116). Instrumented tests compile. connectedDebugAndroidTest was not run: no emulator is connected. Undo snackbars stay until the next event.", "by": "Jon R"}
+{"when": "2026-10-04T14:58:50Z", "item": "S15", "action": "status", "from": "open", "to": "started", "note": "", "by": "Jon R"}
+{"when": "2026-10-04T15:51:11Z", "item": "S15", "action": "note", "from": "", "to": "", "note": "Implemented archive Undo, reminder-preserving restore, archi"}
+{"when": "2026-10-04T15:51:12Z", "item": "S15", "action": "handoff", "from": "started", "to": "review", "note": "claim Jon R cleared", "by": "Jon R"}
