@@ -20,7 +20,7 @@
 - Advanced analytics suite.
 - Squalor brand marks in the APK (brand marks are all-rights-reserved; the app icon is app-specific and MPL-2.0).
 
-59 items · — 21 · done 27 · later 11
+59 items · — 20 · done 27 · later 11 · review 1
 
 | # | Slice | Title | Size | Effort | Trees | Findings | Status |
 |---|---|---|---|---|---|---|---|
@@ -47,7 +47,7 @@
 | 17 | S31 | iOS client on the shared core |  | 3 | build |  | later |
 | P2 MVP UX | | | | | | | |
 | 18 | [S37](slices/S37.md) | Notification tap opens the tracker | S | 1 | reminders | ReminderScheduler.kt:78-84 (no contentIntent); MainActivity.kt (no intent handling) | — |
-| 19 | [S39](slices/S39.md) | One-tap logging with undo (UiEvent and snackbar) | M | 2 | ui | TrackerViewModel.kt:23-63 (message String? loses events, no undo); TrackerRepository.kt:111-122 (quickLog uses LocalDate.now()) | — |
+| 19 | [S39](slices/S39.md) | One-tap logging with undo (UiEvent and snackbar) | M | 2 | ui | TrackerViewModel.kt:23-63 (message String? loses events, no undo); TrackerRepository.kt:111-122 (quickLog uses LocalDate.now()) | review |
 | 20 | [S40](slices/S40.md) | Material3 date and time pickers; no future dates | M | 2 | ui | MainScreen.kt:728-741 (date typed as YYYY-MM-DD), :614-628 (reminder hour and minute as text) | — |
 | 21 | [S41](slices/S41.md) | Bar and line charts on Canvas for the detail screen | M | 2 | ui | MainScreen.kt:395-416 (14 stacked LinearProgressIndicator rows labelled with ISO dates) | — |
 | 22 | [S42](slices/S42.md) | Calendar heatmap with tap-to-log | M | 2 | ui | TrackerAnalytics.kt (no month view); detail screen has no way to see hits and misses over a month | — |
