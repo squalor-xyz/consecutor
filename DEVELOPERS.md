@@ -196,33 +196,33 @@ Google’s official guidance recommends using an upload key with Play App Signin
 
 ### Configure Signing In Gradle
 
-This project does not yet commit release signing config. Add it locally or through CI secrets before shipping.
+`app/build.gradle` reads four values and signs the release build only when all four are present:
 
-Typical `app/build.gradle` shape:
+| `keystore.properties` key | Environment variable |
+| --- | --- |
+| `storeFile` | `CONSECUTOR_KEYSTORE` (a path) |
+| `storePassword` | `CONSECUTOR_KEYSTORE_PASSWORD` |
+| `keyAlias` | `CONSECUTOR_KEY_ALIAS` |
+| `keyPassword` | `CONSECUTOR_KEY_PASSWORD` |
 
-```groovy
-android {
-    signingConfigs {
-        release {
-            storeFile file(System.getenv("CONSECUTOR_UPLOAD_KEYSTORE"))
-            storePassword System.getenv("CONSECUTOR_UPLOAD_STORE_PASSWORD")
-            keyAlias System.getenv("CONSECUTOR_UPLOAD_KEY_ALIAS")
-            keyPassword System.getenv("CONSECUTOR_UPLOAD_KEY_PASSWORD")
-        }
-    }
-    buildTypes {
-        release {
-            signingConfig signingConfigs.release
-        }
-    }
-}
+Each value comes from `keystore.properties` in the repo root if it is set there, otherwise from the environment variable. A relative `storeFile` is resolved against the repo root. Blank values count as missing.
+
+Example `keystore.properties` (git-ignored; use your own values):
+
+```properties
+storeFile=/path/to/release.jks
+storePassword=...
+keyAlias=...
+keyPassword=...
 ```
+
+If any of the four values is missing, `assembleRelease` still succeeds but produces an unsigned `app-release-unsigned.apk`. This is what F-Droid builds, since it signs with its own key.
 
 Do not hardcode keystore passwords in the repository.
 
 ## Building Signed Release Files
 
-Signed APK:
+Signed APK (unsigned if signing is not configured, see above):
 
 - `./gradlew assembleRelease`
 
