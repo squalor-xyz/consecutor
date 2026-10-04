@@ -220,7 +220,9 @@
         "S02",
         "S05"
       ],
-      "notes": [],
+      "notes": [
+        "**2026-10-03** — Delivery window, alarm set ~12h ahead (dumpsys alarm, inexact setAndAllowWhileIdle, arm64 google_apis emulators, 2026-10-03). API 34: whenElapsed +12h6m14s, maxWhenElapsed +13h6m14s -> window 1h0m0s (not more than 1h). API 26: whenElapsed +12h0m48s, window +9h0m42s (API 26 dumpsys prints window, not maxWhenElapsed; max = whenElapsed + window, ~+21h) -> window is MORE than one hour; scheduling left as is, strategy change is an owner decision. Also verified on API 34: 2 min reminder delivered; after backup import only the imported tracker's alarm remained (stale alarms for old ids gone, no stale notification fired)."
+      ],
       "claim": null,
       "fields": {
         "size": "S",

@@ -362,6 +362,12 @@ Before shipping anywhere:
 - `entries`, `targets` and `reminders` have a cascading foreign key to `trackers`; `targets` and `reminders` are unique per tracker (0..1).
 - See Privacy Notes below for the current (no extra) at-rest encryption posture and history.
 
+## Reminders
+
+- Reminders use inexact alarms (`AlarmManager.setAndAllowWhileIdle`). The app does not request `SCHEDULE_EXACT_ALARM`.
+- A reminder may arrive late, especially in Doze. Measured on emulators (Google APIs, arm64) for an alarm set about 12 hours ahead: on API 34 the system may deliver it up to 1 hour late; on API 26 up to about 9 hours late. Short-horizon check: a reminder set about 2 minutes ahead on API 34 was delivered.
+- Alarms are keyed by tracker id (`PendingIntent` request code). Archiving cancels a tracker's alarm; a backup import cancels all existing alarms before replacing the trackers.
+
 ## Privacy Notes
 
 - Automatic Android backup is disabled.

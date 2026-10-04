@@ -1,6 +1,5 @@
 package com.squalor.consecutor
 
-import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -23,7 +22,6 @@ import java.time.ZonedDateTime
 class ReminderScheduler(private val context: Context) {
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-    @SuppressLint("ScheduleExactAlarm")
     fun scheduleTracker(bundle: TrackerBundle) {
         cancelTracker(bundle.tracker.id)
         val reminder = bundle.reminder.firstOrNull() ?: return
@@ -36,25 +34,19 @@ class ReminderScheduler(private val context: Context) {
             putExtra(EXTRA_TRACKER_EMOJI, bundle.tracker.emoji)
         }
         val pendingIntent = pendingIntent(bundle.tracker.id, intent)
-        if (canScheduleExactAlarms()) {
-            alarmManager.setExactAndAllowWhileIdle(
-                AlarmManager.RTC_WAKEUP,
-                triggerAt,
-                pendingIntent
-            )
-        } else {
-            alarmManager.setAndAllowWhileIdle(
-                AlarmManager.RTC_WAKEUP,
-                triggerAt,
-                pendingIntent
-            )
-        }
+        alarmManager.setAndAllowWhileIdle(
+            AlarmManager.RTC_WAKEUP,
+            triggerAt,
+            pendingIntent
+        )
     }
 
     fun cancelTracker(trackerId: Long) {
         val intent = Intent(context, ReminderReceiver::class.java)
         alarmManager.cancel(pendingIntent(trackerId, intent))
     }
+
+    fun cancelAll(ids: Collection<Long>) = ids.forEach(::cancelTracker)
 
     fun ensureNotificationChannel() {
         val channel = NotificationChannel(
@@ -102,10 +94,6 @@ class ReminderScheduler(private val context: Context) {
         const val EXTRA_TRACKER_ID = "tracker_id"
         const val EXTRA_TRACKER_NAME = "tracker_name"
         const val EXTRA_TRACKER_EMOJI = "tracker_emoji"
-    }
-
-    private fun canScheduleExactAlarms(): Boolean {
-        return Build.VERSION.SDK_INT < Build.VERSION_CODES.S || alarmManager.canScheduleExactAlarms()
     }
 }
 
