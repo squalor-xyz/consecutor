@@ -21,6 +21,8 @@ import androidx.compose.ui.test.performScrollToNode
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -141,7 +143,7 @@ class NavigationTest {
     fun countLongPressOpensCustomEntryForToday() {
         composeRule.onNodeWithText("+1").performTouchInput { longClick() }
         waitForNode(hasText("Log entry"))
-        composeRule.onNodeWithText("Date (YYYY-MM-DD)").assertTextContains(LocalDate.now().toString())
+        composeRule.onNodeWithText(todayLabel()).assertIsDisplayed()
         composeRule.onNodeWithText("Value").performTextReplacement("7")
         composeRule.onNodeWithText("Save").performClick()
         waitForNode(hasText("7 today"))
@@ -154,7 +156,7 @@ class NavigationTest {
         waitForNode(hasText("Log"))
         composeRule.onNodeWithText("Log").performClick()
         waitForNode(hasText("Log entry"))
-        composeRule.onNodeWithText("Date (YYYY-MM-DD)").assertTextContains(LocalDate.now().toString())
+        composeRule.onNodeWithText(todayLabel()).assertIsDisplayed()
         composeRule.onNodeWithText("Value").performTextInput("12.5")
         composeRule.onNodeWithText("Save").performClick()
         waitForNode(hasText("Entry added."))
@@ -322,6 +324,9 @@ class NavigationTest {
             app.repository.getReminderBundles().single().entries.filterNot { it.isDeleted }
         }
     }
+
+    private fun todayLabel(): String =
+        LocalDate.now().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))
 
     // Espresso.pressBack needs the app window to have focus, which aosp-atd's system ANR dialog takes away.
     // This drives the same back dispatcher without a key event.
