@@ -114,6 +114,9 @@ fun MainScreen(viewModel: TrackerViewModel) {
         viewModel.select(null)
     }
     BackHandler(enabled = screen != Screen.DASHBOARD, onBack = returnToDashboard)
+    LaunchedEffect(selectedId) {
+        if (selectedId != null) screen = Screen.DETAIL
+    }
     LaunchedEffect(screen, selectedId) {
         if (screen == Screen.DETAIL && selectedId == null) screen = Screen.DASHBOARD
     }
@@ -400,7 +403,9 @@ fun MainScreen(viewModel: TrackerViewModel) {
                         TrackerDetailScreen(
                             detail = detail,
                             padding = padding,
+                            today = today,
                             onAddEntry = { entryEditorState = EntryEditorState.new(detail) },
+                            onAddEntryForDate = { date -> entryEditorState = EntryEditorState.forDate(detail, date) },
                             onEditEntry = { entry -> entryEditorState = EntryEditorState.from(detail, entry) }
                         )
                     }

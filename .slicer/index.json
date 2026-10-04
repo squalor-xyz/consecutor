@@ -1081,14 +1081,16 @@
       "id": "S37",
       "title": "Notification tap opens the tracker",
       "short_title": "Notification tap opens the tracker",
-      "status": "open",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S08",
         "S07",
         "S10"
       ],
-      "notes": [],
+      "notes": [
+        "**2026-10-04** — Ready for review: reminder notifications carry immutable activity intents keyed by tracker id; singleTop MainActivity handles initial and new intents, and saved ViewModel selection drives detail navigation. Verified 118 unit tests, all 16 existing NavigationTest cases, and all 6 NotificationNavigationTest cases on the API 34 emulator. Manual two-minute reminder checks passed from the background and while another tracker was open: correct detail, one MainActivity, Back to dashboard. adb am start with tracker_id 1 opened tracker 1. The first new-test run exposed a duplicate-text assertion in the test helper; corrected and all six S37 tests passed on rerun. No ViewModel change or new dependencies."
+      ],
       "claim": null,
       "fields": {
         "size": "S",
@@ -1104,7 +1106,7 @@
         "importance": 2,
         "urgency": 2,
         "effort": 1,
-        "attempts": 0
+        "attempts": 1
       }
     },
     {
@@ -1231,7 +1233,7 @@
       "id": "S42",
       "title": "Calendar heatmap with tap-to-log",
       "short_title": "Calendar heatmap with tap-to-log",
-      "status": "open",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S16",
