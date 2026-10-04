@@ -245,7 +245,7 @@
       "id": "S09",
       "title": "Notification permission UX that reflects real state",
       "short_title": "Notification permission UX that reflects real state",
-      "status": "open",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S08",
