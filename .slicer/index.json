@@ -1591,7 +1591,7 @@
       "id": "S54",
       "title": "Resource-id UiEvents and structured target and reminder labels",
       "short_title": "Resource-id UiEvents and structured target and reminder labels",
-      "status": "open",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S15",
