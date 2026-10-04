@@ -20,7 +20,7 @@
 - Advanced analytics suite.
 - Squalor brand marks in the APK (brand marks are all-rights-reserved; the app icon is app-specific and MPL-2.0).
 
-61 items · — 16 · done 34 · later 11
+61 items · — 15 · done 34 · later 11 · review 1
 
 | # | Slice | Title | Size | Effort | Trees | Findings | Status |
 |---|---|---|---|---|---|---|---|
@@ -43,7 +43,7 @@
 | 14 | S30 | Extract domain; streak and backup logic into a Kotlin Multiplatform shared core |  | 3 | build |  | later |
 | 15 | S31 | iOS client on the shared core |  | 3 | build |  | later |
 | P2 MVP UX | | | | | | | |
-| 16 | [S37](slices/S37.md) | Notification tap opens the tracker | S | 1 | reminders | ReminderScheduler.kt:78-84 (no contentIntent); MainActivity.kt (no intent handling) | — |
+| 16 | [S37](slices/S37.md) | Notification tap opens the tracker | S | 1 | reminders | ReminderScheduler.kt:78-84 (no contentIntent); MainActivity.kt (no intent handling) | review |
 | 17 | [S40](slices/S40.md) | Material3 date and time pickers; no future dates | M | 2 | ui | MainScreen.kt:728-741 (date typed as YYYY-MM-DD), :614-628 (reminder hour and minute as text) | — |
 | 18 | [S41](slices/S41.md) | Bar and line charts on Canvas for the detail screen | M | 2 | ui | MainScreen.kt:395-416 (14 stacked LinearProgressIndicator rows labelled with ISO dates) | — |
 | 19 | [S42](slices/S42.md) | Calendar heatmap with tap-to-log | M | 2 | ui | TrackerAnalytics.kt (no month view); detail screen has no way to see hits and misses over a month | — |
