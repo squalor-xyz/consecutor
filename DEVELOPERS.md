@@ -136,9 +136,15 @@ Unit tests:
 
 - `./gradlew test`
 
-Instrumented tests need an emulator. CI does not run them, so run them locally before merging data-layer changes. `NavigationTest` clears the app database and refuses to run unless the hardware is an emulator:
+Instrumented tests run in CI (the `instrumented` job) on a Gradle Managed Device, and you can run the same thing locally without a device. The first run downloads an emulator system image. The job stays red until S61.
+
+- `./gradlew pixel6api34DebugAndroidTest`
+
+To run them on an emulator or device you already have:
 
 - `./gradlew connectedDebugAndroidTest`
+
+Instrumented tests clear the app's database, and `NavigationTest` refuses to run unless the hardware is an emulator. Do not point `connectedDebugAndroidTest` at a personal phone.
 
 Manual install to a connected device:
 

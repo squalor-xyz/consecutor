@@ -1,0 +1,39 @@
+{
+  "id": "S61",
+  "title": "Fix the five failing NavigationTest tests on the managed device",
+  "lead": [],
+  "depends_note": null,
+  "findings_note": "S55 ran `./gradlew pixel6api34DebugAndroidTest` on `aosp-atd`: 29 tests, 5 failures, all in `NavigationTest`.",
+  "size": "S",
+  "flags": [],
+  "trees_note": "ui",
+  "trees_plural": false,
+  "boundary": "**Not in this slice:** adding new instrumented tests, changing the `instrumented` CI job or the `pixel6api34` device from S55, and running on more than one API level.",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "- S55's `instrumented` CI job runs the `androidTest` suite on a Gradle Managed Device (`pixel6api34`, `aosp-atd`). It stays red until that suite passes.\n- The run before S15 was 29 tests and 5 `NavigationTest` failures. S15 changed the three assertion tests on main. The two `Espresso.pressBack` failures were not part of that change.\n- Re-run the current suite before editing. The suite is larger than 29 tests after S15."
+    },
+    {
+      "heading": "Files",
+      "body": "- `app/src/androidTest/java/com/squalor/consecutor/NavigationTest.kt`\n- `app/src/main/java/com/squalor/consecutor/ui/EntryEditorDialog.kt`, `ui/TrackerDetailScreen.kt`, `MainScreen.kt` (only if a fix has to change them)"
+    },
+    {
+      "heading": "Failing tests",
+      "body": "Instrumented tests in `NavigationTest` on `pixel6api34` (`aosp-atd`). The run before S15 was 29 tests and 5 failures:\n\n- `editingTrackerNameSurvivesRecreation`\n- `entryFieldsSurviveRecreation`\n- `selectedTrackerSurvivesRecreation`\n- `backFromDetailReturnsToDashboard`\n- `backFromSettingsReturnsToDashboard`\n\nS15 (`f374778`) changed the first three on main: `performTextReplacement` of the full field value, and `onAllNodesWithText` for the duplicate detail title. It did not change the two `Espresso.pressBack` tests. It also added `backFromArchivedReturnsToDashboard`, which uses `pressBack` and passed on a normal API 34 emulator, not on `aosp-atd`. The merged suite is larger than 29 tests. Re-run before editing."
+    },
+    {
+      "heading": "Implement",
+      "body": "1. Re-run `./gradlew pixel6api34DebugAndroidTest` on current main with `systemImageSource` `aosp-atd`.\n2. Fix whatever still fails. The two `pressBack` tests (`backFromDetailReturnsToDashboard`, `backFromSettingsReturnsToDashboard`) are the failures S15 did not change. Do not redo S15's text-replacement edits if those tests already pass.\n3. Do not change `systemImageSource` in `app/build.gradle`. Do not change the `instrumented` CI job or the `pixel6api34` device."
+    },
+    {
+      "heading": "Check",
+      "body": "- `./gradlew pixel6api34DebugAndroidTest` passes on the current suite, 0 failures.\n- The `instrumented` job on GitHub is green (owner pushes)."
+    },
+    {
+      "heading": "Git",
+      "body": "Commit on `main`, message `S61: <summary>`."
+    }
+  ],
+  "notes": []
+}
