@@ -20,7 +20,7 @@ Requirements:
 
 - Android Studio Koala or newer
 - JDK 17
-- Android SDK 36.1 (compile SDK; target SDK stays 34)
+- Android SDK 36.1 (compile SDK; target SDK 36)
 
 Basic local flow:
 
