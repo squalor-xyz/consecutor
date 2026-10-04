@@ -305,7 +305,7 @@
       "id": "S11",
       "title": "Brand theme: light and dark palettes following the system",
       "short_title": "Brand theme: light and dark palettes following the system",
-      "status": "review",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S01",
