@@ -1200,7 +1200,7 @@
       "id": "S41",
       "title": "Bar and line charts on Canvas for the detail screen",
       "short_title": "Bar and line charts on Canvas for the detail screen",
-      "status": "open",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S16",
