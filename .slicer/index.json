@@ -1378,7 +1378,7 @@
       "id": "S47",
       "title": "Release signing from environment or keystore.properties, unsigned fallback",
       "short_title": "Release signing from environment or keystore.properties, unsigned fallback",
-      "status": "open",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S04",
@@ -1400,7 +1400,7 @@
         "importance": 3,
         "urgency": 2,
         "effort": 1,
-        "attempts": 0
+        "attempts": 1
       }
     },
     {
