@@ -110,10 +110,10 @@ internal fun TrackerSummaryCard(
                 Text("Last entry: $it", style = MaterialTheme.typography.bodySmall)
             }
             Text(
-                "Recent completion ${(tracker.completionRate * 100).toInt()}%",
+                "Recent completion ${((tracker.completionRate ?: 0f) * 100).toInt()}%",
                 style = MaterialTheme.typography.bodySmall
             )
-            LinearProgressIndicator(progress = { tracker.completionRate }, modifier = Modifier.fillMaxWidth())
+            LinearProgressIndicator(progress = { tracker.completionRate ?: 0f }, modifier = Modifier.fillMaxWidth())
         }
     }
 }

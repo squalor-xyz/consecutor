@@ -59,6 +59,7 @@ object TrackerAnalytics {
             .maxByOrNull { LocalDate.parse(it.effectiveDate) }
             ?.effectiveDate
             ?.let(LocalDate::parse)
+        val progress = computeProgress(activeEntries, aggregated, tracker.type, target, today, weekFields)
 
         return TrackerSummary(
             id = tracker.id,
@@ -74,11 +75,53 @@ object TrackerAnalytics {
             } else {
                 activeEntries.sumOf { entryValue(tracker.type, it) }
             },
-            completionRate = streak.completionRate,
+            completionRate = streak.completionRate.takeIf { progress.hasTarget },
+            todayValue = progress.todayValue,
+            doneToday = progress.doneToday,
+            todayEntryIds = progress.todayEntryIds,
+            periodValue = progress.periodValue,
+            periodTarget = progress.periodTarget,
+            periodMet = progress.periodMet,
             lastEntryDate = lastEntryDate,
             targetLabel = target?.let { formatTarget(it, tracker.type, tracker.unit) },
             reminderLabel = reminder?.takeIf { it.enabled }?.let(::formatReminder),
             isArchived = tracker.isArchived
+        )
+    }
+
+    private fun computeProgress(
+        activeEntries: List<EntryEntity>,
+        aggregated: Map<LocalDate, Double>,
+        type: TrackerType,
+        target: TargetEntity?,
+        today: LocalDate,
+        weekFields: WeekFields
+    ): TodayProgress {
+        val todayEntries = activeEntries.filter { LocalDate.parse(it.effectiveDate) == today }
+        val todayValue = aggregated[today] ?: 0.0
+        // MEASURE trackers have no target; ignore any stale target row.
+        val effectiveTarget = target.takeIf { type != TrackerType.MEASURE }
+        val doneToday = when {
+            type != TrackerType.COUNT -> todayEntries.isNotEmpty()
+            effectiveTarget?.period == TargetPeriod.DAILY -> targetMet(todayValue, effectiveTarget)
+            effectiveTarget != null -> todayEntries.isNotEmpty()
+            else -> todayValue > 0.0
+        }
+        val periodValue = if (effectiveTarget?.period == TargetPeriod.WEEKLY) {
+            val weekStart = startOfWeek(today, weekFields)
+            aggregated.filterKeys { it >= weekStart }.values.sum()
+        } else {
+            todayValue
+        }
+        val periodTarget = effectiveTarget?.targetValue
+        return TodayProgress(
+            hasTarget = effectiveTarget != null,
+            todayValue = todayValue,
+            doneToday = doneToday,
+            todayEntryIds = todayEntries.map { it.id },
+            periodValue = periodValue,
+            periodTarget = periodTarget,
+            periodMet = periodTarget != null && periodValue >= periodTarget
         )
     }
 
@@ -230,6 +273,16 @@ object TrackerAnalytics {
             daysOfWeek = days
         )
     }
+
+    private data class TodayProgress(
+        val hasTarget: Boolean,
+        val todayValue: Double,
+        val doneToday: Boolean,
+        val todayEntryIds: List<Long>,
+        val periodValue: Double,
+        val periodTarget: Double?,
+        val periodMet: Boolean
+    )
 
     data class StreakStats(
         val current: Int,

@@ -366,7 +366,7 @@
       "id": "S13",
       "title": "Dashboard analytics: today and period progress on TrackerSummary",
       "short_title": "Dashboard analytics: today and period progress on TrackerSummary",
-      "status": "open",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S07",
@@ -388,7 +388,7 @@
         "importance": 3,
         "urgency": 2,
         "effort": 2,
-        "attempts": 0
+        "attempts": 1
       }
     },
     {
