@@ -1255,7 +1255,7 @@
       "id": "S43",
       "title": "Export to file and share, with cache cleanup and a narrowed FileProvider",
       "short_title": "Export to file and share, with cache cleanup and a narrowed FileProvider",
-      "status": "open",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S06",
