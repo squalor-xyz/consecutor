@@ -1107,7 +1107,7 @@
       "id": "S38",
       "title": "Dashboard cards: status line, streak line, stable order, no no-op chips",
       "short_title": "Dashboard cards: status line, streak line, stable order, no no-op chips",
-      "status": "open",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S13",
