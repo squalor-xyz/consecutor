@@ -32,6 +32,12 @@ interface TrackerDao {
     @Query("SELECT * FROM trackers WHERE id = :id")
     suspend fun getTracker(id: Long): TrackerEntity?
 
+    @Query("SELECT * FROM trackers WHERE isArchived = 1 ORDER BY name COLLATE NOCASE")
+    fun observeArchivedTrackers(): Flow<List<TrackerEntity>>
+
+    @Query("SELECT COUNT(*) FROM entries WHERE trackerId = :id AND isDeleted = 0")
+    suspend fun countActiveEntries(id: Long): Int
+
     @Query("DELETE FROM trackers WHERE id = :id")
     suspend fun deleteTracker(id: Long)
 

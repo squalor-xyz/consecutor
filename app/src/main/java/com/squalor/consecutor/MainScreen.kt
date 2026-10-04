@@ -5,13 +5,17 @@ import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -43,6 +47,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import com.squalor.consecutor.ui.ArchivedScreen
 import com.squalor.consecutor.ui.DashboardScreen
 import com.squalor.consecutor.ui.EmptyState
 import com.squalor.consecutor.ui.EntryEditorDialog
@@ -59,12 +64,16 @@ import java.time.format.FormatStyle
 private enum class Screen {
     DASHBOARD,
     DETAIL,
-    SETTINGS
+    SETTINGS,
+    ARCHIVED
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun MainScreen(viewModel: TrackerViewModel) {
+    val archived by viewModel.archived.collectAsState()
+    val pendingDelete by viewModel.pendingDelete.collectAsState()
+    var showOverflow by remember { mutableStateOf(false) }
     val dashboard by viewModel.dashboard.collectAsState()
     val pendingImport by viewModel.pendingImport.collectAsState()
     val today by viewModel.today.collectAsState()
@@ -124,11 +133,16 @@ fun MainScreen(viewModel: TrackerViewModel) {
             // Start immediately so the next event can dismiss even a just-created snackbar.
             snackbarJob = launch(start = CoroutineStart.UNDISPATCHED) {
                 when (event) {
+                    is UiEvent.Deleted -> {
+                        returnToDashboard()
+                        snackbarHostState.showSnackbar(event.text)
+                    }
                     is UiEvent.Message -> snackbarHostState.showSnackbar(event.text)
-                    is UiEvent.Logged, is UiEvent.Cleared -> {
+                    is UiEvent.Logged, is UiEvent.Cleared, is UiEvent.Archived -> {
                         val text = when (event) {
                             is UiEvent.Logged -> event.text
                             is UiEvent.Cleared -> event.text
+                            is UiEvent.Archived -> event.text
                         }
                         // The default duration is indefinite while Undo is showing.
                         // The next event dismisses this snackbar.
@@ -141,6 +155,24 @@ fun MainScreen(viewModel: TrackerViewModel) {
                 }
             }
         }
+    }
+
+    pendingDelete?.let { pending ->
+        val entryLabel = if (pending.entryCount == 1) "entry" else "entries"
+        AlertDialog(
+            onDismissRequest = viewModel::cancelDelete,
+            title = { Text("Delete tracker permanently?") },
+            text = { Text("Delete \"${pending.name}\" and its ${pending.entryCount} $entryLabel? This cannot be undone.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.cancelDelete()
+                    viewModel.deletePermanently(pending.trackerId)
+                }) { Text("Delete permanently", color = MaterialTheme.colorScheme.error) }
+            },
+            dismissButton = {
+                TextButton(onClick = viewModel::cancelDelete) { Text("Cancel") }
+            }
+        )
     }
 
     pendingImport?.let { pending ->
@@ -229,6 +261,7 @@ fun MainScreen(viewModel: TrackerViewModel) {
                                 ?.let { listOfNotNull(it.emoji, it.name).joinToString(" ").trim() }
                                 .orEmpty()
                             Screen.SETTINGS -> "Settings"
+                            Screen.ARCHIVED -> "Archived"
                         },
                         letterSpacing = if (screen == Screen.DASHBOARD) 2.sp else TextUnit.Unspecified,
                         maxLines = 1,
@@ -254,9 +287,24 @@ fun MainScreen(viewModel: TrackerViewModel) {
                                 IconButton(onClick = { editingTrackerId = detail.tracker.id }) {
                                     Icon(Icons.Default.Edit, contentDescription = "Edit tracker")
                                 }
+                                Box {
+                                    IconButton(onClick = { showOverflow = true }) {
+                                        Icon(Icons.Default.MoreVert, contentDescription = "Tracker options")
+                                    }
+                                    DropdownMenu(expanded = showOverflow, onDismissRequest = { showOverflow = false }) {
+                                        DropdownMenuItem(text = { Text("Archive tracker") }, onClick = {
+                                            showOverflow = false
+                                            viewModel.archive(detail.tracker.id)
+                                        })
+                                        DropdownMenuItem(text = { Text("Delete permanently") }, onClick = {
+                                            showOverflow = false
+                                            viewModel.prepareDelete(detail.tracker.id, detail.tracker.name, detail.entries.size)
+                                        })
+                                    }
+                                }
                             }
                         }
-                        Screen.SETTINGS -> Unit
+                        Screen.SETTINGS, Screen.ARCHIVED -> Unit
                     }
                 }
             )
@@ -277,7 +325,7 @@ fun MainScreen(viewModel: TrackerViewModel) {
                         }
                     }
                 }
-                Screen.SETTINGS -> Unit
+                Screen.SETTINGS, Screen.ARCHIVED -> Unit
             }
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
@@ -285,6 +333,8 @@ fun MainScreen(viewModel: TrackerViewModel) {
         when (screen) {
             Screen.DASHBOARD -> DashboardScreen(
                 dashboard = dashboard,
+                archivedCount = archived.size,
+                onOpenArchived = { screen = Screen.ARCHIVED },
                 padding = padding,
                 onOpenTracker = {
                     viewModel.select(it)
@@ -305,16 +355,17 @@ fun MainScreen(viewModel: TrackerViewModel) {
                             detail = detail,
                             padding = padding,
                             onAddEntry = { entryEditorState = EntryEditorState.new(detail) },
-                            onEditEntry = { entry -> entryEditorState = EntryEditorState.from(detail, entry) },
-                            onArchive = {
-                                viewModel.archiveTracker(detail.tracker.id)
-                                screen = Screen.DASHBOARD
-                                viewModel.select(null)
-                            }
+                            onEditEntry = { entry -> entryEditorState = EntryEditorState.from(detail, entry) }
                         )
                     }
                 }
             }
+            Screen.ARCHIVED -> ArchivedScreen(
+                archived = archived,
+                padding = padding,
+                onRestore = { viewModel.restore(it) },
+                onDelete = { viewModel.prepareDelete(it.id, it.name) }
+            )
             Screen.SETTINGS -> SettingsScreen(
                 padding = padding,
                 onSaveCsv = { saveCsvLauncher.launch(ExportKind.CSV.fileName(viewModel.today.value)) },

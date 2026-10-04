@@ -34,6 +34,8 @@ import com.squalor.consecutor.TrackerType
 @Composable
 internal fun DashboardScreen(
     dashboard: List<TrackerSummary>,
+    archivedCount: Int,
+    onOpenArchived: () -> Unit,
     padding: PaddingValues,
     onOpenTracker: (Long) -> Unit,
     onLogToday: (TrackerSummary) -> Unit,
@@ -41,7 +43,7 @@ internal fun DashboardScreen(
     onEditToday: (TrackerSummary) -> Unit,
     onCreate: () -> Unit
 ) {
-    if (dashboard.isEmpty()) {
+    if (dashboard.isEmpty() && archivedCount == 0) {
         EmptyState(
             text = "No trackers yet.",
             padding = padding,
@@ -57,6 +59,14 @@ internal fun DashboardScreen(
         contentPadding = PaddingValues(16.dp, 16.dp, 16.dp, 88.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
+        if (dashboard.isEmpty()) {
+            item {
+                Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                    Text("No trackers yet.")
+                    TextButton(onClick = onCreate) { Text("Create tracker") }
+                }
+            }
+        }
         items(dashboard, key = { it.id }) { tracker ->
             TrackerSummaryCard(
                 tracker = tracker,
@@ -65,6 +75,13 @@ internal fun DashboardScreen(
                 onToggleToday = { onToggleToday(tracker) },
                 onEditToday = { onEditToday(tracker) }
             )
+        }
+        if (archivedCount > 0) {
+            item {
+                TextButton(onClick = onOpenArchived, modifier = Modifier.fillMaxWidth()) {
+                    Text("Archived ($archivedCount)")
+                }
+            }
         }
     }
 }

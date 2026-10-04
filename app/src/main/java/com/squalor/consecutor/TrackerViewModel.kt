@@ -44,6 +44,8 @@ sealed interface DetailState {
     object NotFound : DetailState
 }
 
+data class PendingTrackerDelete(val trackerId: Long, val name: String, val entryCount: Int)
+
 data class PendingImport(
     val raw: String,
     val trackerCount: Int,
@@ -77,6 +79,12 @@ class TrackerViewModel(
 
     val dashboard: StateFlow<List<TrackerSummary>> = repository.observeDashboard(today)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    val archived: StateFlow<List<TrackerEntity>> = repository.observeArchivedTrackers()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    private val _pendingDelete = MutableStateFlow<PendingTrackerDelete?>(null)
+    val pendingDelete: StateFlow<PendingTrackerDelete?> = _pendingDelete
 
     private val eventChannel = Channel<UiEvent>(Channel.BUFFERED)
     val events: Flow<UiEvent> = eventChannel.receiveAsFlow()
@@ -127,9 +135,36 @@ class TrackerViewModel(
         rescheduleReminders()
     }
 
-    fun archiveTracker(trackerId: Long) = launchAction("Tracker archived.", "Unable to archive tracker.") {
-        repository.archiveTracker(trackerId)
-        reminderScheduler.cancelTracker(trackerId)
+    fun archive(id: Long) = launchAction(null, "Unable to archive tracker.") {
+        repository.archiveTracker(id)
+        reminderScheduler.cancelTracker(id)
+        select(null)
+        eventChannel.send(UiEvent.Archived("Tracker archived.", id))
+    }
+
+    private suspend fun restoreTracker(id: Long) {
+        repository.unarchiveTracker(id)
+        repository.getTrackerBundle(id)?.let(reminderScheduler::scheduleTracker)
+    }
+
+    fun restore(id: Long) = launchAction("Tracker restored.", "Unable to restore tracker.") {
+        restoreTracker(id)
+    }
+
+    fun prepareDelete(id: Long, name: String, entryCount: Int? = null) =
+        launchAction(null, "Unable to load tracker entry count.") {
+            _pendingDelete.value = PendingTrackerDelete(id, name, entryCount ?: repository.countActiveEntries(id))
+        }
+
+    fun cancelDelete() {
+        _pendingDelete.value = null
+    }
+
+    fun deletePermanently(id: Long) = launchAction(null, "Unable to delete tracker.") {
+        repository.deleteTracker(id)
+        reminderScheduler.cancelTracker(id)
+        select(null)
+        eventChannel.send(UiEvent.Deleted("Tracker deleted.", id))
     }
 
     fun addEntry(trackerId: Long, trackerType: TrackerType, draft: EntryDraft) =
@@ -185,7 +220,8 @@ class TrackerViewModel(
         when (event) {
             is UiEvent.Logged -> repository.deleteEntry(event.entryId, event.trackerId)
             is UiEvent.Cleared -> repository.restoreEntries(event.trackerId, event.entryIds)
-            is UiEvent.Message -> Unit
+            is UiEvent.Archived -> restoreTracker(event.trackerId)
+            is UiEvent.Message, is UiEvent.Deleted -> Unit
         }
     }
 
