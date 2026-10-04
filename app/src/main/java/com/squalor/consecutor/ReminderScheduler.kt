@@ -16,6 +16,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
+import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZonedDateTime
 
@@ -30,8 +31,6 @@ class ReminderScheduler(private val context: Context) {
         val triggerAt = nextTrigger(reminder)
         val intent = Intent(context, ReminderReceiver::class.java).apply {
             putExtra(EXTRA_TRACKER_ID, bundle.tracker.id)
-            putExtra(EXTRA_TRACKER_NAME, bundle.tracker.name)
-            putExtra(EXTRA_TRACKER_EMOJI, bundle.tracker.emoji)
         }
         val pendingIntent = pendingIntent(bundle.tracker.id, intent)
         alarmManager.setAndAllowWhileIdle(
@@ -92,8 +91,6 @@ class ReminderScheduler(private val context: Context) {
     companion object {
         const val CHANNEL_ID = "tracker_reminders"
         const val EXTRA_TRACKER_ID = "tracker_id"
-        const val EXTRA_TRACKER_NAME = "tracker_name"
-        const val EXTRA_TRACKER_EMOJI = "tracker_emoji"
     }
 }
 
@@ -121,34 +118,40 @@ internal fun nextReminderTrigger(reminder: ReminderEntity, now: ZonedDateTime): 
 class ReminderReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val pendingResult = goAsync()
-        val scheduler = ReminderScheduler(context)
-        scheduler.ensureNotificationChannel()
-        val trackerId = intent.getLongExtra(ReminderScheduler.EXTRA_TRACKER_ID, 0L)
-        scheduler.showNotification(
-            context = context,
-            trackerId = trackerId,
-            trackerName = intent.getStringExtra(ReminderScheduler.EXTRA_TRACKER_NAME).orEmpty(),
-            trackerEmoji = intent.getStringExtra(ReminderScheduler.EXTRA_TRACKER_EMOJI)
-        )
         val app = context.applicationContext as? ConsecutorApp
         if (app == null) {
             pendingResult.finish()
             return
         }
+        val trackerId = intent.getLongExtra(ReminderScheduler.EXTRA_TRACKER_ID, 0L)
         CoroutineScope(Dispatchers.IO).launch {
-            app.repository.getReminderBundles()
-                .firstOrNull { it.tracker.id == trackerId }
-                ?.let(scheduler::scheduleTracker)
-            pendingResult.finish()
+            try {
+                val scheduler = ReminderScheduler(context)
+                val bundle = app.repository.getTrackerBundle(trackerId)
+                if (bundle == null || bundle.tracker.isArchived || !hasEnabledReminder(bundle)) {
+                    scheduler.cancelTracker(trackerId)
+                    return@launch
+                }
+                if (shouldNotify(bundle, LocalDate.now())) {
+                    scheduler.ensureNotificationChannel()
+                    scheduler.showNotification(
+                        context = context,
+                        trackerId = trackerId,
+                        trackerName = bundle.tracker.name,
+                        trackerEmoji = bundle.tracker.emoji
+                    )
+                }
+                scheduler.scheduleTracker(bundle)
+            } finally {
+                pendingResult.finish()
+            }
         }
     }
 }
 
 class ReminderBootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        if (intent.action != Intent.ACTION_BOOT_COMPLETED && intent.action != Intent.ACTION_MY_PACKAGE_REPLACED) {
-            return
-        }
+        if (intent.action !in RESCHEDULE_ACTIONS) return
         val pendingResult = goAsync()
         val app = context.applicationContext as? ConsecutorApp
         if (app == null) {
@@ -156,10 +159,23 @@ class ReminderBootReceiver : BroadcastReceiver() {
             return
         }
         CoroutineScope(Dispatchers.IO).launch {
-            val scheduler = ReminderScheduler(context)
-            scheduler.ensureNotificationChannel()
-            app.repository.getReminderBundles().forEach(scheduler::scheduleTracker)
-            pendingResult.finish()
+            try {
+                val scheduler = ReminderScheduler(context)
+                scheduler.ensureNotificationChannel()
+                app.repository.getReminderBundles().forEach(scheduler::scheduleTracker)
+            } finally {
+                pendingResult.finish()
+            }
         }
+    }
+
+    private companion object {
+        val RESCHEDULE_ACTIONS = setOf(
+            Intent.ACTION_BOOT_COMPLETED,
+            Intent.ACTION_MY_PACKAGE_REPLACED,
+            Intent.ACTION_TIME_CHANGED,
+            Intent.ACTION_TIMEZONE_CHANGED,
+            Intent.ACTION_LOCALE_CHANGED
+        )
     }
 }
