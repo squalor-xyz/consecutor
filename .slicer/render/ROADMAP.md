@@ -20,7 +20,7 @@
 - Advanced analytics suite.
 - Squalor brand marks in the APK (brand marks are all-rights-reserved; the app icon is app-specific and MPL-2.0).
 
-61 items · — 17 · done 33 · later 11
+61 items · — 16 · done 34 · later 11
 
 | # | Slice | Title | Size | Effort | Trees | Findings | Status |
 |---|---|---|---|---|---|---|---|
@@ -61,53 +61,53 @@
 | Later | | | | | | | |
 | 26 | S59 | Optional scheduled backup to a user-chosen folder |  | 2 | data |  | later |
 | 27 | [S60](slices/S60.md) | Editor dialogs keep Save and Cancel above the keyboard | S | 1 | ui | S48 walkthrough 2026-10-04: TrackerEditorDialog.kt:83-90 (AlertDialog with LazyColumn heightIn(max = 520.dp)); Save row partly under the IME on API 36, same at targetSdk 34 | — |
-| 28 | [S61](slices/S61.md) | Fix NavigationTest failures | S | 2 | ui | S55 ran `./gradlew pixel6api34DebugAndroidTest` on `aosp-atd`: 29 tests, 5 failures, all in `NavigationTest`. | — |
 
 ---
 
 | # | Slice | Title | Size | Effort | Trees | Findings | Status |
 |---|---|---|---|---|---|---|---|
 | P0 Build green | | | | | | | |
-| 29 | [S01](slices/S01.md) | Build green: remove machine-specific JDK path and fix compile errors | S | 1 | build | gradle.properties:25, TrackerAnalytics.kt:80, no JDK in prior agent env | done |
-| 30 | [S02](slices/S02.md) | Test real reminder scheduling logic instead of a copy | S | 1 | reminders | ReminderSchedulerTest.kt:106 | done |
-| 31 | [S03](slices/S03.md) | Run BackupCodec tests on the JVM and validate imported data | M | 2 | data | BackupCodecTest.kt, BackupCodec.kt:62-118 | done |
-| 32 | [S04](slices/S04.md) | CI: build; unit test and lint on every push and PR | S | 1 | build | .github/workflows/build.yml | done |
+| 28 | [S01](slices/S01.md) | Build green: remove machine-specific JDK path and fix compile errors | S | 1 | build | gradle.properties:25, TrackerAnalytics.kt:80, no JDK in prior agent env | done |
+| 29 | [S02](slices/S02.md) | Test real reminder scheduling logic instead of a copy | S | 1 | reminders | ReminderSchedulerTest.kt:106 | done |
+| 30 | [S03](slices/S03.md) | Run BackupCodec tests on the JVM and validate imported data | M | 2 | data | BackupCodecTest.kt, BackupCodec.kt:62-118 | done |
+| 31 | [S04](slices/S04.md) | CI: build; unit test and lint on every push and PR | S | 1 | build | .github/workflows/build.yml | done |
 | P1 Correctness | | | | | | | |
-| 33 | [S05](slices/S05.md) | Freeze schema v1 baseline with foreign keys and 0..1 constraints | M | 2 | data | AppDatabase.kt:12,29; TrackerModels.kt; TrackerRepository.kt:49,69,218 | done |
-| 34 | [S06](slices/S06.md) | Move IO off the main thread and handle every ViewModel failure | S | 1 | data | TrackerViewModel.kt:39-63,86; TrackerRepository.kt:127,134 | done |
-| 35 | [S07](slices/S07.md) | Fix detail-screen flow resubscription and midnight rollover | S | 1 | ui | MainScreen.kt:85; TrackerAnalytics.kt:11,38; TrackerRepository.kt:117 | done |
-| 36 | [S08](slices/S08.md) | Reminder reliability: inexact alarms and stale-alarm cleanup | S | 1 | reminders | ReminderScheduler.kt:26-52,107-109; AndroidManifest.xml SCHEDULE_EXACT_ALARM; TrackerViewModel.kt:85-100 | done |
-| 37 | [S09](slices/S09.md) | Notification permission UX that reflects real state | S | 1 | ui | MainScreen.kt:111,123,247-251,514-521 | done |
+| 32 | [S05](slices/S05.md) | Freeze schema v1 baseline with foreign keys and 0..1 constraints | M | 2 | data | AppDatabase.kt:12,29; TrackerModels.kt; TrackerRepository.kt:49,69,218 | done |
+| 33 | [S06](slices/S06.md) | Move IO off the main thread and handle every ViewModel failure | S | 1 | data | TrackerViewModel.kt:39-63,86; TrackerRepository.kt:127,134 | done |
+| 34 | [S07](slices/S07.md) | Fix detail-screen flow resubscription and midnight rollover | S | 1 | ui | MainScreen.kt:85; TrackerAnalytics.kt:11,38; TrackerRepository.kt:117 | done |
+| 35 | [S08](slices/S08.md) | Reminder reliability: inexact alarms and stale-alarm cleanup | S | 1 | reminders | ReminderScheduler.kt:26-52,107-109; AndroidManifest.xml SCHEDULE_EXACT_ALARM; TrackerViewModel.kt:85-100 | done |
+| 36 | [S09](slices/S09.md) | Notification permission UX that reflects real state | S | 1 | ui | MainScreen.kt:111,123,247-251,514-521 | done |
 | P2 MVP UX | | | | | | | |
-| 38 | [S10](slices/S10.md) | System back navigation and state that survives rotation | S | 1 | ui | MainScreen.kt:67-255 (no BackHandler); editor dialogs use remember | done |
-| 39 | [S11](slices/S11.md) | Brand theme: light and dark palettes following the system | S | 1 | ui | ConsecutorTheme.kt (template #6200EE light-only); res/values/themes.xml DarkActionBar | done |
-| 40 | [S12](slices/S12.md) | Consecutor app icon (adaptive and themed; FLOSS-licensed) | M | 2 | release | res/drawable/ic_launcher_foreground.xml (template); branding/LICENSE reserves all marks | done |
-| 41 | [S13](slices/S13.md) | Dashboard analytics: today and period progress on TrackerSummary | M | 2 | ui | TrackerModels.kt:114-129; TrackerAnalytics.kt:38-70 | done |
-| 42 | [S14](slices/S14.md) | Editor validation: inline errors, numeric input, type lock, emoji limit | M | 2 | ui | MainScreen.kt:523-790 (text fields for date/hour/minute; Save no-ops at :650,:656,:760,:764) | done |
-| 43 | [S15](slices/S15.md) | Archive; restore and permanently delete trackers | M | 2 | ui | TrackerRepository.kt:16,68; MainScreen.kt:233-237,388 | done |
-| 44 | [S17](slices/S17.md) | Flat CSV export as a pure function (with formula-injection guard) | S | 1 | data | TrackerRepository.kt:230-289 (buildCsv) | done |
+| 37 | [S10](slices/S10.md) | System back navigation and state that survives rotation | S | 1 | ui | MainScreen.kt:67-255 (no BackHandler); editor dialogs use remember | done |
+| 38 | [S11](slices/S11.md) | Brand theme: light and dark palettes following the system | S | 1 | ui | ConsecutorTheme.kt (template #6200EE light-only); res/values/themes.xml DarkActionBar | done |
+| 39 | [S12](slices/S12.md) | Consecutor app icon (adaptive and themed; FLOSS-licensed) | M | 2 | release | res/drawable/ic_launcher_foreground.xml (template); branding/LICENSE reserves all marks | done |
+| 40 | [S13](slices/S13.md) | Dashboard analytics: today and period progress on TrackerSummary | M | 2 | ui | TrackerModels.kt:114-129; TrackerAnalytics.kt:38-70 | done |
+| 41 | [S14](slices/S14.md) | Editor validation: inline errors, numeric input, type lock, emoji limit | M | 2 | ui | MainScreen.kt:523-790 (text fields for date/hour/minute; Save no-ops at :650,:656,:760,:764) | done |
+| 42 | [S15](slices/S15.md) | Archive; restore and permanently delete trackers | M | 2 | ui | TrackerRepository.kt:16,68; MainScreen.kt:233-237,388 | done |
+| 43 | [S17](slices/S17.md) | Flat CSV export as a pure function (with formula-injection guard) | S | 1 | data | TrackerRepository.kt:230-289 (buildCsv) | done |
 | P1 Correctness | | | | | | | |
-| 45 | [S32](slices/S32.md) | Split MainScreen.kt into per-screen files (no behaviour change) | S | 1 | ui | MainScreen.kt (one file of ~800 lines holding every screen and dialog) | done |
-| 46 | [S33](slices/S33.md) | Numeric input and display rules: finite, bounded, locale-aware | S | 1 | data | MainScreen.kt:651,764-765 (toDoubleOrNull accepts NaN and Infinity); BackupCodec.kt:51; MainScreen.kt:793 (formatValue prints 3.0E9) | done |
-| 47 | [S34](slices/S34.md) | Analytics correctness: YES_NO once per day, ignore future entries, injectable week start | S | 1 | data | TrackerAnalytics.kt:85-95 (sums YES_NO entries), :125-130 (future entries), :200-203 (Locale.getDefault) | done |
-| 48 | [S35](slices/S35.md) | Repository: YES_NO add is idempotent per date; addEntry returns the entry id | S | 1 | data | TrackerRepository.kt:74-88 (addEntry returns Unit and always inserts) | done |
-| 49 | [S36](slices/S36.md) | Reminder receiver reads fresh data: skip when done, deleted, archived or disabled | M | 2 | reminders | ReminderScheduler.kt:133-156 (receiver trusts extras, always notifies); AndroidManifest.xml (no time-change actions) | done |
+| 44 | [S32](slices/S32.md) | Split MainScreen.kt into per-screen files (no behaviour change) | S | 1 | ui | MainScreen.kt (one file of ~800 lines holding every screen and dialog) | done |
+| 45 | [S33](slices/S33.md) | Numeric input and display rules: finite, bounded, locale-aware | S | 1 | data | MainScreen.kt:651,764-765 (toDoubleOrNull accepts NaN and Infinity); BackupCodec.kt:51; MainScreen.kt:793 (formatValue prints 3.0E9) | done |
+| 46 | [S34](slices/S34.md) | Analytics correctness: YES_NO once per day, ignore future entries, injectable week start | S | 1 | data | TrackerAnalytics.kt:85-95 (sums YES_NO entries), :125-130 (future entries), :200-203 (Locale.getDefault) | done |
+| 47 | [S35](slices/S35.md) | Repository: YES_NO add is idempotent per date; addEntry returns the entry id | S | 1 | data | TrackerRepository.kt:74-88 (addEntry returns Unit and always inserts) | done |
+| 48 | [S36](slices/S36.md) | Reminder receiver reads fresh data: skip when done, deleted, archived or disabled | M | 2 | reminders | ReminderScheduler.kt:133-156 (receiver trusts extras, always notifies); AndroidManifest.xml (no time-change actions) | done |
 | P2 MVP UX | | | | | | | |
-| 50 | [S38](slices/S38.md) | Dashboard cards: status line, streak line, stable order, no no-op chips | M | 2 | ui | TrackerDao.kt:14 (order by updatedAt); MainScreen.kt:277-343 (marketing header, no-op AssistChips, completion bar always shown) | done |
-| 51 | [S39](slices/S39.md) | One-tap logging with undo (UiEvent and snackbar) | M | 2 | ui | TrackerViewModel.kt:23-63 (message String? loses events, no undo); TrackerRepository.kt:111-122 (quickLog uses LocalDate.now()) | done |
-| 52 | [S43](slices/S43.md) | Export to file and share, with cache cleanup and a narrowed FileProvider | M | 2 | data | TrackerRepository.kt:124-136 (exports written to cacheDir and never deleted); res/xml/file_paths.xml (whole cache dir and external files exposed); MainScreen.kt:244-246 (share sheet only) | done |
-| 53 | [S44](slices/S44.md) | Import confirmation with preview, safety backup and exportedAt | M | 2 | data | TrackerViewModel.kt:85-100 and TrackerRepository.kt:138-184 (import wipes all data as soon as a file is picked) | done |
+| 49 | [S38](slices/S38.md) | Dashboard cards: status line, streak line, stable order, no no-op chips | M | 2 | ui | TrackerDao.kt:14 (order by updatedAt); MainScreen.kt:277-343 (marketing header, no-op AssistChips, completion bar always shown) | done |
+| 50 | [S39](slices/S39.md) | One-tap logging with undo (UiEvent and snackbar) | M | 2 | ui | TrackerViewModel.kt:23-63 (message String? loses events, no undo); TrackerRepository.kt:111-122 (quickLog uses LocalDate.now()) | done |
+| 51 | [S43](slices/S43.md) | Export to file and share, with cache cleanup and a narrowed FileProvider | M | 2 | data | TrackerRepository.kt:124-136 (exports written to cacheDir and never deleted); res/xml/file_paths.xml (whole cache dir and external files exposed); MainScreen.kt:244-246 (share sheet only) | done |
+| 52 | [S44](slices/S44.md) | Import confirmation with preview, safety backup and exportedAt | M | 2 | data | TrackerViewModel.kt:85-100 and TrackerRepository.kt:138-184 (import wipes all data as soon as a file is picked) | done |
 | P3 Release | | | | | | | |
-| 54 | [S46](slices/S46.md) | Dependency trim and version alignment (no new dependencies) | S | 1 | release | app/build.gradle:51-61 (appcompat, material, compose material M2 unused; lifecycle 2.6.2 vs 2.8.2); app/build.gradle:1-5 (stale comment) | done |
-| 55 | [S47](slices/S47.md) | Release signing from environment or keystore.properties, unsigned fallback | S | 1 | release | app/build.gradle:25-30 (no signingConfig); .gitignore (keystores ignored, keystore.properties is not) | done |
-| 56 | [S48](slices/S48.md) | Raise compile and target SDK to the current Play requirement | S | 1 | release | app/build.gradle:14,19 (compileSdk 34, targetSdk 34) | done |
-| 57 | [S50](slices/S50.md) | Remove the ai-output sample dump | S | 1 | docs | ai-output/chatgpt-output.md (1,167 lines of generated sample code and docs that mention an MIT licence, in an MPL-2.0 repo) | done |
-| 58 | [S51](slices/S51.md) | Make auto-backup exclusion explicit | S | 1 | release | res/xml/backup_rules.xml and res/xml/data_extraction_rules.xml (template files with TODOs); AndroidManifest.xml (allowBackup=false) | done |
+| 53 | [S46](slices/S46.md) | Dependency trim and version alignment (no new dependencies) | S | 1 | release | app/build.gradle:51-61 (appcompat, material, compose material M2 unused; lifecycle 2.6.2 vs 2.8.2); app/build.gradle:1-5 (stale comment) | done |
+| 54 | [S47](slices/S47.md) | Release signing from environment or keystore.properties, unsigned fallback | S | 1 | release | app/build.gradle:25-30 (no signingConfig); .gitignore (keystores ignored, keystore.properties is not) | done |
+| 55 | [S48](slices/S48.md) | Raise compile and target SDK to the current Play requirement | S | 1 | release | app/build.gradle:14,19 (compileSdk 34, targetSdk 34) | done |
+| 56 | [S50](slices/S50.md) | Remove the ai-output sample dump | S | 1 | docs | ai-output/chatgpt-output.md (1,167 lines of generated sample code and docs that mention an MIT licence, in an MPL-2.0 repo) | done |
+| 57 | [S51](slices/S51.md) | Make auto-backup exclusion explicit | S | 1 | release | res/xml/backup_rules.xml and res/xml/data_extraction_rules.xml (template files with TODOs); AndroidManifest.xml (allowBackup=false) | done |
 | P0 Build green | | | | | | | |
-| 59 | [S53](slices/S53.md) | Toolchain refresh: Kotlin 2.x, Compose compiler plugin, Compose BOM, Material3 1.3, lifecycle, version catalog | M | 2 | build | app/build.gradle:1-5,35-61 (Kotlin 1.9.20, Compose 1.5.4, Material3 1.2.1, lifecycle 2.6.2 vs 2.8.2, versions inline); gradle/libs.versions.toml | done |
+| 58 | [S53](slices/S53.md) | Toolchain refresh: Kotlin 2.x, Compose compiler plugin, Compose BOM, Material3 1.3, lifecycle, version catalog | M | 2 | build | app/build.gradle:1-5,35-61 (Kotlin 1.9.20, Compose 1.5.4, Material3 1.2.1, lifecycle 2.6.2 vs 2.8.2, versions inline); gradle/libs.versions.toml | done |
 | P1 Correctness | | | | | | | |
-| 60 | [S55](slices/S55.md) | CI: instrumented tests on a Gradle Managed Device | M | 2 | build | .github/workflows/build.yml (unit tests only); S05, S10, S15, S35, S39 and S45 add instrumented tests that CI never runs | done |
-| 61 | [S56](slices/S56.md) | Deleted entries: never exported, purged after 24 hours | S | 1 | data | BackupCodec.kt:46-57 (encode writes soft-deleted entries and their notes); TrackerRepository.kt:104-109 (soft delete only, never purged) | done |
+| 59 | [S55](slices/S55.md) | CI: instrumented tests on a Gradle Managed Device | M | 2 | build | .github/workflows/build.yml (unit tests only); S05, S10, S15, S35, S39 and S45 add instrumented tests that CI never runs | done |
+| 60 | [S56](slices/S56.md) | Deleted entries: never exported, purged after 24 hours | S | 1 | data | BackupCodec.kt:46-57 (encode writes soft-deleted entries and their notes); TrackerRepository.kt:104-109 (soft delete only, never purged) | done |
+| 61 | [S61](slices/S61.md) | Fix NavigationTest failures | S | 2 | ui | S55 ran `./gradlew pixel6api34DebugAndroidTest` on `aosp-atd`: 29 tests, 5 failures, all in `NavigationTest`. | done |
 
 ## Licensing
 
