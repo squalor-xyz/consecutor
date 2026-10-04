@@ -214,7 +214,7 @@
       "id": "S08",
       "title": "Reminder reliability: inexact alarms and stale-alarm cleanup",
       "short_title": "Reminder reliability: inexact alarms and stale-alarm cleanup",
-      "status": "open",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S02",
