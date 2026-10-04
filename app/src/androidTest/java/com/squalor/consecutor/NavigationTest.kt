@@ -6,8 +6,9 @@ import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
@@ -91,17 +92,19 @@ class NavigationTest {
     fun editingTrackerNameSurvivesRecreation() {
         openTracker()
         composeRule.onNodeWithContentDescription("Edit tracker").performClick()
-        composeRule.onNodeWithText("Name").performTextInput(" edited")
+        composeRule.onNodeWithText("Name").performTextReplacement("Navigation tracker edited")
+        composeRule.onNodeWithText("Name").assertTextContains("Navigation tracker edited")
         composeRule.activityRule.scenario.recreate()
         waitForNode(hasText("Name"))
-        composeRule.onNodeWithText("Name").assertTextContains(" edited")
+        composeRule.onNodeWithText("Name").assertTextContains("Navigation tracker edited")
     }
 
     @Test
     fun entryFieldsSurviveRecreation() {
         openTracker()
         composeRule.onNodeWithContentDescription("Add entry").performClick()
-        composeRule.onNodeWithText("Value").performTextInput("42")
+        composeRule.onNodeWithText("Value").performTextReplacement("42")
+        composeRule.onNodeWithText("Value").assertTextContains("42")
         composeRule.onNodeWithText("Note").performTextInput("Unfinished entry")
         composeRule.activityRule.scenario.recreate()
         waitForNode(hasText("Value"))
@@ -115,7 +118,7 @@ class NavigationTest {
         composeRule.activityRule.scenario.recreate()
         waitForNode(hasContentDescription("Add entry"))
         composeRule.onNodeWithContentDescription("Add entry").assertIsDisplayed()
-        composeRule.onNodeWithText("Navigation tracker").assertIsDisplayed()
+        composeRule.onAllNodesWithText("Navigation tracker")[0].assertIsDisplayed()
     }
 
     @Test
@@ -194,6 +197,115 @@ class NavigationTest {
         val entry = activeEntries().single()
         assertEquals(42.0, entry.value!!, 0.0)
         assertEquals("Keep this note", entry.note)
+    }
+
+    @Test
+    fun archiveUndoReturnsTrackerToDashboard() {
+        archiveTracker()
+        composeRule.onNodeWithText("No trackers yet.").assertIsDisplayed()
+        composeRule.onNodeWithText("Undo").performClick()
+        waitForNode(hasText("Navigation tracker"))
+        composeRule.onNodeWithText("Archived (1)").assertDoesNotExist()
+        assertEquals(false, trackerBundle()!!.tracker.isArchived)
+    }
+
+    @Test
+    fun archivedListIsReachableWithoutActiveTrackersAndRestoreKeepsReminder() {
+        val app = composeRule.activity.application as ConsecutorApp
+        val before = runBlocking(Dispatchers.IO) {
+            val id = app.database.trackerDao().getTrackerBundles().single().tracker.id
+            app.database.trackerDao().insertReminder(
+                ReminderEntity(trackerId = id, enabled = true, hourOfDay = 7, minuteOfHour = 35, daysOfWeekCsv = "1,3,5")
+            )
+            app.repository.getTrackerBundle(id)!!.reminder
+        }
+        archiveTracker()
+        assertEquals(before, trackerBundle()!!.reminder)
+        composeRule.onNodeWithText("Archived (1)").performClick()
+        waitForNode(hasText("Restore"))
+        composeRule.activityRule.scenario.recreate()
+        waitForNode(hasText("Restore"))
+        composeRule.onNodeWithText("Restore").performClick()
+        waitForNode(hasText("No archived trackers."))
+        assertEquals(before, trackerBundle()!!.reminder)
+        assertEquals(false, trackerBundle()!!.tracker.isArchived)
+        composeRule.onNodeWithContentDescription("Back").performClick()
+        waitForNode(hasText("Navigation tracker"))
+        composeRule.onNodeWithText("Archived (1)").assertDoesNotExist()
+    }
+
+    @Test
+    fun backFromArchivedReturnsToDashboard() {
+        archiveTracker()
+        composeRule.onNodeWithText("Archived (1)").performClick()
+        waitForNode(hasText("Restore"))
+        Espresso.pressBack()
+        composeRule.onNodeWithContentDescription("Add tracker").assertIsDisplayed()
+    }
+
+    @Test
+    fun detailDeleteNamesTrackerCountsActiveEntriesAndCanBeCancelled() {
+        seedEntriesForDelete()
+        openTracker()
+        composeRule.onNodeWithContentDescription("Tracker options").performClick()
+        composeRule.onNodeWithText("Delete permanently").performClick()
+        waitForNode(hasText("Delete tracker permanently?"))
+        composeRule.onNodeWithText("Delete \"Navigation tracker\" and its 1 entry? This cannot be undone.").assertIsDisplayed()
+        composeRule.onNodeWithText("Cancel").performClick()
+        composeRule.onNodeWithContentDescription("Add entry").assertIsDisplayed()
+        assertTrue(trackerBundle() != null)
+        composeRule.onNodeWithContentDescription("Tracker options").performClick()
+        composeRule.onNodeWithText("Delete permanently").performClick()
+        waitForNode(hasText("Delete tracker permanently?"))
+        composeRule.onNodeWithText("Delete permanently").performClick()
+        waitForNode(hasText("Tracker deleted."))
+        composeRule.onNodeWithContentDescription("Add tracker").assertIsDisplayed()
+        assertEquals(null, trackerBundle())
+    }
+
+    @Test
+    fun archivedDeleteCountsActiveEntriesCanBeCancelledAndReturnsToDashboard() {
+        seedEntriesForDelete()
+        archiveTracker()
+        composeRule.onNodeWithText("Archived (1)").performClick()
+        waitForNode(hasText("Delete"))
+        composeRule.onNodeWithText("Delete").performClick()
+        waitForNode(hasText("Delete tracker permanently?"))
+        composeRule.onNodeWithText("Delete \"Navigation tracker\" and its 1 entry? This cannot be undone.").assertIsDisplayed()
+        composeRule.onNodeWithText("Cancel").performClick()
+        assertTrue(trackerBundle()!!.tracker.isArchived)
+        composeRule.onNodeWithText("Delete").performClick()
+        waitForNode(hasText("Delete tracker permanently?"))
+        composeRule.onNodeWithText("Delete permanently").performClick()
+        waitForNode(hasText("Tracker deleted."))
+        composeRule.onNodeWithContentDescription("Add tracker").assertIsDisplayed()
+        composeRule.onNodeWithText("Archived (1)").assertDoesNotExist()
+        assertEquals(null, trackerBundle())
+    }
+
+    private fun trackerBundle(): TrackerBundle? {
+        val app = composeRule.activity.application as ConsecutorApp
+        return runBlocking(Dispatchers.IO) { app.repository.getReminderBundles().singleOrNull() }
+    }
+
+    private fun seedEntriesForDelete() {
+        val app = composeRule.activity.application as ConsecutorApp
+        runBlocking(Dispatchers.IO) {
+            val id = app.database.trackerDao().getTrackerBundles().single().tracker.id
+            val draft = EntryDraft(LocalDate.now(), 1.0, null)
+            app.repository.addEntry(id, TrackerType.COUNT, draft)
+            val deleted = app.repository.addEntry(id, TrackerType.COUNT, draft)
+            app.repository.deleteEntry(deleted, id)
+        }
+    }
+
+    private fun archiveTracker() {
+        openTracker()
+        composeRule.onNodeWithContentDescription("Tracker options").performClick()
+        composeRule.onNodeWithText("Archive tracker").performClick()
+        waitForNode(hasText("Archived (1)"))
+        waitForNode(hasText("Tracker archived."))
+        composeRule.onNodeWithContentDescription("Add tracker").assertIsDisplayed()
     }
 
     private fun changeTrackerType(type: TrackerType) {

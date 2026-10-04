@@ -21,7 +21,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,8 +34,7 @@ internal fun TrackerDetailScreen(
     detail: TrackerDetail,
     padding: PaddingValues,
     onAddEntry: () -> Unit,
-    onEditEntry: (EntryItem) -> Unit,
-    onArchive: () -> Unit
+    onEditEntry: (EntryItem) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -62,9 +60,6 @@ internal fun TrackerDetailScreen(
                             Icon(Icons.Default.Add, contentDescription = null)
                             Spacer(Modifier.width(8.dp))
                             Text("Log entry")
-                        }
-                        TextButton(onClick = onArchive) {
-                            Text("Archive tracker")
                         }
                     }
                 }

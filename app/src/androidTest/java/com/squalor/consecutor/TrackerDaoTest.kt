@@ -8,6 +8,8 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -37,6 +39,69 @@ class TrackerDaoTest {
     @After
     fun tearDown() {
         db.close()
+    }
+
+    @Test
+    fun archiveKeepsReminderUnchangedAndUnarchiveClearsFlag() = runBlocking {
+        for (enabled in listOf(true, false)) {
+            val id = dao.insertTracker(tracker())
+            dao.insertReminder(ReminderEntity(trackerId = id, enabled = enabled, hourOfDay = 7, minuteOfHour = 35, daysOfWeekCsv = "1,3,5"))
+            val before = dao.getTrackerBundle(id)!!.reminder
+            repository.archiveTracker(id)
+            assertTrue(dao.getTracker(id)!!.isArchived)
+            assertEquals(before, dao.getTrackerBundle(id)!!.reminder)
+            repository.unarchiveTracker(id)
+            assertEquals(false, dao.getTracker(id)!!.isArchived)
+            assertEquals(before, dao.getTrackerBundle(id)!!.reminder)
+        }
+    }
+
+    @Test
+    fun observeArchivedTrackersEmitsOnlyArchivedInNameOrderAndUpdatesAfterRestore() = runBlocking {
+        val z = dao.insertTracker(tracker("Zulu"))
+        val a = dao.insertTracker(tracker("alpha"))
+        dao.insertTracker(tracker("Active"))
+        repository.archiveTracker(z)
+        repository.archiveTracker(a)
+        withTimeout(5_000) {
+            assertEquals(listOf(a, z), repository.observeArchivedTrackers().first().map { it.id })
+            repository.unarchiveTracker(a)
+            assertEquals(listOf(z), repository.observeArchivedTrackers().first { it.size == 1 }.map { it.id })
+        }
+    }
+
+    @Test
+    fun countActiveEntriesIgnoresDeletedEntriesAndOtherTrackers() = runBlocking {
+        val id = dao.insertTracker(tracker())
+        val other = dao.insertTracker(tracker("Other"))
+        dao.insertEntry(entry(id))
+        dao.insertEntry(entry(id).copy(isDeleted = true))
+        dao.insertEntry(entry(other))
+        assertEquals(1, repository.countActiveEntries(id))
+        assertEquals(0, repository.countActiveEntries(999))
+    }
+
+    @Test
+    fun repositoryDeleteRemovesChildrenAndBackupTrackerButKeepsOtherTrackers() = runBlocking {
+        val id = dao.insertTracker(tracker("Remove"))
+        val other = dao.insertTracker(tracker("Keep"))
+        val entryId = dao.insertEntry(entry(id))
+        val deletedEntryId = dao.insertEntry(entry(id).copy(isDeleted = true))
+        dao.insertTarget(TargetEntity(trackerId = id, period = TargetPeriod.DAILY, targetValue = 3.0))
+        dao.insertReminder(ReminderEntity(trackerId = id, enabled = true, hourOfDay = 8, minuteOfHour = 0))
+        repository.archiveTracker(id)
+        repository.deleteTracker(id)
+        assertNull(dao.getTrackerBundle(id))
+        assertNull(dao.getEntryById(entryId))
+        assertNull(dao.getEntryById(deletedEntryId))
+        assertEquals(listOf(other), dao.getTrackerBundles().map { it.tracker.id })
+        assertEquals(listOf("Keep"), BackupCodec.decode(repository.backupJson()).trackers.map { it.tracker.name })
+        for (table in listOf("targets", "reminders")) {
+            db.openHelper.readableDatabase.query("SELECT COUNT(*) FROM $table WHERE trackerId = $id").use {
+                it.moveToFirst()
+                assertEquals(table, 0, it.getInt(0))
+            }
+        }
     }
 
     private fun tracker(name: String = "Water") = TrackerEntity(

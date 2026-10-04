@@ -67,10 +67,23 @@ class TrackerRepository(
         }
     }
 
-    suspend fun archiveTracker(trackerId: Long) {
-        val existing = trackerDao.getTracker(trackerId) ?: throw IllegalArgumentException("Unknown tracker $trackerId")
-        trackerDao.updateTracker(existing.copy(isArchived = true, updatedAtEpochMs = System.currentTimeMillis()))
-        trackerDao.deleteReminderForTracker(trackerId)
+    fun observeArchivedTrackers(): Flow<List<TrackerEntity>> = trackerDao.observeArchivedTrackers()
+
+    suspend fun countActiveEntries(id: Long): Int = trackerDao.countActiveEntries(id)
+
+    suspend fun archiveTracker(id: Long) = setArchived(id, true)
+
+    suspend fun unarchiveTracker(id: Long) = setArchived(id, false)
+
+    private suspend fun setArchived(id: Long, archived: Boolean) {
+        database.withTransaction {
+            val existing = trackerDao.getTracker(id) ?: throw IllegalArgumentException("Unknown tracker $id")
+            trackerDao.updateTracker(existing.copy(isArchived = archived, updatedAtEpochMs = System.currentTimeMillis()))
+        }
+    }
+
+    suspend fun deleteTracker(id: Long) {
+        database.withTransaction { trackerDao.deleteTracker(id) }
     }
 
     suspend fun addEntry(trackerId: Long, trackerType: TrackerType, draft: EntryDraft): Long {
