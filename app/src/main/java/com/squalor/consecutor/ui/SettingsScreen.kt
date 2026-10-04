@@ -31,54 +31,54 @@ internal fun SettingsScreen(
     canRequestNotifications: Boolean,
     onEnableNotifications: () -> Unit
 ) {
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(padding),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        item {
-            Text("Privacy-first defaults", style = MaterialTheme.typography.titleLarge)
-            Text(
-                "Consecutor keeps tracker data on-device, uses explicit export/import for portability, and avoids account-based sync in v1.",
-                style = MaterialTheme.typography.bodyMedium
-            )
-        }
-        item {
-            SettingsCard(
-                title = "CSV export",
-                body = "Save or share a spreadsheet-friendly snapshot of trackers and entries. $EXPORT_WARNING"
-            ) {
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Button(onClick = onSaveCsv) { Text("Save to file…") }
-                    TextButton(onClick = onShareCsv) { Text("Share…") }
+    ContentColumn(padding) {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            item {
+                Text("Privacy-first defaults", style = MaterialTheme.typography.titleLarge)
+                Text(
+                    "Consecutor keeps tracker data on-device, uses explicit export/import for portability, and avoids account-based sync in v1.",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+            item {
+                SettingsCard(
+                    title = "CSV export",
+                    body = "Save or share a spreadsheet-friendly snapshot of trackers and entries. $EXPORT_WARNING"
+                ) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Button(onClick = onSaveCsv) { Text("Save to file…") }
+                        TextButton(onClick = onShareCsv) { Text("Share…") }
+                    }
                 }
             }
-        }
-        item {
-            SettingsCard(
-                title = "Full backup",
-                body = "Export or import the full app state as a versioned JSON backup file. Import previews the backup before replacing your current data. $EXPORT_WARNING"
-            ) {
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Button(onClick = onSaveBackup) { Text("Save to file…") }
-                    TextButton(onClick = onShareBackup) { Text("Share…") }
-                    TextButton(onClick = onImportBackup) { Text("Import backup") }
+            item {
+                SettingsCard(
+                    title = "Full backup",
+                    body = "Export or import the full app state as a versioned JSON backup file. Import previews the backup before replacing your current data. $EXPORT_WARNING"
+                ) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Button(onClick = onSaveBackup) { Text("Save to file…") }
+                        TextButton(onClick = onShareBackup) { Text("Share…") }
+                        TextButton(onClick = onImportBackup) { Text("Import backup") }
+                    }
                 }
             }
-        }
-        item {
-            SettingsCard(
-                title = "Notifications: ${if (notificationsEnabled) "On" else "Off"}",
-                body = if (notificationsEnabled) {
-                    "Reminders are local only."
-                } else {
-                    "Reminders are local only. Enable notifications to receive your scheduled reminders."
-                }
-            ) {
-                Button(onClick = onEnableNotifications) {
-                    Text(if (canRequestNotifications) "Allow notifications" else "Open settings")
+            item {
+                SettingsCard(
+                    title = "Notifications: ${if (notificationsEnabled) "On" else "Off"}",
+                    body = if (notificationsEnabled) {
+                        "Reminders are local only."
+                    } else {
+                        "Reminders are local only. Enable notifications to receive your scheduled reminders."
+                    }
+                ) {
+                    Button(onClick = onEnableNotifications) {
+                        Text(if (canRequestNotifications) "Allow notifications" else "Open settings")
+                    }
                 }
             }
         }
