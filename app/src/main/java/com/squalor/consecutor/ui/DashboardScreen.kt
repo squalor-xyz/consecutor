@@ -26,10 +26,17 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.squalor.consecutor.R
 import com.squalor.consecutor.TargetPeriod
 import com.squalor.consecutor.TrackerSummary
 import com.squalor.consecutor.TrackerType
+
+// Window sizes of TrackerAnalytics completion rates: 14 days for daily targets, 8 weeks for weekly ones.
+private const val COMPLETION_DAYS = 14
+private const val COMPLETION_WEEKS = 8
 
 @Composable
 internal fun DashboardScreen(
@@ -46,9 +53,9 @@ internal fun DashboardScreen(
 ) {
     if (dashboard.isEmpty() && archivedCount == 0) {
         EmptyState(
-            text = "No trackers yet.",
+            text = stringResource(R.string.dashboard_empty),
             padding = padding,
-            actionLabel = "Create tracker",
+            actionLabel = stringResource(R.string.dashboard_create_tracker),
             onAction = onCreate
         )
         return
@@ -62,8 +69,8 @@ internal fun DashboardScreen(
             if (dashboard.isEmpty()) {
                 item {
                     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                        Text("No trackers yet.")
-                        TextButton(onClick = onCreate) { Text("Create tracker") }
+                        Text(stringResource(R.string.dashboard_empty))
+                        TextButton(onClick = onCreate) { Text(stringResource(R.string.dashboard_create_tracker)) }
                     }
                 }
             }
@@ -80,7 +87,7 @@ internal fun DashboardScreen(
             if (archivedCount > 0) {
                 item {
                     TextButton(onClick = onOpenArchived, modifier = Modifier.fillMaxWidth()) {
-                        Text("Archived ($archivedCount)")
+                        Text(stringResource(R.string.dashboard_archived_link, archivedCount))
                     }
                 }
             }
@@ -108,6 +115,11 @@ internal fun TrackerSummaryCard(
         },
         elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
     ) {
+        val toggleDescription = stringResource(
+            if (tracker.doneToday) R.string.dashboard_clear_today_description else R.string.dashboard_log_today_description,
+            tracker.name
+        )
+        val logCustomAmount = stringResource(R.string.dashboard_log_custom_amount)
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
@@ -122,7 +134,7 @@ internal fun TrackerSummaryCard(
                         modifier = Modifier
                             .sizeIn(minWidth = 48.dp, minHeight = 48.dp)
                             .semantics {
-                                contentDescription = "${if (tracker.doneToday) "Clear" else "Log"} ${tracker.name} today"
+                                contentDescription = toggleDescription
                             }
                     )
                     TrackerType.COUNT -> Box(
@@ -132,17 +144,17 @@ internal fun TrackerSummaryCard(
                             .combinedClickable(
                                 role = Role.Button,
                                 onClick = onLogToday,
-                                onLongClickLabel = "Log custom amount",
+                                onLongClickLabel = logCustomAmount,
                                 onLongClick = onEditToday
                             )
                     ) {
-                        Text("+1", color = MaterialTheme.colorScheme.primary)
+                        Text(stringResource(R.string.dashboard_increment), color = MaterialTheme.colorScheme.primary)
                     }
                     TrackerType.MEASURE -> TextButton(
                         onClick = onEditToday,
                         modifier = Modifier.sizeIn(minWidth = 48.dp, minHeight = 48.dp)
                     ) {
-                        Text("Log")
+                        Text(stringResource(R.string.action_log))
                     }
                 }
             }
@@ -152,8 +164,13 @@ internal fun TrackerSummaryCard(
             StatusLine(tracker)
             StreakLine(tracker)
             tracker.completionRate?.let { rate ->
-                val window = if (tracker.targetPeriod == TargetPeriod.WEEKLY) "8 weeks" else "14 days"
-                Text("Last $window: ${(rate * 100).toInt()}%", style = MaterialTheme.typography.bodySmall)
+                val percent = (rate * 100).toInt()
+                val completionText = if (tracker.targetPeriod == TargetPeriod.WEEKLY) {
+                    pluralStringResource(R.plurals.dashboard_completion_weeks, COMPLETION_WEEKS, COMPLETION_WEEKS, percent)
+                } else {
+                    pluralStringResource(R.plurals.dashboard_completion_days, COMPLETION_DAYS, COMPLETION_DAYS, percent)
+                }
+                Text(completionText, style = MaterialTheme.typography.bodySmall)
                 LinearProgressIndicator(progress = { rate }, modifier = Modifier.fillMaxWidth())
             }
             tracker.reminder?.let {
@@ -166,7 +183,7 @@ internal fun TrackerSummaryCard(
 @Composable
 internal fun ReminderLabel(label: String, notificationsEnabled: Boolean) {
     Text(
-        text = if (notificationsEnabled) label else "$label · Notifications off",
+        text = if (notificationsEnabled) label else stringResource(R.string.dashboard_reminder_notifications_off, label),
         style = MaterialTheme.typography.bodySmall,
         color = if (notificationsEnabled) MaterialTheme.colorScheme.onSurfaceVariant
             else MaterialTheme.colorScheme.error

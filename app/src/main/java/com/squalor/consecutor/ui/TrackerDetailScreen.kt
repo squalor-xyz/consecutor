@@ -21,16 +21,19 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.squalor.consecutor.R
 import com.squalor.consecutor.TrackerDetail
 import com.squalor.consecutor.EntryItem
 import com.squalor.consecutor.TrackerType
 import com.squalor.consecutor.ui.charts.BarChart
 import com.squalor.consecutor.ui.charts.CalendarHeatmap
 import com.squalor.consecutor.ui.charts.ChartMath
+import com.squalor.consecutor.ui.charts.chartSummaryText
 import com.squalor.consecutor.ui.charts.LineChart
 import java.time.LocalDate
 
@@ -63,14 +66,14 @@ internal fun TrackerDetailScreen(
                         val targetPeriod = summary.targetPeriod
                         val targetValue = summary.targetValue
                         if (targetPeriod != null && targetValue != null) {
-                            Text("Target: ${targetLabel(summary.type, targetPeriod, targetValue, summary.unit)}")
+                            Text(stringResource(R.string.detail_target, targetLabel(summary.type, targetPeriod, targetValue, summary.unit)))
                         }
-                        summary.reminder?.let { Text("Reminder: ${reminderLabel(it)}") }
+                        summary.reminder?.let { Text(stringResource(R.string.detail_reminder, reminderLabel(it))) }
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             Button(onClick = onAddEntry) {
                                 Icon(Icons.Default.Add, contentDescription = null)
                                 Spacer(Modifier.width(8.dp))
-                                Text("Log entry")
+                                Text(stringResource(R.string.detail_log_entry))
                             }
                         }
                     }
@@ -79,10 +82,10 @@ internal fun TrackerDetailScreen(
             item {
                 Card(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("Recent trend", style = MaterialTheme.typography.titleMedium)
-                        val summary = ChartMath.summarize(detail.trend)
+                        Text(stringResource(R.string.detail_recent_trend), style = MaterialTheme.typography.titleMedium)
+                        val chartSummary = chartSummaryText(ChartMath.summarize(detail.trend), detail.target != null, detail.tracker.unit)
                         val chartModifier = Modifier.semantics {
-                            contentDescription = ChartMath.summaryText(summary, detail.target != null, detail.tracker.unit)
+                            contentDescription = chartSummary
                         }
                         if (detail.tracker.type == TrackerType.MEASURE) {
                             LineChart(detail.trend, detail.tracker.unit, chartModifier)
@@ -110,10 +113,10 @@ internal fun TrackerDetailScreen(
                 }
             }
             item {
-                Text("History", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.detail_history), style = MaterialTheme.typography.titleMedium)
             }
             if (detail.entries.isEmpty()) {
-                item { Text("No entries yet. Start logging to build history and streaks.") }
+                item { Text(stringResource(R.string.detail_no_entries)) }
             } else {
                 items(detail.entries, key = { it.id }) { entry ->
                     Card(
@@ -122,7 +125,7 @@ internal fun TrackerDetailScreen(
                             .clickable { onEditEntry(entry) }
                     ) {
                         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                            Text(entry.effectiveDate.toString(), fontWeight = FontWeight.SemiBold)
+                            Text(formatDate(entry.effectiveDate), fontWeight = FontWeight.SemiBold)
                             Text(formatEntryValue(detail.tracker.type, entry.value, detail.tracker.unit))
                             entry.note?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
                         }

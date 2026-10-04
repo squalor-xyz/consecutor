@@ -1,13 +1,10 @@
 package com.squalor.consecutor
 
 import com.squalor.consecutor.ui.charts.ChartMath
-import com.squalor.consecutor.ui.charts.ChartSummary
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.time.LocalDate
-import java.util.Locale
 
 class ChartMathTest {
     private val start = LocalDate.of(2026, 4, 1)
@@ -51,29 +48,5 @@ class ChartMathTest {
         assertEquals(100f, ChartMath.barHeight(25.0, 10.0, 100f), 0f)
         assertEquals(0f, ChartMath.barHeight(-3.0, 10.0, 100f), 0f)
         assertEquals(0f, ChartMath.barHeight(3.0, 0.0, 100f), 0f)
-    }
-
-    @Test
-    fun `summary text for a chart with no data says so`() {
-        val summary = ChartSummary(daysMet = 0, daysWithData = 0, totalDays = 30, average = null)
-        assertEquals("Last 30 days: no data.", ChartMath.summaryText(summary, hasTarget = true, unit = "kg", locale = Locale.US))
-    }
-
-    @Test
-    fun `summary text reports days met and the average with its unit`() {
-        val summary = ChartSummary(daysMet = 22, daysWithData = 30, totalDays = 30, average = 6.2)
-        assertEquals(
-            "Last 30 days: 22 of 30 days met target, average 6.2 glasses",
-            ChartMath.summaryText(summary, hasTarget = true, unit = "glasses", locale = Locale.US)
-        )
-    }
-
-    @Test
-    fun `summary text without a target counts days with an entry`() {
-        val summary = ChartSummary(daysMet = 4, daysWithData = 30, totalDays = 30, average = 1.0)
-        assertTrue(
-            ChartMath.summaryText(summary, hasTarget = false, unit = null, locale = Locale.US)
-                .startsWith("Last 30 days: 4 of 30 days with an entry, average 1")
-        )
     }
 }

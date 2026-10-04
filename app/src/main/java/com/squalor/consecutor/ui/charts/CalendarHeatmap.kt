@@ -1,5 +1,6 @@
 package com.squalor.consecutor.ui.charts
 
+import android.text.format.DateFormat
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -28,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
@@ -38,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import com.squalor.consecutor.DayCell
 import com.squalor.consecutor.DayState
 import com.squalor.consecutor.EntryItem
+import com.squalor.consecutor.R
 import com.squalor.consecutor.TargetEntity
 import com.squalor.consecutor.TrackerAnalytics
 import com.squalor.consecutor.TrackerType
@@ -69,8 +72,12 @@ internal fun CalendarHeatmap(
     var monthText by rememberSaveable { mutableStateOf(currentMonth.toString()) }
     val month = YearMonth.parse(monthText).coerceIn(oldestMonth, currentMonth)
     val grid = TrackerAnalytics.buildMonth(type, target, entries, month, today, weekFields)
-    val monthFormat = remember(locale) { DateTimeFormatter.ofPattern("LLLL yyyy", locale) }
-    val dayFormat = remember(locale) { DateTimeFormatter.ofPattern("MMMM d", locale) }
+    val monthFormat = remember(locale) {
+        DateTimeFormatter.ofPattern(DateFormat.getBestDateTimePattern(locale, "LLLLyyyy"), locale)
+    }
+    val dayFormat = remember(locale) {
+        DateTimeFormatter.ofPattern(DateFormat.getBestDateTimePattern(locale, "MMMMd"), locale)
+    }
 
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -78,7 +85,7 @@ internal fun CalendarHeatmap(
                 onClick = { monthText = month.minusMonths(1).toString() },
                 enabled = month > oldestMonth
             ) {
-                Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "Previous month")
+                Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = stringResource(R.string.calendar_previous_month))
             }
             Text(
                 month.format(monthFormat),
@@ -90,7 +97,7 @@ internal fun CalendarHeatmap(
                 onClick = { monthText = month.plusMonths(1).toString() },
                 enabled = month < currentMonth
             ) {
-                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = "Next month")
+                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = stringResource(R.string.calendar_next_month))
             }
         }
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(2.dp)) {
@@ -114,7 +121,11 @@ internal fun CalendarHeatmap(
                     } else {
                         DayCellView(
                             cell = cell,
-                            description = "${cell.date.format(dayFormat)}, ${cell.state.describe()}",
+                            description = stringResource(
+                                R.string.calendar_day_description,
+                                cell.date.format(dayFormat),
+                                stringResource(cell.state.descriptionRes())
+                            ),
                             onClick = { onDayClick(cell.date) },
                             modifier = Modifier.weight(1f)
                         )
@@ -165,10 +176,10 @@ private fun DayCellView(
     }
 }
 
-private fun DayState.describe(): String = when (this) {
-    DayState.MET -> "target met"
-    DayState.PARTIAL -> "partly met"
-    DayState.MISSED -> "missed"
-    DayState.OPEN -> "today, not yet met"
-    DayState.FUTURE -> "no entry"
+private fun DayState.descriptionRes(): Int = when (this) {
+    DayState.MET -> R.string.calendar_state_met
+    DayState.PARTIAL -> R.string.calendar_state_partial
+    DayState.MISSED -> R.string.calendar_state_missed
+    DayState.OPEN -> R.string.calendar_state_open
+    DayState.FUTURE -> R.string.calendar_state_future
 }
