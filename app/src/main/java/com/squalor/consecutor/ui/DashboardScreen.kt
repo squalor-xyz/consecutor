@@ -10,13 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material3.AssistChip
-import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -24,8 +19,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.squalor.consecutor.TargetPeriod
 import com.squalor.consecutor.TrackerSummary
 import com.squalor.consecutor.TrackerType
 
@@ -34,12 +29,15 @@ internal fun DashboardScreen(
     dashboard: List<TrackerSummary>,
     padding: PaddingValues,
     onOpenTracker: (Long) -> Unit,
-    onQuickLog: (TrackerSummary) -> Unit
+    onQuickLog: (TrackerSummary) -> Unit,
+    onCreate: () -> Unit
 ) {
     if (dashboard.isEmpty()) {
         EmptyState(
-            text = "Create your first tracker to start logging habits, events, or measurements.",
-            modifier = Modifier.padding(padding)
+            text = "No trackers yet.",
+            padding = padding,
+            actionLabel = "Create tracker",
+            onAction = onCreate
         )
         return
     }
@@ -47,20 +45,9 @@ internal fun DashboardScreen(
         modifier = Modifier
             .fillMaxSize()
             .padding(padding),
-        contentPadding = PaddingValues(16.dp),
+        contentPadding = PaddingValues(16.dp, 16.dp, 16.dp, 88.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        item {
-            Text(
-                "Local-first tracker dashboard",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
-            )
-            Text(
-                "Track real history, derive consecutive streaks, and keep exports portable.",
-                style = MaterialTheme.typography.bodyMedium
-            )
-        }
         items(dashboard, key = { it.id }) { tracker ->
             TrackerSummaryCard(
                 tracker = tracker,
@@ -81,6 +68,11 @@ internal fun TrackerSummaryCard(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onOpen),
+        colors = if (tracker.doneToday) {
+            CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+        } else {
+            CardDefaults.cardColors()
+        },
         elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -99,32 +91,16 @@ internal fun TrackerSummaryCard(
             tracker.description?.takeIf { it.isNotBlank() }?.let {
                 Text(text = it, style = MaterialTheme.typography.bodyMedium)
             }
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                MetricChip("Current", tracker.currentStreak.toString(), highlight = true)
-                MetricChip("Longest", tracker.longestStreak.toString(), highlight = true)
-                MetricChip("Total", formatValue(tracker.totalValue, tracker.unit))
+            StatusLine(tracker)
+            StreakLine(tracker)
+            tracker.completionRate?.let { rate ->
+                val window = if (tracker.targetPeriod == TargetPeriod.WEEKLY) "8 weeks" else "14 days"
+                Text("Last $window: ${(rate * 100).toInt()}%", style = MaterialTheme.typography.bodySmall)
+                LinearProgressIndicator(progress = { rate }, modifier = Modifier.fillMaxWidth())
             }
-            tracker.targetLabel?.let { AssistChip(onClick = {}, label = { Text(it) }) }
-            tracker.reminderLabel?.let { AssistChip(onClick = {}, leadingIcon = { Icon(Icons.Default.Notifications, null) }, label = { Text(it) }) }
-            tracker.lastEntryDate?.let {
-                Text("Last entry: $it", style = MaterialTheme.typography.bodySmall)
+            tracker.reminderLabel?.let {
+                Text(it, style = MaterialTheme.typography.bodySmall)
             }
-            Text(
-                "Recent completion ${((tracker.completionRate ?: 0f) * 100).toInt()}%",
-                style = MaterialTheme.typography.bodySmall
-            )
-            LinearProgressIndicator(progress = { tracker.completionRate ?: 0f }, modifier = Modifier.fillMaxWidth())
         }
     }
-}
-
-@Composable
-internal fun MetricChip(label: String, value: String, highlight: Boolean = false) {
-    AssistChip(
-        onClick = {},
-        label = { Text("$label: $value") },
-        colors = AssistChipDefaults.assistChipColors(
-            labelColor = if (highlight) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.onSurface
-        )
-    )
 }

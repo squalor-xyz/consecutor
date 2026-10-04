@@ -6,7 +6,6 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
@@ -30,9 +29,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
@@ -173,10 +172,14 @@ fun MainScreen(viewModel: TrackerViewModel) {
                     Text(
                         when (screen) {
                             Screen.DASHBOARD -> "CONSECUTOR"
-                            Screen.DETAIL -> "Tracker"
+                            Screen.DETAIL -> selectedDetail?.tracker
+                                ?.let { listOfNotNull(it.emoji, it.name).joinToString(" ").trim() }
+                                .orEmpty()
                             Screen.SETTINGS -> "Settings"
                         },
-                        letterSpacing = if (screen == Screen.DASHBOARD) 2.sp else TextUnit.Unspecified
+                        letterSpacing = if (screen == Screen.DASHBOARD) 2.sp else TextUnit.Unspecified,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 },
                 navigationIcon = {
@@ -234,12 +237,13 @@ fun MainScreen(viewModel: TrackerViewModel) {
                     viewModel.select(it)
                     screen = Screen.DETAIL
                 },
-                onQuickLog = { summary -> viewModel.quickLog(summary) }
+                onQuickLog = { summary -> viewModel.quickLog(summary) },
+                onCreate = { showNewTrackerDialog = true }
             )
             Screen.DETAIL -> {
                 when (val state = detailState) {
                     DetailState.Loading -> Unit
-                    DetailState.NotFound -> EmptyState("Tracker not found.", modifier = Modifier.padding(padding))
+                    DetailState.NotFound -> EmptyState("Tracker not found.", padding = padding)
                     is DetailState.Loaded -> {
                         val detail = state.detail
                         TrackerDetailScreen(
