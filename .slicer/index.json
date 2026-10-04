@@ -460,7 +460,7 @@
       "id": "S16",
       "title": "Trend analytics: nullable MEASURE points, 30-day window, buildMonth",
       "short_title": "Trend analytics: nullable MEASURE points, 30-day window, buildMonth",
-      "status": "open",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S07",
