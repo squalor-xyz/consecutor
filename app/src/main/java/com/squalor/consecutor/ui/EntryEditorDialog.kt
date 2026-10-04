@@ -25,6 +25,7 @@ import com.squalor.consecutor.EditorLimits
 import com.squalor.consecutor.EntryField
 import com.squalor.consecutor.NumberRules
 import com.squalor.consecutor.validateEntryForm
+import com.squalor.consecutor.TrackerSummary
 import com.squalor.consecutor.TrackerDetail
 import com.squalor.consecutor.TrackerType
 import com.squalor.consecutor.EntryItem
@@ -40,6 +41,16 @@ internal data class EntryEditorState(
     val existingNote: String?
 ) {
     companion object {
+        fun forToday(summary: TrackerSummary, today: LocalDate): EntryEditorState = EntryEditorState(
+            trackerId = summary.id,
+            trackerType = summary.type,
+            unit = summary.unit,
+            entryId = null,
+            existingDate = today,
+            existingValue = if (summary.type == TrackerType.MEASURE) null else 1.0,
+            existingNote = null
+        )
+
         fun new(detail: TrackerDetail): EntryEditorState = EntryEditorState(
             trackerId = detail.tracker.id,
             trackerType = detail.tracker.type,

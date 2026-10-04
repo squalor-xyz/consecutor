@@ -117,25 +117,38 @@ class TrackerRepository(
     }
 
     suspend fun deleteEntry(entryId: Long, trackerId: Long) {
-        val now = System.currentTimeMillis()
+        softDeleteEntries(trackerId, listOf(entryId))
+    }
+
+    suspend fun softDeleteEntries(trackerId: Long, ids: List<Long>) =
+        setEntriesDeleted(trackerId, ids, true)
+
+    suspend fun restoreEntries(trackerId: Long, ids: List<Long>) =
+        setEntriesDeleted(trackerId, ids, false)
+
+    private suspend fun setEntriesDeleted(trackerId: Long, ids: List<Long>, deleted: Boolean) {
+        if (ids.isEmpty()) return
         database.withTransaction {
-            val existing = trackerDao.getEntryById(entryId) ?: return@withTransaction
-            trackerDao.updateEntry(existing.copy(isDeleted = true, updatedAtEpochMs = now))
+            val now = System.currentTimeMillis()
+            trackerDao.setEntriesDeleted(trackerId, ids, deleted, now)
             bumpTracker(trackerId, now)
         }
     }
 
-    suspend fun quickLog(summary: TrackerSummary, today: LocalDate) {
-        if (summary.type == TrackerType.MEASURE) return
-        addEntry(
-            trackerId = summary.id,
-            trackerType = summary.type,
-            draft = EntryDraft(
-                effectiveDate = today,
-                value = 1.0,
-                note = null
-            )
-        )
+    sealed interface TodayToggleResult {
+        data class Logged(val entryId: Long) : TodayToggleResult
+        data class Cleared(val entryIds: List<Long>) : TodayToggleResult
+    }
+
+    /** Read and toggle within one transaction, independent of dashboard refresh timing. */
+    suspend fun toggleToday(trackerId: Long, today: LocalDate): TodayToggleResult = database.withTransaction {
+        val ids = trackerDao.findActiveEntryIds(trackerId, today.toString())
+        if (ids.isEmpty()) {
+            TodayToggleResult.Logged(addEntry(trackerId, TrackerType.YES_NO, EntryDraft(today, 1.0, null)))
+        } else {
+            softDeleteEntries(trackerId, ids)
+            TodayToggleResult.Cleared(ids)
+        }
     }
 
     suspend fun entriesCsv(): String = CsvExport.build(trackerDao.getTrackerBundles())

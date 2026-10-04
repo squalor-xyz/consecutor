@@ -157,6 +157,78 @@ class TrackerDaoTest {
     }
 
     @Test
+    fun restoreEntriesUndeletesOnlyGivenIdsAndPreservesTheirContents() = runBlocking {
+        val id = dao.insertTracker(tracker())
+        val restored = dao.insertEntry(entry(id).copy(isDeleted = true, value = 42.5, note = "Keep this note"))
+        val untouched = dao.insertEntry(entry(id).copy(isDeleted = true))
+        val before = dao.getEntryById(restored)!!
+        repository.restoreEntries(id, listOf(restored))
+
+        val after = dao.getEntryById(restored)!!
+        assertEquals(before.copy(isDeleted = false, updatedAtEpochMs = after.updatedAtEpochMs), after)
+        assertTrue(after.updatedAtEpochMs > before.updatedAtEpochMs)
+        assertTrue(dao.getEntryById(untouched)!!.isDeleted)
+        assertTrue(dao.getTracker(id)!!.updatedAtEpochMs > 1)
+    }
+
+    @Test
+    fun bulkDeletionAndRestorationStayWithinTheGivenTracker() = runBlocking {
+        val first = dao.insertTracker(tracker("A"))
+        val second = dao.insertTracker(tracker("B"))
+        val firstEntry = dao.insertEntry(entry(first))
+        val secondEntry = dao.insertEntry(entry(second))
+        repository.softDeleteEntries(first, listOf(firstEntry, secondEntry))
+        assertTrue(dao.getEntryById(firstEntry)!!.isDeleted)
+        assertEquals(false, dao.getEntryById(secondEntry)!!.isDeleted)
+        assertEquals(1L, dao.getTracker(second)!!.updatedAtEpochMs)
+
+        repository.softDeleteEntries(second, listOf(secondEntry))
+        repository.restoreEntries(first, listOf(firstEntry, secondEntry))
+        assertEquals(false, dao.getEntryById(firstEntry)!!.isDeleted)
+        assertTrue(dao.getEntryById(secondEntry)!!.isDeleted)
+    }
+
+    @Test
+    fun emptyEntryIdsDoNotChangeTheTracker() = runBlocking {
+        val id = dao.insertTracker(tracker())
+        repository.softDeleteEntries(id, emptyList())
+        repository.restoreEntries(id, emptyList())
+        assertEquals(1L, dao.getTracker(id)!!.updatedAtEpochMs)
+    }
+
+    @Test
+    fun yesNoToggleClearsAllTodaysEntriesAndUndoRestoresThem() = runBlocking {
+        val id = dao.insertTracker(tracker().copy(type = TrackerType.YES_NO))
+        val first = dao.insertEntry(entry(id).copy(note = "First"))
+        val second = dao.insertEntry(entry(id).copy(note = "Legacy duplicate"))
+        val otherDate = dao.insertEntry(entry(id).copy(effectiveDate = "2026-01-02"))
+        val result = repository.toggleToday(id, LocalDate.of(2026, 1, 1)) as TrackerRepository.TodayToggleResult.Cleared
+        assertEquals(setOf(first, second), result.entryIds.toSet())
+        assertTrue(dao.getEntryById(first)!!.isDeleted)
+        assertTrue(dao.getEntryById(second)!!.isDeleted)
+        assertEquals(false, dao.getEntryById(otherDate)!!.isDeleted)
+        repository.restoreEntries(id, result.entryIds)
+        assertEquals(setOf(first, second), dao.findActiveEntryIds(id, "2026-01-01").toSet())
+    }
+
+    @Test
+    fun concurrentYesNoTogglesAlternateAndAnEvenNumberLeavesTodayCleared() = runBlocking {
+        val id = dao.insertTracker(tracker().copy(type = TrackerType.YES_NO))
+        val start = CompletableDeferred<Unit>()
+        val actions = List(8) {
+            async(Dispatchers.Default) {
+                start.await()
+                repository.toggleToday(id, draft().effectiveDate)
+            }
+        }
+        start.complete(Unit)
+        val results = actions.awaitAll()
+        assertEquals(4, results.count { it is TrackerRepository.TodayToggleResult.Logged })
+        assertEquals(4, results.count { it is TrackerRepository.TodayToggleResult.Cleared })
+        assertTrue(dao.findActiveEntryIds(id, draft().effectiveDate.toString()).isEmpty())
+    }
+
+    @Test
     fun deletingATrackerCascadesToEntriesTargetsAndReminders() = runBlocking {
         val id = dao.insertTracker(tracker())
         dao.insertEntry(entry(id))
