@@ -426,7 +426,7 @@
       "id": "S15",
       "title": "Archive; restore and permanently delete trackers",
       "short_title": "Archive; restore and permanently delete trackers",
-      "status": "review",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S05",
