@@ -2,6 +2,7 @@ package com.squalor.consecutor
 
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.YearMonth
 import java.time.temporal.ChronoUnit
 import java.time.temporal.WeekFields
 import java.util.Locale
@@ -23,6 +24,7 @@ object TrackerAnalytics {
                 EntryItem(
                     id = it.id,
                     effectiveDate = LocalDate.parse(it.effectiveDate),
+                    occurredAtEpochMs = it.occurredAtEpochMs,
                     value = it.value,
                     note = it.note
                 )
@@ -131,28 +133,93 @@ object TrackerAnalytics {
         val activeEntries = bundle.entries.filter {
             !it.isDeleted && !LocalDate.parse(it.effectiveDate).isAfter(today)
         }
-        val aggregated = aggregateEntries(activeEntries, bundle.tracker.type)
-        val last14Days = (13L downTo 0L).map { today.minusDays(it) }
-        return last14Days.map { date ->
-            val value = aggregated[date] ?: 0.0
+        val type = bundle.tracker.type
+        val dailyValues = dailyValues(
+            activeEntries.map { DayEntry(LocalDate.parse(it.effectiveDate), it.occurredAtEpochMs, it.value) },
+            type
+        )
+        val last30Days = (29L downTo 0L).map { today.minusDays(it) }
+        return last30Days.map { date ->
+            val value = if (type == TrackerType.MEASURE) dailyValues[date] else dailyValues[date] ?: 0.0
             TrendPoint(
                 date = date,
                 value = value,
-                metTarget = target?.let { targetMet(value, it) } ?: (value > 0.0)
+                metTarget = value != null && (target?.let { targetMet(value, it) } ?: (value > 0.0))
             )
         }
     }
 
+    /**
+     * One month of day cells for the calendar view. Entries dated after [today] are ignored and
+     * those days are [DayState.FUTURE]. Only a DAILY target on a COUNT or YES_NO tracker can give
+     * [DayState.PARTIAL]; every other tracker is judged on whether the day has an entry.
+     */
+    fun buildMonth(
+        type: TrackerType,
+        target: TargetEntity?,
+        entries: List<EntryItem>,
+        month: YearMonth,
+        today: LocalDate,
+        weekFields: WeekFields
+    ): MonthGrid {
+        val dailyValues = dailyValues(
+            entries.filter { !it.effectiveDate.isAfter(today) }
+                .map { DayEntry(it.effectiveDate, it.occurredAtEpochMs, it.value) },
+            type
+        )
+        val dailyTarget = target?.takeIf { type != TrackerType.MEASURE && it.period == TargetPeriod.DAILY }
+        val cells = (1..month.lengthOfMonth()).map { dayOfMonth ->
+            val date = month.atDay(dayOfMonth)
+            val hasEntry = date in dailyValues
+            val value = dailyValues[date] ?: 0.0
+            val state = when {
+                date.isAfter(today) -> DayState.FUTURE
+                dailyTarget != null && targetMet(value, dailyTarget) -> DayState.MET
+                dailyTarget != null && value > 0.0 -> DayState.PARTIAL
+                dailyTarget == null && hasEntry -> DayState.MET
+                date == today -> DayState.OPEN
+                else -> DayState.MISSED
+            }
+            DayCell(date = date, value = value, state = state)
+        }
+        return MonthGrid(
+            month = month,
+            leadingBlanks = month.atDay(1).get(weekFields.dayOfWeek()) - 1,
+            cells = cells
+        )
+    }
+
     private fun aggregateEntries(entries: List<EntryEntity>, type: TrackerType): Map<LocalDate, Double> {
-        return entries.groupBy { LocalDate.parse(it.effectiveDate) }
-            .mapValues { (_, dayEntries) ->
+        return aggregateDayValues(
+            entries.map { LocalDate.parse(it.effectiveDate) to it.value },
+            type
+        )
+    }
+
+    private fun aggregateDayValues(entries: List<Pair<LocalDate, Double?>>, type: TrackerType): Map<LocalDate, Double> {
+        return entries.groupBy({ it.first }, { it.second })
+            .mapValues { (_, values) ->
                 if (type == TrackerType.YES_NO) {
                     1.0
                 } else {
-                    dayEntries.sumOf { it.value ?: 1.0 }
+                    values.sumOf { it ?: 1.0 }
                 }
             }
     }
+
+    /**
+     * Daily values for trends and months. COUNT and YES_NO use the streak aggregation. MEASURE uses
+     * the latest entry of the day by occurredAtEpochMs, and a null value stays null.
+     */
+    private fun dailyValues(entries: List<DayEntry>, type: TrackerType): Map<LocalDate, Double?> {
+        if (type != TrackerType.MEASURE) {
+            return aggregateDayValues(entries.map { it.date to it.value }, type)
+        }
+        return entries.groupBy { it.date }
+            .mapValues { (_, dayEntries) -> dayEntries.maxByOrNull { it.occurredAtEpochMs }?.value }
+    }
+
+    private class DayEntry(val date: LocalDate, val occurredAtEpochMs: Long, val value: Double?)
 
     private fun computeStreakStats(
         aggregatedByDate: Map<LocalDate, Double>,
