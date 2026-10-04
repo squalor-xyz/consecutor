@@ -1015,7 +1015,7 @@
       "id": "S35",
       "title": "Repository: YES_NO add is idempotent per date; addEntry returns the entry id",
       "short_title": "Repository: YES_NO add is idempotent per date; addEntry returns the entry id",
-      "status": "review",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S05",
