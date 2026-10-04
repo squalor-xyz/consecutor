@@ -15,7 +15,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.squalor.consecutor.R
 import com.squalor.consecutor.TrackerEntity
 
 @Composable
@@ -26,7 +28,7 @@ internal fun ArchivedScreen(
     onDelete: (TrackerEntity) -> Unit
 ) {
     if (archived.isEmpty()) {
-        EmptyState("No archived trackers.", padding = padding)
+        EmptyState(stringResource(R.string.archived_empty), padding = padding)
         return
     }
     LazyColumn(
@@ -39,9 +41,9 @@ internal fun ArchivedScreen(
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(listOfNotNull(tracker.emoji, tracker.name).joinToString(" "), style = MaterialTheme.typography.titleMedium)
                     Row {
-                        TextButton(onClick = { onRestore(tracker.id) }) { Text("Restore") }
+                        TextButton(onClick = { onRestore(tracker.id) }) { Text(stringResource(R.string.action_restore)) }
                         TextButton(onClick = { onDelete(tracker) }) {
-                            Text("Delete", color = MaterialTheme.colorScheme.error)
+                            Text(stringResource(R.string.action_delete), color = MaterialTheme.colorScheme.error)
                         }
                     }
                 }

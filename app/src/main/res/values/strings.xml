@@ -2,6 +2,170 @@
     <string name="app_name">Consecutor</string>
 
     <string name="action_undo">Undo</string>
+    <string name="action_save">Save</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_ok">OK</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_delete_permanently">Delete permanently</string>
+    <string name="action_restore">Restore</string>
+    <string name="action_log">Log</string>
+    <string name="action_open_settings">Open settings</string>
+
+    <string name="cd_back">Back</string>
+    <string name="cd_settings">Settings</string>
+    <string name="cd_edit_tracker">Edit tracker</string>
+    <string name="cd_tracker_options">Tracker options</string>
+    <string name="cd_add_tracker">Add tracker</string>
+    <string name="cd_add_entry">Add entry</string>
+
+    <plurals name="count_trackers">
+        <item quantity="one">%1$d tracker</item>
+        <item quantity="other">%1$d trackers</item>
+    </plurals>
+    <plurals name="count_entries">
+        <item quantity="one">%1$d entry</item>
+        <item quantity="other">%1$d entries</item>
+    </plurals>
+
+    <string name="main_title_settings">Settings</string>
+    <string name="main_title_archived">Archived</string>
+    <string name="main_menu_archive_tracker">Archive tracker</string>
+    <string name="main_notifications_off_warning">Notifications are off. Reminders cannot be shown.</string>
+    <string name="main_delete_dialog_title">Delete tracker permanently?</string>
+    <string name="main_delete_dialog_text">Delete \"%1$s\" and its %2$s? This cannot be undone.</string>
+    <string name="main_import_dialog_title">Replace all data?</string>
+    <string name="main_import_dialog_text">This backup has %1$s and %2$s (%3$s). Your current %4$s will be removed.</string>
+    <string name="main_import_exported_at">exported %1$s</string>
+    <string name="main_import_export_date_unknown">export date unknown</string>
+    <string name="main_import_replace">Replace</string>
+
+    <string name="dashboard_empty">No trackers yet.</string>
+    <string name="dashboard_create_tracker">Create tracker</string>
+    <string name="dashboard_archived_link">Archived (%1$d)</string>
+    <string name="dashboard_log_today_description">Log %1$s today</string>
+    <string name="dashboard_clear_today_description">Clear %1$s today</string>
+    <string name="dashboard_log_custom_amount">Log custom amount</string>
+    <string name="dashboard_increment">+1</string>
+    <plurals name="dashboard_completion_days">
+        <item quantity="one">Last %1$d day: %2$d%%</item>
+        <item quantity="other">Last %1$d days: %2$d%%</item>
+    </plurals>
+    <plurals name="dashboard_completion_weeks">
+        <item quantity="one">Last %1$d week: %2$d%%</item>
+        <item quantity="other">Last %1$d weeks: %2$d%%</item>
+    </plurals>
+    <string name="dashboard_reminder_notifications_off">%1$s · Notifications off</string>
+
+    <string name="status_done_today">Done today</string>
+    <string name="status_not_logged_today">Not logged today</string>
+    <string name="status_yes_no_weekly">%1$s · %2$s / %3$s this week</string>
+    <string name="status_this_week">%1$s this week</string>
+    <string name="status_today">%1$s today</string>
+    <string name="status_last_logged">Last: %1$s</string>
+    <string name="status_not_logged_yet">Not logged yet</string>
+    <plurals name="streak_days">
+        <item quantity="one">%1$d-day streak · best %2$d</item>
+        <item quantity="other">%1$d-day streak · best %2$d</item>
+    </plurals>
+    <plurals name="streak_weeks">
+        <item quantity="one">%1$d-week streak · best %2$d</item>
+        <item quantity="other">%1$d-week streak · best %2$d</item>
+    </plurals>
+    <string name="streak_none">No streak yet · best %1$d</string>
+    <string name="entry_no_value">No value</string>
+
+    <string name="detail_target">Target: %1$s</string>
+    <string name="detail_reminder">Reminder: %1$s</string>
+    <string name="detail_log_entry">Log entry</string>
+    <string name="detail_recent_trend">Recent trend</string>
+    <string name="detail_history">History</string>
+    <string name="detail_no_entries">No entries yet. Start logging to build history and streaks.</string>
+    <string name="detail_not_found">Tracker not found.</string>
+
+    <plurals name="chart_summary_empty">
+        <item quantity="one">Last %1$d day: no data.</item>
+        <item quantity="other">Last %1$d days: no data.</item>
+    </plurals>
+    <plurals name="chart_summary_target">
+        <item quantity="one">Last %1$d day: %2$d of %1$d days met target, average %3$s</item>
+        <item quantity="other">Last %1$d days: %2$d of %1$d days met target, average %3$s</item>
+    </plurals>
+    <plurals name="chart_summary_entries">
+        <item quantity="one">Last %1$d day: %2$d of %1$d days with an entry, average %3$s</item>
+        <item quantity="other">Last %1$d days: %2$d of %1$d days with an entry, average %3$s</item>
+    </plurals>
+    <plurals name="chart_line_empty">
+        <item quantity="one">No measurements in the last %1$d day.</item>
+        <item quantity="other">No measurements in the last %1$d days.</item>
+    </plurals>
+    <string name="calendar_previous_month">Previous month</string>
+    <string name="calendar_next_month">Next month</string>
+    <string name="calendar_day_description">%1$s, %2$s</string>
+    <string name="calendar_state_met">target met</string>
+    <string name="calendar_state_partial">partly met</string>
+    <string name="calendar_state_missed">missed</string>
+    <string name="calendar_state_open">today, not yet met</string>
+    <string name="calendar_state_future">no entry</string>
+
+    <string name="archived_empty">No archived trackers.</string>
+
+    <string name="settings_privacy_title">Privacy-first defaults</string>
+    <string name="settings_privacy_body">Consecutor keeps tracker data on-device, uses explicit export/import for portability, and avoids account-based sync in v1.</string>
+    <string name="settings_export_warning">Exports are unencrypted and contain your full history. Store them somewhere private.</string>
+    <string name="settings_csv_title">CSV export</string>
+    <string name="settings_csv_body">Save or share a spreadsheet-friendly snapshot of trackers and entries. %1$s</string>
+    <string name="settings_backup_title">Full backup</string>
+    <string name="settings_backup_body">Export or import the full app state as a versioned JSON backup file. Import previews the backup before replacing your current data. %1$s</string>
+    <string name="settings_save_to_file">Save to file…</string>
+    <string name="settings_share">Share…</string>
+    <string name="settings_import_backup">Import backup</string>
+    <string name="settings_notifications_on_title">Notifications: On</string>
+    <string name="settings_notifications_off_title">Notifications: Off</string>
+    <string name="settings_notifications_on_body">Reminders are local only.</string>
+    <string name="settings_notifications_off_body">Reminders are local only. Enable notifications to receive your scheduled reminders.</string>
+    <string name="settings_allow_notifications">Allow notifications</string>
+
+    <string name="editor_title_new_tracker">New tracker</string>
+    <string name="editor_title_edit_tracker">Edit tracker</string>
+    <string name="editor_name">Name</string>
+    <string name="editor_emoji">Emoji</string>
+    <string name="editor_description">Description</string>
+    <string name="editor_type">Type</string>
+    <string name="editor_type_yes_no">Yes/No</string>
+    <string name="editor_type_count">Count</string>
+    <string name="editor_type_measure">Measure</string>
+    <string name="editor_type_locked">Type can\'t change after logging.</string>
+    <string name="editor_unit">Unit</string>
+    <string name="editor_track_target">Track streak target</string>
+    <string name="editor_period_daily">Daily</string>
+    <string name="editor_period_weekly">Weekly</string>
+    <string name="editor_days_per_week">Days per week</string>
+    <string name="editor_target_value">Target value</string>
+    <string name="editor_reminder">Reminder</string>
+    <string name="editor_reminder_days">Reminder days</string>
+    <string name="editor_reminder_days_hint">No days selected means every day.</string>
+
+    <string name="entry_title_log">Log entry</string>
+    <string name="entry_title_edit">Edit entry</string>
+    <string name="entry_today">Today</string>
+    <string name="entry_yesterday">Yesterday</string>
+    <string name="entry_value">Value</string>
+    <string name="entry_value_with_unit">Value (%1$s)</string>
+    <string name="entry_note">Note</string>
+
+    <string name="error_required">Required.</string>
+    <string name="error_too_long">Too long.</string>
+    <plurals name="error_too_long_limit">
+        <item quantity="one">At most %1$d character.</item>
+        <item quantity="other">At most %1$d characters.</item>
+    </plurals>
+    <string name="error_not_a_number">Enter a number.</string>
+    <string name="error_must_be_positive">Must be greater than zero.</string>
+    <string name="error_out_of_range">Enter a whole number from 1 to 7.</string>
+    <string name="error_future_date">Date can\'t be in the future.</string>
+    <string name="error_invalid_date">Use the format YYYY-MM-DD</string>
+    <string name="error_one_character_only">Use a single emoji or character.</string>
+    <string name="error_already_logged">Already logged on this date.</string>
 
     <string name="event_tracker_created">Tracker created.</string>
     <string name="event_tracker_updated">Tracker updated.</string>

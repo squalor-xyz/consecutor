@@ -27,6 +27,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import java.time.LocalDate
@@ -35,6 +36,7 @@ import java.time.format.FormatStyle
 import com.squalor.consecutor.EditorLimits
 import com.squalor.consecutor.EntryField
 import com.squalor.consecutor.NumberRules
+import com.squalor.consecutor.R
 import com.squalor.consecutor.validateEntryForm
 import com.squalor.consecutor.TrackerSummary
 import com.squalor.consecutor.TrackerDetail
@@ -140,19 +142,19 @@ internal fun EntryEditorDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(if (state.entryId == null) "Log entry" else "Edit entry") },
+        title = { Text(stringResource(if (state.entryId == null) R.string.entry_title_log else R.string.entry_title_edit)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     FilterChip(
                         selected = date == today,
                         onClick = { dateText = today.toString() },
-                        label = { Text("Today") }
+                        label = { Text(stringResource(R.string.entry_today)) }
                     )
                     FilterChip(
                         selected = date == today.minusDays(1),
                         onClick = { dateText = today.minusDays(1).toString() },
-                        label = { Text("Yesterday") }
+                        label = { Text(stringResource(R.string.entry_yesterday)) }
                     )
                 }
                 OutlinedButton(
@@ -166,7 +168,12 @@ internal fun EntryEditorDialog(
                     OutlinedTextField(
                         value = valueText,
                         onValueChange = { valueText = it },
-                        label = { Text("Value ${state.unit?.let { "($it)" } ?: ""}".trim()) },
+                        label = {
+                            Text(
+                                if (state.unit != null) stringResource(R.string.entry_value_with_unit, state.unit)
+                                else stringResource(R.string.entry_value)
+                            )
+                        },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                         isError = errorFor(EntryField.VALUE) != null,
                         supportingText = errorSupportingText(errorFor(EntryField.VALUE)),
@@ -176,7 +183,7 @@ internal fun EntryEditorDialog(
                 OutlinedTextField(
                     value = note,
                     onValueChange = { note = it },
-                    label = { Text("Note") },
+                    label = { Text(stringResource(R.string.entry_note)) },
                     isError = errorFor(EntryField.NOTE) != null,
                     supportingText = errorSupportingText(errorFor(EntryField.NOTE), EditorLimits.NOTE),
                     modifier = Modifier.fillMaxWidth()
@@ -199,18 +206,18 @@ internal fun EntryEditorDialog(
                     )
                 )
             }) {
-                Text("Save")
+                Text(stringResource(R.string.action_save))
             }
         },
         dismissButton = {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 onDelete?.let {
                     TextButton(onClick = it) {
-                        Text("Delete")
+                        Text(stringResource(R.string.action_delete))
                     }
                 }
                 TextButton(onClick = onDismiss) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.action_cancel))
                 }
             }
         }
@@ -229,12 +236,12 @@ internal fun EntryEditorDialog(
                     pickerState.selectedDateMillis?.let { dateText = it.fromPickerMillis().toString() }
                     showDatePicker = false
                 }) {
-                    Text("OK")
+                    Text(stringResource(R.string.action_ok))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDatePicker = false }) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.action_cancel))
                 }
             }
         ) {
