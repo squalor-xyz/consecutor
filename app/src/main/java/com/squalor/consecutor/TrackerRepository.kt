@@ -73,11 +73,16 @@ class TrackerRepository(
         trackerDao.deleteReminderForTracker(trackerId)
     }
 
-    suspend fun addEntry(trackerId: Long, trackerType: TrackerType, draft: EntryDraft) {
+    suspend fun addEntry(trackerId: Long, trackerType: TrackerType, draft: EntryDraft): Long {
         requireValidValue(draft)
         val now = System.currentTimeMillis()
-        database.withTransaction {
-            trackerDao.insertEntry(
+        return database.withTransaction {
+            if (trackerType == TrackerType.YES_NO) {
+                trackerDao.findActiveEntryId(trackerId, draft.effectiveDate.toString())?.let {
+                    return@withTransaction it
+                }
+            }
+            val entryId = trackerDao.insertEntry(
                 EntryEntity(
                     trackerId = trackerId,
                     effectiveDate = draft.effectiveDate.toString(),
@@ -89,6 +94,7 @@ class TrackerRepository(
                 )
             )
             bumpTracker(trackerId, now)
+            entryId
         }
     }
 
