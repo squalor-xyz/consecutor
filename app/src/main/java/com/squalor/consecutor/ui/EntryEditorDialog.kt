@@ -72,6 +72,8 @@ internal data class EntryEditorState(
             existingNote = null
         )
 
+        fun forDate(detail: TrackerDetail, date: LocalDate): EntryEditorState = new(detail).copy(existingDate = date)
+
         fun from(detail: TrackerDetail, entry: EntryItem): EntryEditorState = EntryEditorState(
             trackerId = detail.tracker.id,
             trackerType = detail.tracker.type,
