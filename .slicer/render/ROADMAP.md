@@ -20,7 +20,7 @@
 - Advanced analytics suite.
 - Squalor brand marks in the APK (brand marks are all-rights-reserved; the app icon is app-specific and MPL-2.0).
 
-59 items · — 20 · done 28 · later 11
+60 items · — 20 · done 29 · later 11
 
 | # | Slice | Title | Size | Effort | Trees | Findings | Status |
 |---|---|---|---|---|---|---|---|
@@ -52,21 +52,21 @@
 | 21 | [S42](slices/S42.md) | Calendar heatmap with tap-to-log | M | 2 | ui | TrackerAnalytics.kt (no month view); detail screen has no way to see hits and misses over a month | — |
 | 22 | [S45](slices/S45.md) | Accessibility: merged semantics, 48dp targets, 200% font scale | M | 2 | ui | MainScreen.kt (icons with null descriptions, fixed widths such as width(110.dp)) | — |
 | P3 Release | | | | | | | |
-| 23 | [S48](slices/S48.md) | Raise compile and target SDK to the current Play requirement | S | 1 | release | app/build.gradle:14,19 (compileSdk 34, targetSdk 34) | — |
-| 24 | [S49](slices/S49.md) | Store listing: fastlane metadata and screenshots | M | 2 | docs | no fastlane directory; no screenshots or listing text exist | — |
+| 23 | [S49](slices/S49.md) | Store listing: fastlane metadata and screenshots | M | 2 | docs | no fastlane directory; no screenshots or listing text exist | — |
 | Later | | | | | | | |
-| 25 | S52 | Dashboard performance with years of history |  | 3 | data |  | later |
+| 24 | S52 | Dashboard performance with years of history |  | 3 | data |  | later |
 | P2 MVP UX | | | | | | | |
-| 26 | [S54](slices/S54.md) | Resource-id UiEvents and structured target and reminder labels | M | 2 | ui | TrackerAnalytics.kt:172-190 (English formatTarget/formatReminder, 24-hour time); TrackerViewModel.kt (English messages); ReminderScheduler.kt:60-81 (English channel and notification text) | — |
+| 25 | [S54](slices/S54.md) | Resource-id UiEvents and structured target and reminder labels | M | 2 | ui | TrackerAnalytics.kt:172-190 (English formatTarget/formatReminder, 24-hour time); TrackerViewModel.kt (English messages); ReminderScheduler.kt:60-81 (English channel and notification text) | — |
 | P1 Correctness | | | | | | | |
-| 27 | [S55](slices/S55.md) | CI: instrumented tests on a Gradle Managed Device | M | 2 | build | .github/workflows/build.yml (unit tests only); S05, S10, S15, S35, S39 and S45 add instrumented tests that CI never runs | — |
-| 28 | [S56](slices/S56.md) | Deleted entries: never exported, purged after 24 hours | S | 1 | data | BackupCodec.kt:46-57 (encode writes soft-deleted entries and their notes); TrackerRepository.kt:104-109 (soft delete only, never purged) | — |
+| 26 | [S55](slices/S55.md) | CI: instrumented tests on a Gradle Managed Device | M | 2 | build | .github/workflows/build.yml (unit tests only); S05, S10, S15, S35, S39 and S45 add instrumented tests that CI never runs | — |
+| 27 | [S56](slices/S56.md) | Deleted entries: never exported, purged after 24 hours | S | 1 | data | BackupCodec.kt:46-57 (encode writes soft-deleted entries and their notes); TrackerRepository.kt:104-109 (soft delete only, never purged) | — |
 | P3 Release | | | | | | | |
-| 29 | [S57](slices/S57.md) | Settings About card: version, licence, source link and third-party notices | S | 1 | ui | MainScreen.kt:455-461 ("Privacy-first defaults … in v1" header); no version or licence information anywhere in the app | — |
+| 28 | [S57](slices/S57.md) | Settings About card: version, licence, source link and third-party notices | S | 1 | ui | MainScreen.kt:455-461 ("Privacy-first defaults … in v1" header); no version or licence information anywhere in the app | — |
 | P2 MVP UX | | | | | | | |
-| 30 | [S58](slices/S58.md) | Cap content width on large screens and in landscape | S | 1 | ui | all screens use fillMaxSize LazyColumns that stretch edge to edge on tablets and in landscape | — |
+| 29 | [S58](slices/S58.md) | Cap content width on large screens and in landscape | S | 1 | ui | all screens use fillMaxSize LazyColumns that stretch edge to edge on tablets and in landscape | — |
 | Later | | | | | | | |
-| 31 | S59 | Optional scheduled backup to a user-chosen folder |  | 2 | data |  | later |
+| 30 | S59 | Optional scheduled backup to a user-chosen folder |  | 2 | data |  | later |
+| 31 | [S60](slices/S60.md) | Editor dialogs keep Save and Cancel above the keyboard | S | 1 | ui | S48 walkthrough 2026-10-04: TrackerEditorDialog.kt:83-90 (AlertDialog with LazyColumn heightIn(max = 520.dp)); Save row partly under the IME on API 36, same at targetSdk 34 | — |
 
 ---
 
@@ -103,10 +103,11 @@
 | P3 Release | | | | | | | |
 | 55 | [S46](slices/S46.md) | Dependency trim and version alignment (no new dependencies) | S | 1 | release | app/build.gradle:51-61 (appcompat, material, compose material M2 unused; lifecycle 2.6.2 vs 2.8.2); app/build.gradle:1-5 (stale comment) | done |
 | 56 | [S47](slices/S47.md) | Release signing from environment or keystore.properties, unsigned fallback | S | 1 | release | app/build.gradle:25-30 (no signingConfig); .gitignore (keystores ignored, keystore.properties is not) | done |
-| 57 | [S50](slices/S50.md) | Remove the ai-output sample dump | S | 1 | docs | ai-output/chatgpt-output.md (1,167 lines of generated sample code and docs that mention an MIT licence, in an MPL-2.0 repo) | done |
-| 58 | [S51](slices/S51.md) | Make auto-backup exclusion explicit | S | 1 | release | res/xml/backup_rules.xml and res/xml/data_extraction_rules.xml (template files with TODOs); AndroidManifest.xml (allowBackup=false) | done |
+| 57 | [S48](slices/S48.md) | Raise compile and target SDK to the current Play requirement | S | 1 | release | app/build.gradle:14,19 (compileSdk 34, targetSdk 34) | done |
+| 58 | [S50](slices/S50.md) | Remove the ai-output sample dump | S | 1 | docs | ai-output/chatgpt-output.md (1,167 lines of generated sample code and docs that mention an MIT licence, in an MPL-2.0 repo) | done |
+| 59 | [S51](slices/S51.md) | Make auto-backup exclusion explicit | S | 1 | release | res/xml/backup_rules.xml and res/xml/data_extraction_rules.xml (template files with TODOs); AndroidManifest.xml (allowBackup=false) | done |
 | P0 Build green | | | | | | | |
-| 59 | [S53](slices/S53.md) | Toolchain refresh: Kotlin 2.x, Compose compiler plugin, Compose BOM, Material3 1.3, lifecycle, version catalog | M | 2 | build | app/build.gradle:1-5,35-61 (Kotlin 1.9.20, Compose 1.5.4, Material3 1.2.1, lifecycle 2.6.2 vs 2.8.2, versions inline); gradle/libs.versions.toml | done |
+| 60 | [S53](slices/S53.md) | Toolchain refresh: Kotlin 2.x, Compose compiler plugin, Compose BOM, Material3 1.3, lifecycle, version catalog | M | 2 | build | app/build.gradle:1-5,35-61 (Kotlin 1.9.20, Compose 1.5.4, Material3 1.2.1, lifecycle 2.6.2 vs 2.8.2, versions inline); gradle/libs.versions.toml | done |
 
 ## Licensing
 

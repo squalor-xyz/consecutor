@@ -1407,7 +1407,7 @@
       "id": "S48",
       "title": "Raise compile and target SDK to the current Play requirement",
       "short_title": "Raise compile and target SDK to the current Play requirement",
-      "status": "review",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S46",
