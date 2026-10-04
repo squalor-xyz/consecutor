@@ -9,6 +9,40 @@ import org.junit.Test
 class BackupCodecTest {
 
     @Test
+    fun `encode omits deleted entries`() {
+        val bundle = TrackerBundle(
+            tracker = TrackerEntity(id = 1, name = "Water", type = TrackerType.COUNT,
+                createdAtEpochMs = 1, updatedAtEpochMs = 1),
+            entries = listOf(
+                EntryEntity(trackerId = 1, effectiveDate = "2026-01-01", occurredAtEpochMs = 1,
+                    value = 1.0, note = "active", createdAtEpochMs = 1, updatedAtEpochMs = 1),
+                EntryEntity(trackerId = 1, effectiveDate = "2026-01-02", occurredAtEpochMs = 2,
+                    value = 2.0, note = "secret", createdAtEpochMs = 2, updatedAtEpochMs = 2,
+                    isDeleted = true)
+            ), target = emptyList(), reminder = emptyList()
+        )
+        val json = BackupCodec.encode(listOf(bundle))
+        val entries = org.json.JSONObject(json).getJSONArray("trackers")
+            .getJSONObject(0).getJSONArray("entries")
+        assertEquals(1, entries.length())
+        assertEquals(false, entries.getJSONObject(0).getBoolean("isDeleted"))
+        assertTrue(!json.contains("secret"))
+        assertEquals("active", BackupCodec.decode(json).trackers.single().entries.single().note)
+    }
+
+    @Test
+    fun `decode accepts deleted entries in legacy backups`() {
+        val json = """{"version":1,"trackers":[{
+            "tracker":{"name":"Water","type":"COUNT","createdAtEpochMs":1,"updatedAtEpochMs":1},
+            "entries":[{"effectiveDate":"2026-01-01","occurredAtEpochMs":1,"value":1,
+                "note":"legacy deleted note","createdAtEpochMs":1,"updatedAtEpochMs":2,"isDeleted":true}]
+        }]}"""
+        val entry = BackupCodec.decode(json).trackers.single().entries.single()
+        assertTrue(entry.isDeleted)
+        assertEquals("legacy deleted note", entry.note)
+    }
+
+    @Test
     fun `exportedAt round-trips through encode and decode`() {
         val timestamp = 1_800_000_000_000L
         val json = BackupCodec.encode(emptyList(), timestamp)
@@ -80,7 +114,7 @@ class BackupCodecTest {
                     note = "Missed",
                     createdAtEpochMs = now,
                     updatedAtEpochMs = now,
-                    isDeleted = true   // should survive roundtrip
+                    isDeleted = true
                 )
             ),
             target = listOf(
@@ -118,14 +152,9 @@ class BackupCodecTest {
         assertEquals(21, imported.reminder!!.hourOfDay)
         assertEquals("1,2,3,4,5", imported.reminder!!.daysOfWeekCsv)
 
-        assertEquals(3, imported.entries.size)
-        val deleted = imported.entries.first { it.isDeleted }
-        assertEquals("2026-04-22", deleted.effectiveDate)
-        assertEquals("Missed", deleted.note)
-        assertTrue(deleted.isDeleted)
-
-        val active = imported.entries.filterNot { it.isDeleted }
-        assertEquals(2, active.size)
+        assertEquals(2, imported.entries.size)
+        assertTrue(imported.entries.none { it.isDeleted })
+        assertTrue(!json.contains("Missed"))
     }
 
     @Test

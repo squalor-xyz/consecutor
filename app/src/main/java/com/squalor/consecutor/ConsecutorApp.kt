@@ -21,6 +21,9 @@ class ConsecutorApp : Application() {
         }
         reminderScheduler.ensureNotificationChannel()
         appScope.launch(Dispatchers.IO) {
+            runCatching { repository.purgeDeletedEntries() }
+        }
+        appScope.launch(Dispatchers.IO) {
             ExportCache.clear(ExportCache.exportsDir(this@ConsecutorApp))
         }
     }

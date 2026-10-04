@@ -366,6 +366,7 @@ Before shipping anywhere:
 
 ## Persistence Notes
 
+- Deleted entries are kept for 24 hours (for Undo), then removed at the next app start; they are never written to backups or CSV.
 - Room schema version is currently `1` (the frozen baseline).
 - Schemas are exported to `app/schemas/` and committed; regenerate and commit them with every schema change.
 - `fallbackToDestructiveMigration()` is enabled in debug builds only. Pre-1.0 data loss is acceptable (owner decision).

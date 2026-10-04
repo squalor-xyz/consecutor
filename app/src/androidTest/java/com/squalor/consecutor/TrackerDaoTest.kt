@@ -58,6 +58,60 @@ class TrackerDaoTest {
     private fun draft() = EntryDraft(effectiveDate = LocalDate.of(2026, 1, 2), value = 2.0, note = null)
 
     @Test
+    fun purgeDeletedEntriesRemovesOnlyDeletedEntriesOlderThanCutoff() = runBlocking {
+        val trackerId = dao.insertTracker(tracker())
+        val active = dao.insertEntry(entry(trackerId).copy(updatedAtEpochMs = 99))
+        val old = dao.insertEntry(entry(trackerId).copy(isDeleted = true, updatedAtEpochMs = 99))
+        val boundary = dao.insertEntry(entry(trackerId).copy(isDeleted = true, updatedAtEpochMs = 100))
+        val recent = dao.insertEntry(entry(trackerId).copy(isDeleted = true, updatedAtEpochMs = 101))
+
+        assertEquals(1, dao.purgeDeletedEntries(100))
+        assertNull(dao.getEntryById(old))
+        assertEquals(setOf(active, boundary, recent), dao.getTrackerBundles().single().entries.map { it.id }.toSet())
+        assertEquals(0, dao.purgeDeletedEntries(100))
+    }
+
+    @Test
+    fun repositoryPurgeUsesTwentyFourHoursSinceDeletionAndPreservesUndo() = runBlocking {
+        val trackerId = dao.insertTracker(tracker())
+        val now = 2 * TrackerRepository.PURGE_AFTER_MS
+        val cutoff = now - TrackerRepository.PURGE_AFTER_MS
+        val old = dao.insertEntry(entry(trackerId).copy(isDeleted = true, updatedAtEpochMs = cutoff - 1))
+        val boundary = dao.insertEntry(entry(trackerId).copy(isDeleted = true, updatedAtEpochMs = cutoff))
+        val recent = dao.insertEntry(entry(trackerId).copy(isDeleted = true, updatedAtEpochMs = now - 1))
+        val restored = dao.insertEntry(entry(trackerId).copy(isDeleted = true, updatedAtEpochMs = cutoff - 1))
+        repository.restoreEntries(trackerId, listOf(restored))
+
+        assertEquals(1, repository.purgeDeletedEntries(now))
+        assertNull(dao.getEntryById(old))
+        assertTrue(dao.getEntryById(boundary)!!.isDeleted)
+        assertTrue(dao.getEntryById(recent)!!.isDeleted)
+        assertEquals(false, dao.getEntryById(restored)!!.isDeleted)
+    }
+
+    @Test
+    fun importBackupSkipsEntriesMarkedDeleted() = runBlocking {
+        val previousTracker = dao.insertTracker(tracker("Replaced"))
+        dao.insertEntry(entry(previousTracker))
+        val json = """{"version":1,"trackers":[{
+            "tracker":{"name":"Imported","type":"COUNT","createdAtEpochMs":1,"updatedAtEpochMs":1},
+            "entries":[
+                {"effectiveDate":"2026-01-01","occurredAtEpochMs":1,"value":1,
+                    "note":"active","createdAtEpochMs":1,"updatedAtEpochMs":1,"isDeleted":false},
+                {"effectiveDate":"2026-01-02","occurredAtEpochMs":2,"value":2,
+                    "note":"secret","createdAtEpochMs":2,"updatedAtEpochMs":2,"isDeleted":true}]
+        }]}"""
+        repository.importBackup(json)
+
+        val imported = dao.getTrackerBundles().single()
+        assertEquals("Imported", imported.tracker.name)
+        assertEquals("active", imported.entries.single().note)
+        assertEquals(false, imported.entries.single().isDeleted)
+        assertTrue(!repository.backupJson().contains("secret"))
+        assertTrue(!repository.entriesCsv().contains("secret"))
+    }
+
+    @Test
     fun yesNoAddEntryTwiceOnOneDateReturnsTheSameIdWithoutChangingEntryOrTracker() = runBlocking {
         val trackerId = dao.insertTracker(tracker().copy(type = TrackerType.YES_NO))
         val firstId = repository.addEntry(trackerId, TrackerType.YES_NO, draft().copy(note = "First"))
