@@ -66,10 +66,19 @@ class ReminderScheduler(private val context: Context) {
             return
         }
         val title = listOfNotNull(trackerEmoji, trackerName).joinToString(" ").trim()
+        val intent = Intent(context, MainActivity::class.java)
+            .putExtra(EXTRA_TRACKER_ID, trackerId)
+        val contentIntent = PendingIntent.getActivity(
+            context,
+            trackerId.toInt(),
+            intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(if (title.isBlank()) "Tracker reminder" else title)
             .setContentText("Log today's progress in Consecutor.")
+            .setContentIntent(contentIntent)
             .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .build()

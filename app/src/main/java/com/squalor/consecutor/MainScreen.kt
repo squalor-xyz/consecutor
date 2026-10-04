@@ -112,6 +112,9 @@ fun MainScreen(viewModel: TrackerViewModel) {
         viewModel.select(null)
     }
     BackHandler(enabled = screen != Screen.DASHBOARD, onBack = returnToDashboard)
+    LaunchedEffect(selectedId) {
+        if (selectedId != null) screen = Screen.DETAIL
+    }
     LaunchedEffect(screen, selectedId) {
         if (screen == Screen.DETAIL && selectedId == null) screen = Screen.DASHBOARD
     }
