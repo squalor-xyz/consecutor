@@ -1801,12 +1801,15 @@
       "id": "S61",
       "title": "Fix the five failing NavigationTest tests on the managed device",
       "short_title": "Fix NavigationTest failures",
-      "status": "open",
+      "status": "review",
       "has_slice": true,
       "depends_on": [
         "S55"
       ],
-      "notes": [],
+      "notes": [
+        "**2026-10-04** — Baseline on current main (aosp-atd): 38 tests, 3 failures, all Espresso.pressBack RootViewWithoutFocusException (backFromDetail, backFromSettings, backFromArchived); S15 text fixes held. A temporary dumpsys diagnostic in backFromSettings showed the focused window was \"Application Not Responding: system\" with MainActivity top-resumed; which process the ANR is for was not found. Fix (9bb1380): NavigationTest pressBack() helper uses onBackPressedDispatcher.onBackPressed() instead of Espresso.pressBack. Local ./gradlew pixel6api34DebugAndroidTest: 38 tests, 0 failures (6m20s). Not yet checked: GitHub instrumented job. DEVELOPERS.md still says the job stays red until S61; not changed here.",
+        "**2026-10-04** — Correction: DEVELOPERS.md was changed after the note above. Commit e3b77a9 removes the sentence \"The job stays red until S61.\" from the Local Test Runs section. The GitHub instrumented job is still not checked."
+      ],
       "claim": null,
       "fields": {
         "size": "S",
@@ -1822,7 +1825,7 @@
         "importance": 3,
         "urgency": 2,
         "effort": 2,
-        "attempts": 0
+        "attempts": 1
       }
     }
   ],

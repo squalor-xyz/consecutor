@@ -21,7 +21,6 @@ import androidx.compose.ui.test.performScrollToNode
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import java.time.LocalDate
-import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -67,7 +66,7 @@ class NavigationTest {
     @Test
     fun backFromDetailReturnsToDashboard() {
         openTracker()
-        Espresso.pressBack()
+        pressBack()
         composeRule.onNodeWithContentDescription("Add tracker").assertIsDisplayed()
     }
 
@@ -75,7 +74,7 @@ class NavigationTest {
     fun backFromSettingsReturnsToDashboard() {
         composeRule.onNodeWithContentDescription("Settings").performClick()
         composeRule.onNodeWithText("Privacy-first defaults").assertIsDisplayed()
-        Espresso.pressBack()
+        pressBack()
         composeRule.onNodeWithContentDescription("Add tracker").assertIsDisplayed()
     }
 
@@ -239,7 +238,7 @@ class NavigationTest {
         archiveTracker()
         composeRule.onNodeWithText("Archived (1)").performClick()
         waitForNode(hasText("Restore"))
-        Espresso.pressBack()
+        pressBack()
         composeRule.onNodeWithContentDescription("Add tracker").assertIsDisplayed()
     }
 
@@ -322,6 +321,13 @@ class NavigationTest {
         return runBlocking(Dispatchers.IO) {
             app.repository.getReminderBundles().single().entries.filterNot { it.isDeleted }
         }
+    }
+
+    // Espresso.pressBack needs the app window to have focus, which aosp-atd's system ANR dialog takes away.
+    // This drives the same back dispatcher without a key event.
+    private fun pressBack() {
+        composeRule.activityRule.scenario.onActivity { it.onBackPressedDispatcher.onBackPressed() }
+        composeRule.waitForIdle()
     }
 
     private fun waitForNode(matcher: SemanticsMatcher) {
