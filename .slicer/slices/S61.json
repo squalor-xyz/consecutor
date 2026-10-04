@@ -12,7 +12,7 @@
   "sections": [
     {
       "heading": "Why",
-      "body": "- S55's `instrumented` CI job runs the `androidTest` suite on a Gradle Managed Device. It stays red until these five `NavigationTest` tests pass.\n- Three fail on assertions. `assertTextContains` defaults to `substring = false`, so one text item on the node must equal the expected string.\n- Two fail with `RootViewWithoutFocusException` from `Espresso.pressBack`."
+      "body": "- S55's `instrumented` CI job runs the `androidTest` suite on a Gradle Managed Device (`pixel6api34`, `aosp-atd`). It stays red until that suite passes.\n- The run before S15 was 29 tests and 5 `NavigationTest` failures. S15 changed the three assertion tests on main. The two `Espresso.pressBack` failures were not part of that change.\n- Re-run the current suite before editing. The suite is larger than 29 tests after S15."
     },
     {
       "heading": "Files",
@@ -20,15 +20,15 @@
     },
     {
       "heading": "Failing tests",
-      "body": "Instrumented tests in `NavigationTest`, all failing on `pixel6api34`:\n- `editingTrackerNameSurvivesRecreation`: `performTextInput(\" edited\")` runs at selection 0 on the prefilled name, so `EditableText` is ` editedNavigation tracker` and no item equals ` edited`.\n- `entryFieldsSurviveRecreation`: a new COUNT entry prefills Value with `1`, so `performTextInput(\"42\")` produces `421`. Passing sibling tests use `performTextReplacement`.\n- `selectedTrackerSurvivesRecreation`: `onNodeWithText(\"Navigation tracker\")` finds 2 nodes on the detail screen (top bar title and the `headlineSmall` text in the detail card).\n- `backFromDetailReturnsToDashboard` and `backFromSettingsReturnsToDashboard`: `Espresso.pressBack` waits 10 seconds and throws `RootViewWithoutFocusException` (`has-window-focus=false`). Clicks, text entry and `scenario.recreate()` complete in the other tests on the same image."
+      "body": "Instrumented tests in `NavigationTest` on `pixel6api34` (`aosp-atd`). The run before S15 was 29 tests and 5 failures:\n\n- `editingTrackerNameSurvivesRecreation`\n- `entryFieldsSurviveRecreation`\n- `selectedTrackerSurvivesRecreation`\n- `backFromDetailReturnsToDashboard`\n- `backFromSettingsReturnsToDashboard`\n\nS15 (`f374778`) changed the first three on main: `performTextReplacement` of the full field value, and `onAllNodesWithText` for the duplicate detail title. It did not change the two `Espresso.pressBack` tests. It also added `backFromArchivedReturnsToDashboard`, which uses `pressBack` and passed on a normal API 34 emulator, not on `aosp-atd`. The merged suite is larger than 29 tests. Re-run before editing."
     },
     {
       "heading": "Implement",
-      "body": "1. Fix the two text-input tests so they replace the prefilled value (`performTextReplacement`) and assert the string they actually expect.\n2. Resolve the duplicate name node in `selectedTrackerSurvivesRecreation`.\n3. Find why the application window has no focus for the two `pressBack` tests on the `aosp-atd` image, and fix it.\n4. Do not change `systemImageSource` in `app/build.gradle`."
+      "body": "1. Re-run `./gradlew pixel6api34DebugAndroidTest` on current main with `systemImageSource` `aosp-atd`.\n2. Fix whatever still fails. The two `pressBack` tests (`backFromDetailReturnsToDashboard`, `backFromSettingsReturnsToDashboard`) are the failures S15 did not change. Do not redo S15's text-replacement edits if those tests already pass.\n3. Do not change `systemImageSource` in `app/build.gradle`. Do not change the `instrumented` CI job or the `pixel6api34` device."
     },
     {
       "heading": "Check",
-      "body": "- `./gradlew pixel6api34DebugAndroidTest` passes: 29 tests, 0 failures.\n- The `instrumented` job on GitHub is green (owner pushes)."
+      "body": "- `./gradlew pixel6api34DebugAndroidTest` passes on the current suite, 0 failures.\n- The `instrumented` job on GitHub is green (owner pushes)."
     },
     {
       "heading": "Git",
