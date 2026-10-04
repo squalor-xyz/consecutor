@@ -22,7 +22,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
-import androidx.compose.material3.SnackbarDuration
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -131,10 +130,11 @@ fun MainScreen(viewModel: TrackerViewModel) {
                             is UiEvent.Logged -> event.text
                             is UiEvent.Cleared -> event.text
                         }
+                        // The default duration is indefinite while Undo is showing.
+                        // The next event dismisses this snackbar.
                         val result = snackbarHostState.showSnackbar(
                             message = text,
-                            actionLabel = "Undo",
-                            duration = SnackbarDuration.Short
+                            actionLabel = "Undo"
                         )
                         if (result == SnackbarResult.ActionPerformed) viewModel.undo(event)
                     }
