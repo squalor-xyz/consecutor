@@ -556,13 +556,15 @@
       "id": "S19",
       "title": "Release build: R8, shrinkResources, versioning scheme, dependenciesInfo",
       "short_title": "Release build: R8, shrinkResources, versioning scheme, dependenciesInfo",
-      "status": "open",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S04",
         "S47"
       ],
-      "notes": [],
+      "notes": [
+        "**2026-10-04** — Release APK before minification: versionCode 1, 12929555 bytes (unsigned, minify off, earlier assembleRelease on main). After R8 and shrinkResources: versionCode 10000, versionName 1.0.0, 1466054 bytes. bundleRelease AAB is 3712283 bytes. assembleRelease and bundleRelease succeeded with no new ProGuard keep rules. aapt dump permissions lists POST_NOTIFICATIONS, RECEIVE_BOOT_COMPLETED, and the pre-existing AndroidX DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION. A throwaway keystore signed a local copy; apksigner verified v2 and v3; the keystore and signed copy were deleted. No device was attached, so the install smoke test and logcat pass were not run."
+      ],
       "claim": null,
       "fields": {
         "size": "S",
