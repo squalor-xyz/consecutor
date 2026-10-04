@@ -1081,7 +1081,7 @@
       "id": "S37",
       "title": "Notification tap opens the tracker",
       "short_title": "Notification tap opens the tracker",
-      "status": "review",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S08",
