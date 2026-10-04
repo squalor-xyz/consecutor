@@ -1,0 +1,39 @@
+{
+  "id": "S60",
+  "title": "Editor dialogs keep Save and Cancel above the keyboard",
+  "lead": [],
+  "depends_note": null,
+  "findings_note": "S48 walkthrough 2026-10-04: TrackerEditorDialog.kt:83-90 (AlertDialog with LazyColumn heightIn(max = 520.dp)); Save row partly under the IME on API 36, same at targetSdk 34",
+  "size": "S",
+  "flags": [],
+  "trees_note": "ui",
+  "trees_plural": false,
+  "boundary": "**Not in this slice:** field validation (S14), the date and time pickers themselves (S40), and accessibility labels (S45).",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "On a Pixel 6 emulator (API 36), focusing the Name field in the New tracker dialog opens the keyboard over the bottom of the dialog: the Save button is cut off and only its top half shows above the keyboard. The same happens with a targetSdk 34 build, so it predates S48. Users fill in the name first, so Save is hidden at exactly the moment they reach for it."
+    },
+    {
+      "heading": "Files",
+      "body": "- `app/src/main/java/com/squalor/consecutor/ui/TrackerEditorDialog.kt`\n- `app/src/main/java/com/squalor/consecutor/ui/EntryEditorDialog.kt` (check it for the same problem)"
+    },
+    {
+      "heading": "Failing tests",
+      "body": "- None automated. The emulator check below is the acceptance test."
+    },
+    {
+      "heading": "Implement",
+      "body": "1. Reproduce first: Pixel 6 emulator, open New tracker, tap Name, take a screenshot. Save must be partly hidden.\n2. Make the dialog fit the space above the keyboard: the confirm and dismiss row stays fully visible and the form scrolls inside the remaining height. The fixed `heightIn(max = 520.dp)` on the LazyColumn is the likely cause. Confirm the fix on the emulator; do not settle for a version that only works in a Preview.\n3. Apply the same fix to `EntryEditorDialog` if step 1 also reproduces there."
+    },
+    {
+      "heading": "Check",
+      "body": "- With the keyboard open on any field of either dialog, Save and Cancel are fully visible and tappable, on a Pixel 6 emulator in portrait and landscape and at font scale 1.3. Record the result with `slicer note`.\n- `./gradlew testDebugUnitTest lintDebug assembleDebug` passes."
+    },
+    {
+      "heading": "Git",
+      "body": "Commit on `main`, message `S60: <summary>`."
+    }
+  ],
+  "notes": []
+}

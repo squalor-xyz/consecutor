@@ -334,3 +334,6 @@
 {"when": "2026-10-04T14:35:56Z", "item": "S48", "action": "note", "from": "", "to": "", "note": "Play requirement checked 2026-10-04 at https://developer.and"}
 {"when": "2026-10-04T14:51:28Z", "item": "S48", "action": "note", "from": "", "to": "", "note": "Walkthrough 2026-10-04, debug build targetSdk=36 (dumpsys co"}
 {"when": "2026-10-04T14:51:28Z", "item": "S48", "action": "handoff", "from": "started", "to": "review", "note": "claim Jon R cleared", "by": "Jon R"}
+{"when": "2026-10-04T14:56:38Z", "item": "S60", "action": "add", "from": "", "to": "open", "note": "Editor dialogs keep Save and Cancel above the keyboard"}
+{"when": "2026-10-04T14:56:38Z", "item": "S45", "action": "edit", "from": "", "to": "", "note": "Implement"}
+{"when": "2026-10-04T14:56:38Z", "item": "S40", "action": "edit", "from": "", "to": "", "note": "Implement"}

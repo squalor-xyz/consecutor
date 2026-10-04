@@ -2,7 +2,7 @@
   "version": 3,
   "id_prefix": "S",
   "id_width": 2,
-  "next_id": 60,
+  "next_id": 61,
   "preamble": "",
   "passes": [],
   "items": [
@@ -1759,6 +1759,34 @@
         "importance": 2,
         "urgency": 1,
         "effort": 2,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S60",
+      "title": "Editor dialogs keep Save and Cancel above the keyboard",
+      "short_title": "Editor dialogs keep Save and Cancel above the keyboard",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [
+        "S40"
+      ],
+      "notes": [],
+      "claim": null,
+      "fields": {
+        "size": "S",
+        "flags": [],
+        "trees": [
+          "ui"
+        ],
+        "trees_literal": false,
+        "findings": "S48 walkthrough 2026-10-04: TrackerEditorDialog.kt:83-90 (AlertDialog with LazyColumn heightIn(max = 520.dp)); Save row partly under the IME on API 36, same at targetSdk 34",
+        "pass": "",
+        "group": "",
+        "reason": "",
+        "importance": 2,
+        "urgency": 2,
+        "effort": 1,
         "attempts": 0
       }
     }
