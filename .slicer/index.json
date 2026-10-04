@@ -1801,7 +1801,7 @@
       "id": "S61",
       "title": "Fix the five failing NavigationTest tests on the managed device",
       "short_title": "Fix NavigationTest failures",
-      "status": "review",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S55"
