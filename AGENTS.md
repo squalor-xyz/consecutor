@@ -2,7 +2,10 @@
 
 ## Slice workflow
 
-Work is planned with `slicer` (see `.slicer/`). For each slice `<ID>`:
+Work is planned with `slicer` (see `.slicer/`).
+Read slices with `slicer show <ID>`; never open `.slicer/` files directly.
+`slicer ai instructions` has the full rules.
+For each slice `<ID>`:
 
 1. Pick it with `slicer next`.
 2. Work in its own worktree: `git worktree add .worktrees/<ID> -b slice/<ID> main`.
