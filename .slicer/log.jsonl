@@ -317,3 +317,5 @@
 {"when": "2026-10-04T00:46:42Z", "item": "S14", "action": "status", "from": "open", "to": "started", "note": "", "by": "Jon R"}
 {"when": "2026-10-04T00:49:01Z", "item": "S14", "action": "handoff", "from": "started", "to": "review", "note": "claim Jon R cleared", "by": "Jon R"}
 {"when": "2026-10-04T00:59:12Z", "item": "S14", "action": "status", "from": "review", "to": "done", "note": "Merged to main. testDebugUnitTest passed (97, including EditorValidationTest). Manual editor checks were not run: no device was connected.", "by": "Jon R"}
+{"when": "2026-10-04T01:00:59Z", "item": "S36", "action": "status", "from": "open", "to": "started", "note": "", "by": "Jon R"}
+{"when": "2026-10-04T01:01:53Z", "item": "S36", "action": "handoff", "from": "started", "to": "review", "note": "claim Jon R cleared", "by": "Jon R"}
