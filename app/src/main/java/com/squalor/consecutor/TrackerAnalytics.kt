@@ -82,6 +82,7 @@ object TrackerAnalytics {
             periodValue = progress.periodValue,
             periodTarget = progress.periodTarget,
             periodMet = progress.periodMet,
+            targetPeriod = progress.targetPeriod,
             lastEntryDate = lastEntryDate,
             targetLabel = target?.let { formatTarget(it, tracker.type, tracker.unit) },
             reminderLabel = reminder?.takeIf { it.enabled }?.let(::formatReminder),
@@ -121,7 +122,8 @@ object TrackerAnalytics {
             todayEntryIds = todayEntries.map { it.id },
             periodValue = periodValue,
             periodTarget = periodTarget,
-            periodMet = periodTarget != null && periodValue >= periodTarget
+            periodMet = periodTarget != null && periodValue >= periodTarget,
+            targetPeriod = effectiveTarget?.period
         )
     }
 
@@ -281,7 +283,8 @@ object TrackerAnalytics {
         val todayEntryIds: List<Long>,
         val periodValue: Double,
         val periodTarget: Double?,
-        val periodMet: Boolean
+        val periodMet: Boolean,
+        val targetPeriod: TargetPeriod?
     )
 
     data class StreakStats(

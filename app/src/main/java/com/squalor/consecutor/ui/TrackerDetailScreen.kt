@@ -53,10 +53,8 @@ internal fun TrackerDetailScreen(
                         style = MaterialTheme.typography.headlineSmall
                     )
                     detail.tracker.description?.let { Text(it) }
-                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        MetricChip("Current streak", detail.summary.currentStreak.toString(), highlight = true)
-                        MetricChip("Longest", detail.summary.longestStreak.toString(), highlight = true)
-                    }
+                    StatusLine(detail.summary)
+                    StreakLine(detail.summary)
                     detail.summary.targetLabel?.let { Text("Target: $it") }
                     detail.summary.reminderLabel?.let { Text("Reminder: $it") }
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface TrackerDao {
     @Transaction
-    @Query("SELECT * FROM trackers ORDER BY isArchived ASC, updatedAtEpochMs DESC")
+    @Query("SELECT * FROM trackers ORDER BY isArchived ASC, createdAtEpochMs ASC, id ASC")
     fun observeTrackerBundles(): Flow<List<TrackerBundle>>
 
     @Transaction
