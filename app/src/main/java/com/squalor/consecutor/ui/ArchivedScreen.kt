@@ -31,19 +31,21 @@ internal fun ArchivedScreen(
         EmptyState(stringResource(R.string.archived_empty), padding = padding)
         return
     }
-    LazyColumn(
-        modifier = Modifier.fillMaxSize().padding(padding),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        items(archived, key = { it.id }) { tracker ->
-            Card(modifier = Modifier.fillMaxWidth()) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(listOfNotNull(tracker.emoji, tracker.name).joinToString(" "), style = MaterialTheme.typography.titleMedium)
-                    Row {
-                        TextButton(onClick = { onRestore(tracker.id) }) { Text(stringResource(R.string.action_restore)) }
-                        TextButton(onClick = { onDelete(tracker) }) {
-                            Text(stringResource(R.string.action_delete), color = MaterialTheme.colorScheme.error)
+    ContentColumn(padding) {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(archived, key = { it.id }) { tracker ->
+                Card(modifier = Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(listOfNotNull(tracker.emoji, tracker.name).joinToString(" "), style = MaterialTheme.typography.titleMedium)
+                        Row {
+                            TextButton(onClick = { onRestore(tracker.id) }) { Text(stringResource(R.string.action_restore)) }
+                            TextButton(onClick = { onDelete(tracker) }) {
+                                Text(stringResource(R.string.action_delete), color = MaterialTheme.colorScheme.error)
+                            }
                         }
                     }
                 }

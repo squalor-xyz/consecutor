@@ -60,35 +60,35 @@ internal fun DashboardScreen(
         )
         return
     }
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(padding),
-        contentPadding = PaddingValues(16.dp, 16.dp, 16.dp, 88.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        if (dashboard.isEmpty()) {
-            item {
-                Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                    Text(stringResource(R.string.dashboard_empty))
-                    TextButton(onClick = onCreate) { Text(stringResource(R.string.dashboard_create_tracker)) }
+    ContentColumn(padding) {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(16.dp, 16.dp, 16.dp, 88.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            if (dashboard.isEmpty()) {
+                item {
+                    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                        Text(stringResource(R.string.dashboard_empty))
+                        TextButton(onClick = onCreate) { Text(stringResource(R.string.dashboard_create_tracker)) }
+                    }
                 }
             }
-        }
-        items(dashboard, key = { it.id }) { tracker ->
-            TrackerSummaryCard(
-                tracker = tracker,
-                notificationsEnabled = notificationsEnabled,
-                onOpen = { onOpenTracker(tracker.id) },
-                onLogToday = { onLogToday(tracker) },
-                onToggleToday = { onToggleToday(tracker) },
-                onEditToday = { onEditToday(tracker) }
-            )
-        }
-        if (archivedCount > 0) {
-            item {
-                TextButton(onClick = onOpenArchived, modifier = Modifier.fillMaxWidth()) {
-                    Text(stringResource(R.string.dashboard_archived_link, archivedCount))
+            items(dashboard, key = { it.id }) { tracker ->
+                TrackerSummaryCard(
+                    tracker = tracker,
+                    notificationsEnabled = notificationsEnabled,
+                    onOpen = { onOpenTracker(tracker.id) },
+                    onLogToday = { onLogToday(tracker) },
+                    onToggleToday = { onToggleToday(tracker) },
+                    onEditToday = { onEditToday(tracker) }
+                )
+            }
+            if (archivedCount > 0) {
+                item {
+                    TextButton(onClick = onOpenArchived, modifier = Modifier.fillMaxWidth()) {
+                        Text(stringResource(R.string.dashboard_archived_link, archivedCount))
+                    }
                 }
             }
         }
