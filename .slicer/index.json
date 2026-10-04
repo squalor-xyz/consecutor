@@ -1344,7 +1344,7 @@
       "id": "S46",
       "title": "Dependency trim and version alignment (no new dependencies)",
       "short_title": "Dependency trim and version alignment (no new dependencies)",
-      "status": "open",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S11",
