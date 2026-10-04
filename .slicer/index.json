@@ -1719,7 +1719,7 @@
       "id": "S58",
       "title": "Cap content width on large screens and in landscape",
       "short_title": "Cap content width on large screens and in landscape",
-      "status": "open",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S15",
