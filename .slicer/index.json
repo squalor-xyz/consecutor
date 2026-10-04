@@ -1289,7 +1289,7 @@
       "id": "S44",
       "title": "Import confirmation with preview, safety backup and exportedAt",
       "short_title": "Import confirmation with preview, safety backup and exportedAt",
-      "status": "open",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S06",
