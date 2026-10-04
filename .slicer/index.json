@@ -395,7 +395,7 @@
       "id": "S14",
       "title": "Editor validation: inline errors, numeric input, type lock, emoji limit",
       "short_title": "Editor validation: inline errors, numeric input, type lock, emoji limit",
-      "status": "review",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S33",
