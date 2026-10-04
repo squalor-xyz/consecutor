@@ -1,6 +1,7 @@
 package com.squalor.consecutor
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -52,7 +53,7 @@ class TrackerAnalyticsTest {
         val summary = TrackerAnalytics.toSummary(bundle, LocalDate.parse("2026-04-21"))
         assertEquals(3, summary.currentStreak)
         assertEquals(3, summary.longestStreak)
-        assertTrue(summary.completionRate > 0f)
+        assertTrue(summary.completionRate!! > 0f)
     }
 
     @Test
@@ -172,7 +173,7 @@ class TrackerAnalyticsTest {
         val summary = TrackerAnalytics.toSummary(bundle, today)
         assertEquals(0, summary.currentStreak)
         assertEquals(0, summary.longestStreak)
-        assertEquals(0f, summary.completionRate, 0f)
+        assertEquals(0f, summary.completionRate!!, 0f)
         assertEquals(1.0, summary.totalValue, 0.0)
     }
 
@@ -188,7 +189,7 @@ class TrackerAnalyticsTest {
         assertEquals(1.0, summary.totalValue, 0.0)
         assertEquals(1, summary.currentStreak)
         assertEquals(1, summary.longestStreak)
-        assertEquals(1f / 14f, summary.completionRate, 0f)
+        assertEquals(1f / 14f, summary.completionRate!!, 0f)
         // A second entry cannot satisfy a daily threshold of two either.
         val higherTarget = bundle.copy(target = listOf(bundle.target.single().copy(targetValue = 2.0)))
         assertEquals(0, TrackerAnalytics.toSummary(higherTarget, today).currentStreak)
@@ -255,7 +256,11 @@ class TrackerAnalyticsTest {
             assertEquals(type.name, 0.0, detail.summary.totalValue, 0.0)
             assertEquals(type.name, 0, detail.summary.currentStreak)
             assertEquals(type.name, 0, detail.summary.longestStreak)
-            assertEquals(type.name, 0f, detail.summary.completionRate, 0f)
+            if (type == TrackerType.MEASURE) {
+                assertNull(type.name, detail.summary.completionRate)
+            } else {
+                assertEquals(type.name, 0f, detail.summary.completionRate!!, 0f)
+            }
             assertNull(type.name, detail.summary.lastEntryDate)
             assertTrue(type.name, detail.trend.all { it.value == 0.0 && !it.metTarget })
             assertEquals(1, detail.entries.size)
@@ -276,7 +281,7 @@ class TrackerAnalyticsTest {
         val summary = TrackerAnalytics.toSummary(bundle, today)
         assertEquals(0, summary.currentStreak)
         assertEquals(0, summary.longestStreak)
-        assertEquals(0f, summary.completionRate, 0f)
+        assertEquals(0f, summary.completionRate!!, 0f)
         assertEquals(1.0, summary.totalValue, 0.0)
     }
 
@@ -315,7 +320,7 @@ class TrackerAnalyticsTest {
         val summary = TrackerAnalytics.toSummary(bundle, today, weekFields = WeekFields.ISO)
         assertEquals(0, summary.currentStreak)
         assertEquals(0, summary.longestStreak)
-        assertEquals(0f, summary.completionRate, 0f)
+        assertEquals(0f, summary.completionRate!!, 0f)
         assertEquals(2.0, summary.totalValue, 0.0)
         assertEquals(summary, TrackerAnalytics.toDetail(bundle, today, weekFields = WeekFields.ISO).summary)
     }
@@ -333,10 +338,177 @@ class TrackerAnalyticsTest {
         val summary = TrackerAnalytics.toSummary(bundle, today, weekFields = WeekFields.SUNDAY_START)
         assertEquals(1, summary.currentStreak)
         assertEquals(1, summary.longestStreak)
-        assertEquals(1f / 8f, summary.completionRate, 0f)
+        assertEquals(1f / 8f, summary.completionRate!!, 0f)
         assertEquals(2.0, summary.totalValue, 0.0)
         assertEquals(summary, TrackerAnalytics.toDetail(bundle, today, weekFields = WeekFields.SUNDAY_START).summary)
     }
+
+    @Test
+    fun `todayValue sums today's active entries and ignores deleted ones`() {
+        val today = LocalDate.of(2026, 4, 22)
+        val bundle = analyticsBundle(
+            TrackerType.COUNT,
+            listOf(
+                entry(1, today.toString(), 2.0),
+                entry(1, today.toString(), 3.0),
+                entry(1, today.toString(), 50.0).copy(isDeleted = true),
+                entry(1, today.minusDays(1).toString(), 7.0)
+            )
+        )
+
+        val summary = TrackerAnalytics.toSummary(bundle, today, WeekFields.ISO)
+        assertEquals(5.0, summary.todayValue, 0.0)
+    }
+
+    @Test
+    fun `yes_no doneToday is true with an entry today and false otherwise`() {
+        val today = LocalDate.of(2026, 4, 22)
+        val withToday = analyticsBundle(TrackerType.YES_NO, listOf(entry(1, today.toString())))
+        val onlyYesterday = analyticsBundle(TrackerType.YES_NO, listOf(entry(1, today.minusDays(1).toString())))
+
+        val done = TrackerAnalytics.toSummary(withToday, today, WeekFields.ISO)
+        assertTrue(done.doneToday)
+        assertEquals(1.0, done.todayValue, 0.0)
+        assertEquals(1.0, done.periodValue, 0.0)
+        assertEquals(1.0, done.periodTarget!!, 0.0)
+        assertTrue(done.periodMet)
+
+        val notDone = TrackerAnalytics.toSummary(onlyYesterday, today, WeekFields.ISO)
+        assertFalse(notDone.doneToday)
+        assertEquals(0.0, notDone.todayValue, 0.0)
+        assertFalse(notDone.periodMet)
+    }
+
+    @Test
+    fun `count with a daily target is done today only when todayValue reaches the target`() {
+        val today = LocalDate.of(2026, 4, 22)
+        val partial = analyticsBundle(
+            TrackerType.COUNT,
+            listOf(entry(1, today.toString(), 3.0)),
+            TargetPeriod.DAILY,
+            5.0
+        )
+        val partialSummary = TrackerAnalytics.toSummary(partial, today, WeekFields.ISO)
+        assertFalse(partialSummary.doneToday)
+        assertEquals(3.0, partialSummary.periodValue, 0.0)
+        assertEquals(5.0, partialSummary.periodTarget!!, 0.0)
+        assertFalse(partialSummary.periodMet)
+
+        val full = partial.copy(entries = partial.entries + entry(1, today.toString(), 2.0))
+        val fullSummary = TrackerAnalytics.toSummary(full, today, WeekFields.ISO)
+        assertTrue(fullSummary.doneToday)
+        assertEquals(5.0, fullSummary.periodValue, 0.0)
+        assertTrue(fullSummary.periodMet)
+    }
+
+    @Test
+    fun `count with a weekly target reports week sum and periodMet`() {
+        val today = LocalDate.of(2026, 4, 22) // Wednesday; ISO week starts Monday 2026-04-20
+        val bundle = analyticsBundle(
+            TrackerType.COUNT,
+            listOf(
+                entry(1, "2026-04-19", 100.0), // previous week
+                entry(1, "2026-04-20", 4.0),
+                entry(1, "2026-04-22", 3.0)
+            ),
+            TargetPeriod.WEEKLY,
+            10.0
+        )
+
+        val summary = TrackerAnalytics.toSummary(bundle, today, WeekFields.ISO)
+        assertEquals(7.0, summary.periodValue, 0.0)
+        assertEquals(10.0, summary.periodTarget!!, 0.0)
+        assertFalse(summary.periodMet)
+        assertEquals(3.0, summary.todayValue, 0.0)
+        assertTrue(summary.doneToday) // logged today, even though the weekly target is not reached
+
+        val met = bundle.copy(entries = bundle.entries + entry(1, "2026-04-21", 3.0))
+        val metSummary = TrackerAnalytics.toSummary(met, today, WeekFields.ISO)
+        assertEquals(10.0, metSummary.periodValue, 0.0)
+        assertTrue(metSummary.periodMet)
+    }
+
+    @Test
+    fun `yes_no with a weekly target counts distinct days in periodValue`() {
+        val today = LocalDate.of(2026, 4, 22)
+        val bundle = analyticsBundle(
+            TrackerType.YES_NO,
+            listOf(
+                entry(1, "2026-04-19"), // previous week
+                entry(1, "2026-04-20"),
+                entry(1, "2026-04-20"), // same day twice counts once
+                entry(1, "2026-04-22")
+            ),
+            TargetPeriod.WEEKLY,
+            3.0
+        )
+
+        val summary = TrackerAnalytics.toSummary(bundle, today, WeekFields.ISO)
+        assertEquals(2.0, summary.periodValue, 0.0)
+        assertEquals(3.0, summary.periodTarget!!, 0.0)
+        assertFalse(summary.periodMet)
+        assertTrue(summary.doneToday)
+        assertEquals(1.0, summary.todayValue, 0.0)
+    }
+
+    @Test
+    fun `tracker without a target has null periodTarget and null completionRate`() {
+        val today = LocalDate.of(2026, 4, 22)
+        for (type in listOf(TrackerType.YES_NO, TrackerType.COUNT)) {
+            val withEntry = noTargetBundle(type, listOf(entry(1, today.toString(), 2.0)))
+            val summary = TrackerAnalytics.toSummary(withEntry, today, WeekFields.ISO)
+            assertNull(type.name, summary.periodTarget)
+            assertNull(type.name, summary.completionRate)
+            assertFalse(type.name, summary.periodMet)
+            assertTrue(type.name, summary.doneToday)
+            assertEquals(type.name, summary.todayValue, summary.periodValue, 0.0)
+
+            val empty = TrackerAnalytics.toSummary(noTargetBundle(type, emptyList()), today, WeekFields.ISO)
+            assertFalse(type.name, empty.doneToday)
+            assertEquals(type.name, 0.0, empty.periodValue, 0.0)
+        }
+    }
+
+    @Test
+    fun `measure tracker has null periodTarget and null completionRate and is done today with an entry`() {
+        val today = LocalDate.of(2026, 4, 22)
+        val bundle = noTargetBundle(TrackerType.MEASURE, listOf(entry(1, today.toString(), 82.5)))
+
+        val summary = TrackerAnalytics.toSummary(bundle, today, WeekFields.ISO)
+        assertNull(summary.periodTarget)
+        assertNull(summary.completionRate)
+        assertFalse(summary.periodMet)
+        assertTrue(summary.doneToday)
+        assertEquals(82.5, summary.todayValue, 0.0)
+
+        // A MEASURE tracker never has a target in the app; stale target rows must not produce one here.
+        val withStaleTarget = analyticsBundle(TrackerType.MEASURE, listOf(entry(1, today.toString(), 82.5)))
+        val stale = TrackerAnalytics.toSummary(withStaleTarget, today, WeekFields.ISO)
+        assertNull(stale.periodTarget)
+        assertNull(stale.completionRate)
+    }
+
+    @Test
+    fun `todayEntryIds lists only active entries dated today`() {
+        val today = LocalDate.of(2026, 4, 22)
+        val bundle = analyticsBundle(
+            TrackerType.COUNT,
+            listOf(
+                entry(1, today.toString(), 1.0).copy(id = 11),
+                entry(1, today.toString(), 1.0).copy(id = 12, isDeleted = true),
+                entry(1, today.minusDays(1).toString(), 1.0).copy(id = 13),
+                entry(1, today.plusDays(1).toString(), 1.0).copy(id = 14),
+                entry(1, today.toString(), 1.0).copy(id = 15)
+            )
+        )
+
+        val summary = TrackerAnalytics.toSummary(bundle, today, WeekFields.ISO)
+        assertEquals(setOf(11L, 15L), summary.todayEntryIds.toSet())
+        assertEquals(2, summary.todayEntryIds.size)
+    }
+
+    private fun noTargetBundle(type: TrackerType, entries: List<EntryEntity>): TrackerBundle =
+        analyticsBundle(type, entries).copy(target = emptyList())
 
     private fun analyticsBundle(
         type: TrackerType,
