@@ -518,7 +518,7 @@
       "id": "S18",
       "title": "Move UI strings to resources and plurals",
       "short_title": "Move UI strings to resources and plurals",
-      "status": "review",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S38",
