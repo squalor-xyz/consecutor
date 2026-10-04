@@ -1015,13 +1015,16 @@
       "id": "S35",
       "title": "Repository: YES_NO add is idempotent per date; addEntry returns the entry id",
       "short_title": "Repository: YES_NO add is idempotent per date; addEntry returns the entry id",
-      "status": "open",
+      "status": "review",
       "has_slice": true,
       "depends_on": [
         "S05",
         "S34"
       ],
-      "notes": [],
+      "notes": [
+        "**2026-10-04** — Implemented in .worktrees/S35 on slice/S35; code commit 84307c3. addEntry returns Long, looks up an active YES_NO entry by tracker/date inside the existing Room transaction, and returns immediately without changing the entry or tracker timestamp when found. Other types still insert. Six in-memory Room instrumentation tests cover duplicate preservation, COUNT/MEASURE repeated additions, soft-delete replacement, independent dates/trackers, and concurrent YES_NO additions. No schema or UI changes. git diff --check passed. testDebugUnitTest, assembleDebugAndroidTest, and connectedDebugAndroidTest have not run: task-specific permission to use the external JDK, Gradle cache, Android SDK, and test device is pending. Review handoff includes this verification limitation.",
+        "**2026-10-04** — Final verification supersedes the earlier pending-access note. With approved JDK 17/Gradle cache/SDK access, ./gradlew --offline testDebugUnitTest assembleDebugAndroidTest passed: 83 unit tests, zero failures/errors/skips, and instrumentation APK compiled. On headless read-only s08_api34 (confirmed API 34), direct AndroidJUnitRunner via ADB passed TrackerDaoTest: OK (12 tests), including all six S35 tests. Full instrumentation run: 19 tests, 4 navigation timeouts at NavigationTest.openTracker; unchanged baseline 77de0ee reproduced the same four failures (editingTrackerNameSurvivesRecreation, selectedTrackerSurvivesRecreation, entryFieldsSurviveRecreation, backFromDetailReturnsToDashboard). Gradle connectedDebugAndroidTest could not resolve uncached com.android.tools.utp:android-test-plugin-host-additional-test-output:31.13.2 in offline mode; no dependencies downloaded or added. Raw logs retained in ignored build/s35/{checks.txt,connected.txt,instrumentation.txt,dao-tests.txt,baseline-checks.txt,baseline-navigation.txt}. git diff --check and slicer check passed. Ready for review, claim cleared; code commit 84307c3."
+      ],
       "claim": null,
       "fields": {
         "size": "S",
@@ -1037,7 +1040,7 @@
         "importance": 2,
         "urgency": 2,
         "effort": 1,
-        "attempts": 0
+        "attempts": 1
       }
     },
     {

@@ -41,6 +41,9 @@ interface TrackerDao {
     @Insert
     suspend fun insertEntry(entry: EntryEntity): Long
 
+    @Query("SELECT id FROM entries WHERE trackerId = :trackerId AND effectiveDate = :date AND isDeleted = 0 LIMIT 1")
+    suspend fun findActiveEntryId(trackerId: Long, date: String): Long?
+
     @Update
     suspend fun updateEntry(entry: EntryEntity)
 
