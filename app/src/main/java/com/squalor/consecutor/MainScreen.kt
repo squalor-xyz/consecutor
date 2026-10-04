@@ -42,6 +42,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
@@ -84,6 +85,7 @@ fun MainScreen(viewModel: TrackerViewModel) {
     val pendingImport by viewModel.pendingImport.collectAsState()
     val today by viewModel.today.collectAsState()
     val context = LocalContext.current
+    val resources = LocalResources.current
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     var permissionResult by remember { mutableStateOf(0) }
@@ -177,20 +179,21 @@ fun MainScreen(viewModel: TrackerViewModel) {
                 when (event) {
                     is UiEvent.Deleted -> {
                         returnToDashboard()
-                        snackbarHostState.showSnackbar(event.text)
+                        snackbarHostState.showSnackbar(resources.getString(event.textRes, *event.args.toTypedArray()))
                     }
-                    is UiEvent.Message -> snackbarHostState.showSnackbar(event.text)
+                    is UiEvent.Message ->
+                        snackbarHostState.showSnackbar(resources.getString(event.textRes, *event.args.toTypedArray()))
                     is UiEvent.Logged, is UiEvent.Cleared, is UiEvent.Archived -> {
                         val text = when (event) {
-                            is UiEvent.Logged -> event.text
-                            is UiEvent.Cleared -> event.text
-                            is UiEvent.Archived -> event.text
+                            is UiEvent.Logged -> resources.getString(event.textRes, *event.args.toTypedArray())
+                            is UiEvent.Cleared -> resources.getString(event.textRes, *event.args.toTypedArray())
+                            is UiEvent.Archived -> resources.getString(event.textRes, *event.args.toTypedArray())
                         }
                         // The default duration is indefinite while Undo is showing.
                         // The next event dismisses this snackbar.
                         val result = snackbarHostState.showSnackbar(
                             message = text,
-                            actionLabel = "Undo"
+                            actionLabel = resources.getString(R.string.action_undo)
                         )
                         if (result == SnackbarResult.ActionPerformed) viewModel.undo(event)
                     }

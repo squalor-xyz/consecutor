@@ -5,6 +5,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.temporal.WeekFields
@@ -637,6 +638,35 @@ class TrackerAnalyticsTest {
             assertEquals(type.name, 0.0, grid.cells[21].value, 0.0)
             assertEquals(type.name, DayState.OPEN, grid.cells[20].state)
         }
+    }
+
+    @Test
+    fun `summary exposes target period and value and the enabled reminder`() {
+        val bundle = analyticsBundle(TrackerType.COUNT, emptyList(), TargetPeriod.WEEKLY, 3.0).copy(
+            reminder = listOf(
+                ReminderEntity(trackerId = 1, enabled = true, hourOfDay = 7, minuteOfHour = 30, daysOfWeekCsv = "1,5")
+            )
+        )
+
+        val summary = TrackerAnalytics.toSummary(bundle, LocalDate.of(2026, 4, 21))
+
+        assertEquals(TargetPeriod.WEEKLY, summary.targetPeriod)
+        assertEquals(3.0, summary.targetValue!!, 0.0)
+        val reminder = summary.reminder!!
+        assertEquals(7, reminder.hourOfDay)
+        assertEquals(30, reminder.minuteOfHour)
+        assertEquals(setOf(DayOfWeek.MONDAY, DayOfWeek.FRIDAY), reminder.daysOfWeek)
+    }
+
+    @Test
+    fun `summary has a null reminder when the reminder is disabled`() {
+        val bundle = analyticsBundle(TrackerType.COUNT, emptyList()).copy(
+            reminder = listOf(
+                ReminderEntity(trackerId = 1, enabled = false, hourOfDay = 7, minuteOfHour = 30, daysOfWeekCsv = "1,5")
+            )
+        )
+
+        assertNull(TrackerAnalytics.toSummary(bundle, LocalDate.of(2026, 4, 21)).reminder)
     }
 
     private fun item(date: LocalDate, value: Double?, occurredAt: Long = 0): EntryItem =
