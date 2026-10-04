@@ -37,7 +37,7 @@
 - Encrypted backups or at-rest encryption (tracked as later items).<br>
 - Advanced analytics suite.<br>
 - Squalor brand marks in the APK (brand marks are all-rights-reserved; the app icon is app-specific and MPL-2.0).</p></div></section>
-<p class="summary">60 items · — 20 · done 29 · later 11</p>
+<p class="summary">60 items · — 19 · done 29 · later 11 · review 1</p>
 <table><thead><tr><th>#</th><th>ID</th><th>Title</th><th>Size</th><th>Effort</th><th>Trees</th><th>Findings</th><th>Status</th></tr></thead><tbody>
 <tr class="group"><td></td><td colspan="7"><strong>P1 Correctness</strong></td></tr>
 <tr class="open"><td>1</td><td>S09</td><td>Notification permission UX that reflects real state</td><td>S</td><td>1</td><td>ui</td><td>MainScreen.kt:111,123,247-251,514-521</td><td class="status">—</td></tr>
@@ -74,7 +74,7 @@
 <tr class="open"><td>25</td><td>S54</td><td>Resource-id UiEvents and structured target and reminder labels</td><td>M</td><td>2</td><td>ui</td><td>TrackerAnalytics.kt:172-190 (English formatTarget/formatReminder, 24-hour time); TrackerViewModel.kt (English messages); ReminderScheduler.kt:60-81 (English channel and notification text)</td><td class="status">—</td></tr>
 <tr class="group"><td></td><td colspan="7"><strong>P1 Correctness</strong></td></tr>
 <tr class="open"><td>26</td><td>S55</td><td>CI: instrumented tests on a Gradle Managed Device</td><td>M</td><td>2</td><td>build</td><td>.github/workflows/build.yml (unit tests only); S05, S10, S15, S35, S39 and S45 add instrumented tests that CI never runs</td><td class="status">—</td></tr>
-<tr class="open"><td>27</td><td>S56</td><td>Deleted entries: never exported, purged after 24 hours</td><td>S</td><td>1</td><td>data</td><td>BackupCodec.kt:46-57 (encode writes soft-deleted entries and their notes); TrackerRepository.kt:104-109 (soft delete only, never purged)</td><td class="status">—</td></tr>
+<tr class="other"><td>27</td><td>S56</td><td>Deleted entries: never exported, purged after 24 hours</td><td>S</td><td>1</td><td>data</td><td>BackupCodec.kt:46-57 (encode writes soft-deleted entries and their notes); TrackerRepository.kt:104-109 (soft delete only, never purged)</td><td class="status">review</td></tr>
 <tr class="group"><td></td><td colspan="7"><strong>P3 Release</strong></td></tr>
 <tr class="open"><td>28</td><td>S57</td><td>Settings About card: version, licence, source link and third-party notices</td><td>S</td><td>1</td><td>ui</td><td>MainScreen.kt:455-461 (&quot;Privacy-first defaults … in v1&quot; header); no version or licence information anywhere in the app</td><td class="status">—</td></tr>
 <tr class="group"><td></td><td colspan="7"><strong>P2 MVP UX</strong></td></tr>
