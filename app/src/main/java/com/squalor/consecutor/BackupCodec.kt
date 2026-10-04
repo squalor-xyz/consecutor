@@ -11,9 +11,10 @@ class BackupFormatException(message: String) : IllegalArgumentException(message)
 object BackupCodec {
     private const val VERSION = 1
 
-    fun encode(bundles: List<TrackerBundle>): String {
+    fun encode(bundles: List<TrackerBundle>, exportedAtEpochMs: Long? = null): String {
         val root = JSONObject()
         root.put("version", VERSION)
+        exportedAtEpochMs?.let { root.put("exportedAtEpochMs", it) }
         root.put("trackers", JSONArray().apply {
             bundles.forEach { bundle ->
                 put(JSONObject().apply {
@@ -156,7 +157,10 @@ object BackupCodec {
                 entries = entries
             )
         }
-        return ImportPayload(trackers)
+        return ImportPayload(
+            trackers,
+            if (root.isNull("exportedAtEpochMs")) null else root.getLong("exportedAtEpochMs")
+        )
     }
 
     // Reads absent or JSON-null keys as null. Avoids optString, whose null handling differs
@@ -171,7 +175,7 @@ object BackupCodec {
         if (!condition) throw BackupFormatException(message())
     }
 
-    data class ImportPayload(val trackers: List<ImportedTracker>)
+    data class ImportPayload(val trackers: List<ImportedTracker>, val exportedAtEpochMs: Long? = null)
     data class ImportedTracker(
         val tracker: TrackerEntity,
         val target: ImportedTarget?,

@@ -12,6 +12,9 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -45,6 +48,10 @@ import com.squalor.consecutor.ui.EntryEditorStateSaver
 import com.squalor.consecutor.ui.SettingsScreen
 import com.squalor.consecutor.ui.TrackerDetailScreen
 import com.squalor.consecutor.ui.TrackerEditorDialog
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 private enum class Screen {
     DASHBOARD,
@@ -57,6 +64,7 @@ private enum class Screen {
 fun MainScreen(viewModel: TrackerViewModel) {
     val dashboard by viewModel.dashboard.collectAsState()
     val message by viewModel.message.collectAsState()
+    val pendingImport by viewModel.pendingImport.collectAsState()
     val today by viewModel.today.collectAsState()
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
@@ -87,7 +95,7 @@ fun MainScreen(viewModel: TrackerViewModel) {
 
     val importLauncher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         if (uri != null) {
-            viewModel.importBackup(context, uri)
+            viewModel.prepareImport(context, uri)
         }
     }
     val saveCsvLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument(ExportKind.CSV.mimeType)) { uri ->
@@ -111,6 +119,28 @@ fun MainScreen(viewModel: TrackerViewModel) {
             snackbarHostState.showSnackbar(it)
             viewModel.clearMessage()
         }
+    }
+
+    pendingImport?.let { pending ->
+        val exportDate = pending.exportedAtEpochMs?.let {
+            val date = Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault())
+            "exported ${date.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM))}"
+        } ?: "export date unknown"
+        AlertDialog(
+            onDismissRequest = viewModel::cancelImport,
+            title = { Text("Replace all data?") },
+            text = {
+                Text("This backup has ${pending.trackerCount} trackers and ${pending.activeEntryCount} entries ($exportDate). Your current ${pending.currentTrackerCount} trackers will be removed.")
+            },
+            confirmButton = {
+                TextButton(onClick = viewModel::confirmImport) {
+                    Text("Replace", color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = viewModel::cancelImport) { Text("Cancel") }
+            }
+        )
     }
 
     if (showNewTrackerDialog) {

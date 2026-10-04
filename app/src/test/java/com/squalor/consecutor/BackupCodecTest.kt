@@ -9,6 +9,30 @@ import org.junit.Test
 class BackupCodecTest {
 
     @Test
+    fun `exportedAt round-trips through encode and decode`() {
+        val timestamp = 1_800_000_000_000L
+        val json = BackupCodec.encode(emptyList(), timestamp)
+        assertEquals(timestamp, BackupCodec.decode(json).exportedAtEpochMs)
+        assertEquals(1, org.json.JSONObject(json).getInt("version"))
+    }
+
+    @Test
+    fun `decode of a backup without exportedAt gives null`() {
+        assertNull(BackupCodec.decode("""{"version":1,"trackers":[]}""").exportedAtEpochMs)
+        assertTrue(!org.json.JSONObject(BackupCodec.encode(emptyList())).has("exportedAtEpochMs"))
+    }
+
+    @Test
+    fun `decode of a backup with null exportedAt gives null`() {
+        assertNull(BackupCodec.decode("""{"version":1,"trackers":[],"exportedAtEpochMs":null}""").exportedAtEpochMs)
+    }
+
+    @Test
+    fun `invalid exportedAt is a format error`() {
+        assertRejects("""{"version":1,"trackers":[],"exportedAtEpochMs":"invalid"}""", "missing required data")
+    }
+
+    @Test
     fun `encode then decode roundtrips tracker with target reminder and mixed entries`() {
         val now = System.currentTimeMillis()
         val bundle = TrackerBundle(

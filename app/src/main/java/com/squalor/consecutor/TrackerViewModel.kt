@@ -10,6 +10,8 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -21,16 +23,29 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
+import java.io.InputStream
 import java.time.LocalDate
+import java.time.ZoneOffset
 import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 sealed interface DetailState {
     object Loading : DetailState
     data class Loaded(val detail: TrackerDetail) : DetailState
     object NotFound : DetailState
 }
+
+data class PendingImport(
+    val raw: String,
+    val trackerCount: Int,
+    val activeEntryCount: Int,
+    val exportedAtEpochMs: Long?,
+    val currentTrackerCount: Int
+)
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class TrackerViewModel(
@@ -60,6 +75,11 @@ class TrackerViewModel(
 
     private val _message = MutableStateFlow<String?>(null)
     val message: StateFlow<String?> = _message
+
+    private val _pendingImport = MutableStateFlow<PendingImport?>(null)
+    val pendingImport: StateFlow<PendingImport?> = _pendingImport
+    private var importContext: Context? = null
+    private var importJob: Job? = null
 
     init {
         viewModelScope.launch {
@@ -164,33 +184,90 @@ class TrackerViewModel(
         ExportKind.BACKUP -> repository.backupJson()
     }
 
-    fun importBackup(context: Context, uri: Uri) = viewModelScope.launch {
-        val raw = runCatching {
-            withContext(Dispatchers.IO) {
-                context.contentResolver.openInputStream(uri)?.bufferedReader()?.use { it.readText() }
+    fun prepareImport(context: Context, uri: Uri) {
+        if (importJob?.isActive == true) return
+        _pendingImport.value = null
+        importContext = null
+        val appContext = context.applicationContext
+        importJob = viewModelScope.launch {
+            runCatching {
+                val raw = withContext(Dispatchers.IO) {
+                    val stream = appContext.contentResolver.openInputStream(uri)
+                        ?: throw IOException("Unable to open backup file.")
+                    stream.use(::readBackupText)
+                }
+                val payload = withContext(Dispatchers.Default) { BackupCodec.decode(raw) }
+                PendingImport(
+                    raw = raw,
+                    trackerCount = payload.trackers.size,
+                    activeEntryCount = payload.trackers.sumOf { tracker -> tracker.entries.count { !it.isDeleted } },
+                    exportedAtEpochMs = payload.exportedAtEpochMs,
+                    currentTrackerCount = repository.getTrackerCount()
+                )
+            }.onSuccess {
+                importContext = appContext
+                _pendingImport.value = it
+            }.onFailure {
+                if (it is CancellationException) throw it
+                _message.value = if (it is BackupFormatException) it.message else "Unable to read backup file."
             }
-        }.getOrElse {
-            if (it is CancellationException) throw it
-            null
         }
-        if (raw.isNullOrBlank()) {
-            _message.value = "Unable to read backup file."
-            return@launch
-        }
-        runCatching {
-            reminderScheduler.cancelAll(repository.getReminderBundles().map { it.tracker.id })
-            repository.importBackup(raw)
-            rescheduleReminders()
-        }.onSuccess {
-            _message.value = "Backup imported."
-        }.onFailure {
-            // The database is unchanged when the import fails, so re-arm the previous reminders.
-            runCatching { rescheduleReminders() }
-            if (it is CancellationException) throw it
-            _message.value = if (it is BackupFormatException) {
-                "Backup import failed: ${it.message}"
-            } else {
-                "Backup import failed."
+    }
+
+    fun cancelImport() {
+        _pendingImport.value = null
+        importContext = null
+    }
+
+    fun confirmImport() {
+        if (importJob?.isActive == true) return
+        val pending = _pendingImport.value ?: return
+        val context = importContext ?: return
+        cancelImport()
+        importJob = viewModelScope.launch {
+            val savedCopy = runCatching {
+                withContext(Dispatchers.IO) {
+                    if (repository.getTrackerCount() == 0) return@withContext false
+                    val dir = File(context.filesDir, "backups")
+                    if (!dir.isDirectory && !dir.mkdirs()) throw IOException("Unable to create backup directory.")
+                    val text = repository.backupJson()
+                    val timestamp = ZonedDateTime.now(ZoneOffset.UTC)
+                        .format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss", Locale.ROOT))
+                    val file = File(dir, "pre-import-$timestamp.json")
+                    if (!file.createNewFile()) throw IOException("A safety backup already exists for this second.")
+                    try {
+                        file.writeText(text)
+                    } catch (failure: Exception) {
+                        file.delete()
+                        throw failure
+                    }
+                    BackupFiles.prune(dir)
+                    true
+                }
+            }.getOrElse {
+                if (it is CancellationException) throw it
+                _message.value = "Unable to save a safety backup. Your data was not replaced."
+                return@launch
+            }
+            runCatching {
+                reminderScheduler.cancelAll(repository.getReminderBundles().map { it.tracker.id })
+                withContext(Dispatchers.IO) { repository.importBackup(pending.raw) }
+                rescheduleReminders()
+            }.onSuccess {
+                _message.value = if (savedCopy) {
+                    "Backup imported. A copy of your previous data was saved in the app's private storage."
+                } else {
+                    "Backup imported."
+                }
+            }.onFailure {
+                // Re-arm the current database's reminders after a failed replacement.
+                withContext(NonCancellable) { runCatching { rescheduleReminders() } }
+                if (it is CancellationException) throw it
+                _message.value = if (it is BackupFormatException) {
+                    "Backup import failed: ${it.message}"
+                } else {
+                    "Backup import failed."
+                }
             }
         }
     }
@@ -218,4 +295,20 @@ class TrackerViewModel(
         }
         context.startActivity(Intent.createChooser(intent, chooserTitle))
     }
+}
+
+/** Enforces the byte limit even when the document provider reports no size. */
+internal fun readBackupText(stream: InputStream): String {
+    val limit = 20 * 1024 * 1024
+    val output = ByteArrayOutputStream()
+    val buffer = ByteArray(8192)
+    while (true) {
+        val read = stream.read(buffer)
+        if (read == -1) break
+        if (output.size() + read > limit) {
+            throw BackupFormatException("That file is too large to be a backup.")
+        }
+        output.write(buffer, 0, read)
+    }
+    return output.toString(Charsets.UTF_8.name())
 }

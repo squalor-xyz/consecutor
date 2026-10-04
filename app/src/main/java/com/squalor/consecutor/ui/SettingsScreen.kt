@@ -57,7 +57,7 @@ internal fun SettingsScreen(
         item {
             SettingsCard(
                 title = "Full backup",
-                body = "Export or import the full app state as a versioned JSON backup file. $EXPORT_WARNING"
+                body = "Export or import the full app state as a versioned JSON backup file. Import previews the backup before replacing your current data. $EXPORT_WARNING"
             ) {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Button(onClick = onSaveBackup) { Text("Save to file…") }

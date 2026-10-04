@@ -140,7 +140,9 @@ class TrackerRepository(
 
     suspend fun entriesCsv(): String = CsvExport.build(trackerDao.getTrackerBundles())
 
-    suspend fun backupJson(): String = BackupCodec.encode(trackerDao.getTrackerBundles())
+    suspend fun backupJson(): String = BackupCodec.encode(trackerDao.getTrackerBundles(), System.currentTimeMillis())
+
+    suspend fun getTrackerCount(): Int = trackerDao.getTrackerCount()
 
     suspend fun importBackup(rawBackup: String) {
         val payload = BackupCodec.decode(rawBackup)
