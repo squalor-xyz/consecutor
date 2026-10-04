@@ -29,14 +29,18 @@ import com.squalor.consecutor.TrackerDetail
 import com.squalor.consecutor.EntryItem
 import com.squalor.consecutor.TrackerType
 import com.squalor.consecutor.ui.charts.BarChart
+import com.squalor.consecutor.ui.charts.CalendarHeatmap
 import com.squalor.consecutor.ui.charts.ChartMath
 import com.squalor.consecutor.ui.charts.LineChart
+import java.time.LocalDate
 
 @Composable
 internal fun TrackerDetailScreen(
     detail: TrackerDetail,
     padding: PaddingValues,
+    today: LocalDate,
     onAddEntry: () -> Unit,
+    onAddEntryForDate: (LocalDate) -> Unit,
     onEditEntry: (EntryItem) -> Unit
 ) {
     LazyColumn(
@@ -82,6 +86,23 @@ internal fun TrackerDetailScreen(
                         BarChart(detail.trend, detail.target?.targetValue, chartModifier)
                     }
                 }
+            }
+        }
+        item {
+            Card(modifier = Modifier.fillMaxWidth()) {
+                CalendarHeatmap(
+                    type = detail.tracker.type,
+                    target = detail.target,
+                    entries = detail.entries,
+                    today = today,
+                    onDayClick = { date ->
+                        val entry = detail.entries
+                            .filter { it.effectiveDate == date }
+                            .maxByOrNull { it.occurredAtEpochMs }
+                        if (entry != null) onEditEntry(entry) else onAddEntryForDate(date)
+                    },
+                    modifier = Modifier.padding(16.dp)
+                )
             }
         }
         item {
