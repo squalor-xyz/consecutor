@@ -10,6 +10,9 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TrackerDao {
+    @Query("SELECT COUNT(*) FROM trackers")
+    suspend fun getTrackerCount(): Int
+
     @Transaction
     @Query("SELECT * FROM trackers ORDER BY isArchived ASC, createdAtEpochMs ASC, id ASC")
     fun observeTrackerBundles(): Flow<List<TrackerBundle>>
