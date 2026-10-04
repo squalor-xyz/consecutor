@@ -1,7 +1,6 @@
 package com.squalor.consecutor
 
 import android.Manifest
-import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -25,6 +24,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarResult
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
@@ -38,6 +38,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
@@ -54,6 +55,11 @@ import com.squalor.consecutor.ui.EntryEditorDialog
 import com.squalor.consecutor.ui.EntryEditorState
 import com.squalor.consecutor.ui.EntryEditorStateSaver
 import com.squalor.consecutor.ui.SettingsScreen
+import com.squalor.consecutor.ui.canRequestNotificationPermission
+import com.squalor.consecutor.ui.notificationPermissionRequested
+import com.squalor.consecutor.ui.openNotificationSettings
+import com.squalor.consecutor.ui.recordNotificationPermissionRequest
+import com.squalor.consecutor.ui.rememberNotificationPermissionState
 import com.squalor.consecutor.ui.TrackerDetailScreen
 import com.squalor.consecutor.ui.TrackerEditorDialog
 import java.time.Instant
@@ -79,6 +85,21 @@ fun MainScreen(viewModel: TrackerViewModel) {
     val today by viewModel.today.collectAsState()
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+    var permissionResult by remember { mutableStateOf(0) }
+    val notificationsEnabled by rememberNotificationPermissionState(permissionResult)
+    val showNotificationWarning: () -> Unit = {
+        scope.launch(start = CoroutineStart.UNDISPATCHED) {
+            snackbarHostState.currentSnackbarData?.dismiss()
+            val result = snackbarHostState.showSnackbar(
+                message = "Notifications are off. Reminders cannot be shown.",
+                actionLabel = "Open settings",
+                withDismissAction = true,
+                duration = SnackbarDuration.Long
+            )
+            if (result == SnackbarResult.ActionPerformed) openNotificationSettings(context)
+        }
+    }
     var screen by rememberSaveable { mutableStateOf(Screen.DASHBOARD) }
     val selectedId by viewModel.selectedId.collectAsState()
     val detailState by viewModel.detail.collectAsState()
@@ -120,15 +141,36 @@ fun MainScreen(viewModel: TrackerViewModel) {
         }
     }
     val permissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        permissionResult++
         if (granted) {
             viewModel.ensureReminderChannel()
+        } else {
+            showNotificationWarning()
+        }
+    }
+    val requestNotifications: () -> Unit = {
+        recordNotificationPermissionRequest(context)
+        permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+    }
+    val maybeRequestNotifications: (TrackerDraft) -> Unit = { draft ->
+        if (draft.reminderEnabled && !notificationsEnabled) {
+            if (!notificationPermissionRequested(context) && canRequestNotificationPermission(context)) {
+                requestNotifications()
+            } else {
+                showNotificationWarning()
+            }
         }
     }
 
     LaunchedEffect(Unit) {
         var snackbarJob: Job? = null
         viewModel.events.collect { event ->
-            snackbarHostState.currentSnackbarData?.dismiss()
+            // Saving may finish after the permission result; keep its settings action visible.
+            if (event !is UiEvent.Message ||
+                snackbarHostState.currentSnackbarData?.visuals?.actionLabel != "Open settings"
+            ) {
+                snackbarHostState.currentSnackbarData?.dismiss()
+            }
             snackbarJob?.cancel()
             // Start immediately so the next event can dismiss even a just-created snackbar.
             snackbarJob = launch(start = CoroutineStart.UNDISPATCHED) {
@@ -202,7 +244,7 @@ fun MainScreen(viewModel: TrackerViewModel) {
             initial = null,
             onDismiss = { showNewTrackerDialog = false },
             onSave = { draft ->
-                maybeRequestNotifications(permissionLauncher, draft)
+                maybeRequestNotifications(draft)
                 viewModel.saveTracker(existingTrackerId = null, draft = draft)
                 showNewTrackerDialog = false
             }
@@ -214,7 +256,7 @@ fun MainScreen(viewModel: TrackerViewModel) {
             initial = detail,
             onDismiss = { editingTrackerId = null },
             onSave = { draft ->
-                maybeRequestNotifications(permissionLauncher, draft)
+                maybeRequestNotifications(draft)
                 viewModel.saveTracker(detail.tracker.id, draft)
                 editingTrackerId = null
             }
@@ -333,6 +375,7 @@ fun MainScreen(viewModel: TrackerViewModel) {
         when (screen) {
             Screen.DASHBOARD -> DashboardScreen(
                 dashboard = dashboard,
+                notificationsEnabled = notificationsEnabled,
                 archivedCount = archived.size,
                 onOpenArchived = { screen = Screen.ARCHIVED },
                 padding = padding,
@@ -373,21 +416,16 @@ fun MainScreen(viewModel: TrackerViewModel) {
                 onSaveBackup = { saveBackupLauncher.launch(ExportKind.BACKUP.fileName(viewModel.today.value)) },
                 onShareBackup = { viewModel.share(context, ExportKind.BACKUP) },
                 onImportBackup = { importLauncher.launch(arrayOf("application/json", "text/plain")) },
+                notificationsEnabled = notificationsEnabled,
+                canRequestNotifications = !notificationsEnabled && canRequestNotificationPermission(context),
                 onEnableNotifications = {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    if (!notificationsEnabled && canRequestNotificationPermission(context)) {
+                        requestNotifications()
+                    } else {
+                        openNotificationSettings(context)
                     }
                 }
             )
         }
-    }
-}
-
-private fun maybeRequestNotifications(
-    launcher: androidx.activity.result.ActivityResultLauncher<String>,
-    draft: TrackerDraft
-) {
-    if (draft.reminderEnabled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
     }
 }
