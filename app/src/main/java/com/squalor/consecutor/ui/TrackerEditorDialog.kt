@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Save
@@ -15,6 +16,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -28,8 +30,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import java.time.DayOfWeek
+import com.squalor.consecutor.EditorLimits
+import com.squalor.consecutor.NumberRules
+import com.squalor.consecutor.TrackerField
+import com.squalor.consecutor.resolveTargetValue
+import com.squalor.consecutor.validateTrackerForm
 import com.squalor.consecutor.TrackerDetail
 import com.squalor.consecutor.TrackerType
 import com.squalor.consecutor.TrackerDraft
@@ -55,7 +64,7 @@ internal fun TrackerEditorDialog(
     var type by rememberSaveable { mutableStateOf(initial?.tracker?.type ?: TrackerType.YES_NO) }
     var targetEnabled by rememberSaveable { mutableStateOf(initial?.target != null) }
     var targetPeriod by rememberSaveable { mutableStateOf(initial?.target?.period ?: TargetPeriod.DAILY) }
-    var targetValue by rememberSaveable { mutableStateOf(initial?.target?.targetValue?.toString() ?: "1") }
+    var targetValue by rememberSaveable { mutableStateOf(initial?.target?.targetValue?.let { NumberRules.formatForInput(it) } ?: "1") }
     val reminder = initial?.reminder
     var reminderEnabled by rememberSaveable { mutableStateOf(reminder?.enabled ?: false) }
     var reminderHour by rememberSaveable { mutableStateOf(reminder?.hourOfDay?.toString() ?: "20") }
@@ -63,6 +72,13 @@ internal fun TrackerEditorDialog(
     var reminderDays by rememberSaveable(
         stateSaver = ReminderDaysSaver
     ) { mutableStateOf(reminder?.daysOfWeek ?: emptySet()) }
+    var showErrors by rememberSaveable { mutableStateOf(false) }
+    val locale = LocalConfiguration.current.locales[0]
+    val typeLocked = initial?.entries?.isNotEmpty() == true
+    val errors = validateTrackerForm(
+        name, emoji, description, unit, type, targetEnabled, targetPeriod, targetValue, locale
+    )
+    fun errorFor(field: TrackerField) = if (showErrors) errors[field] else null
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -73,13 +89,34 @@ internal fun TrackerEditorDialog(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 item {
-                    OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Name") }, modifier = Modifier.fillMaxWidth())
+                    OutlinedTextField(
+                        value = name,
+                        onValueChange = { name = it },
+                        label = { Text("Name") },
+                        isError = errorFor(TrackerField.NAME) != null,
+                        supportingText = errorSupportingText(errorFor(TrackerField.NAME), EditorLimits.NAME),
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
                 item {
-                    OutlinedTextField(value = emoji, onValueChange = { emoji = it }, label = { Text("Emoji") }, modifier = Modifier.fillMaxWidth())
+                    OutlinedTextField(
+                        value = emoji,
+                        onValueChange = { emoji = it },
+                        label = { Text("Emoji") },
+                        isError = errorFor(TrackerField.EMOJI) != null,
+                        supportingText = errorSupportingText(errorFor(TrackerField.EMOJI)),
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
                 item {
-                    OutlinedTextField(value = description, onValueChange = { description = it }, label = { Text("Description") }, modifier = Modifier.fillMaxWidth())
+                    OutlinedTextField(
+                        value = description,
+                        onValueChange = { description = it },
+                        label = { Text("Description") },
+                        isError = errorFor(TrackerField.DESCRIPTION) != null,
+                        supportingText = errorSupportingText(errorFor(TrackerField.DESCRIPTION), EditorLimits.DESCRIPTION),
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
                 item {
                     Text("Type", fontWeight = FontWeight.SemiBold)
@@ -88,14 +125,25 @@ internal fun TrackerEditorDialog(
                             FilterChip(
                                 selected = option == type,
                                 onClick = { type = option },
+                                enabled = !typeLocked,
                                 label = { Text(option.name.replace("_", " ")) }
                             )
                         }
                     }
+                    if (typeLocked) {
+                        Text("Type can't change after logging.", style = MaterialTheme.typography.bodySmall)
+                    }
                 }
                 if (type != TrackerType.YES_NO) {
                     item {
-                        OutlinedTextField(value = unit, onValueChange = { unit = it }, label = { Text("Unit") }, modifier = Modifier.fillMaxWidth())
+                        OutlinedTextField(
+                            value = unit,
+                            onValueChange = { unit = it },
+                            label = { Text("Unit") },
+                            isError = errorFor(TrackerField.UNIT) != null,
+                            supportingText = errorSupportingText(errorFor(TrackerField.UNIT), EditorLimits.UNIT),
+                            modifier = Modifier.fillMaxWidth()
+                        )
                     }
                 }
                 if (type != TrackerType.MEASURE) {
@@ -117,13 +165,20 @@ internal fun TrackerEditorDialog(
                                 }
                             }
                         }
-                        item {
-                            OutlinedTextField(
-                                value = targetValue,
-                                onValueChange = { targetValue = it },
-                                label = { Text("Target value") },
-                                modifier = Modifier.fillMaxWidth()
-                            )
+                        if (type != TrackerType.YES_NO || targetPeriod == TargetPeriod.WEEKLY) {
+                            item {
+                                OutlinedTextField(
+                                    value = targetValue,
+                                    onValueChange = { targetValue = it },
+                                    label = {
+                                        Text(if (type == TrackerType.YES_NO) "Days per week" else "Target value")
+                                    },
+                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                                    isError = errorFor(TrackerField.TARGET) != null,
+                                    supportingText = errorSupportingText(errorFor(TrackerField.TARGET)),
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
                         }
                     }
                 }
@@ -170,21 +225,18 @@ internal fun TrackerEditorDialog(
         confirmButton = {
             Button(
                 onClick = {
-                    val parsedTarget = if (targetEnabled && type != TrackerType.MEASURE) {
-                        targetValue.toDoubleOrNull()?.takeIf { it > 0.0 } ?: return@Button
-                    } else {
-                        null
-                    }
+                    showErrors = true
+                    if (errors.isNotEmpty()) return@Button
+                    val parsedTarget = resolveTargetValue(type, targetEnabled, targetPeriod, targetValue, locale)
                     val parsedHour = reminderHour.toIntOrNull() ?: 20
                     val parsedMinute = reminderMinute.toIntOrNull() ?: 0
-                    if (name.isBlank()) return@Button
                     onSave(
                         TrackerDraft(
                             name = name,
                             emoji = emoji.ifBlank { null },
                             description = description.ifBlank { null },
                             type = type,
-                            unit = unit.ifBlank { null },
+                            unit = if (type == TrackerType.YES_NO) null else unit.ifBlank { null },
                             colorHex = initial?.tracker?.colorHex ?: "#1F6FEB",
                             targetPeriod = if (targetEnabled && type != TrackerType.MEASURE) targetPeriod else null,
                             targetValue = parsedTarget,

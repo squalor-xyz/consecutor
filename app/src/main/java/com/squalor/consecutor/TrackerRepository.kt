@@ -228,6 +228,13 @@ class TrackerRepository(
         draft.targetValue?.let {
             require(NumberRules.isValidValue(it) && it > 0.0) { "Target must be greater than zero and within range." }
         }
+        val period = draft.targetPeriod
+        val value = draft.targetValue
+        if (draft.type == TrackerType.YES_NO && period != null && value != null) {
+            require(isValidYesNoTarget(period, value)) {
+                "A yes/no target must be 1 per day or 1 to 7 per week."
+            }
+        }
     }
 
     private fun normalizeValue(type: TrackerType, rawValue: Double?): Double? {

@@ -57,6 +57,7 @@ private enum class Screen {
 fun MainScreen(viewModel: TrackerViewModel) {
     val dashboard by viewModel.dashboard.collectAsState()
     val message by viewModel.message.collectAsState()
+    val today by viewModel.today.collectAsState()
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
     var screen by rememberSaveable { mutableStateOf(Screen.DASHBOARD) }
@@ -139,6 +140,14 @@ fun MainScreen(viewModel: TrackerViewModel) {
     entryEditorState?.let { state ->
         EntryEditorDialog(
             state = state,
+            today = today,
+            otherYesNoDates = selectedDetail
+                ?.takeIf { it.tracker.id == state.trackerId }
+                ?.entries
+                ?.filter { it.id != state.entryId }
+                ?.map { it.effectiveDate }
+                ?.toSet()
+                .orEmpty(),
             onDismiss = { entryEditorState = null },
             onSave = { draft ->
                 if (state.entryId == null) {

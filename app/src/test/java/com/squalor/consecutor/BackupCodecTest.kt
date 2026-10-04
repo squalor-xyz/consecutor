@@ -248,6 +248,11 @@ class BackupCodecTest {
     }
 
     @Test
+    fun `decode rejects a yes_no daily target other than 1`() {
+        assertRejects(backupJson(type = "YES_NO", targetValue = 2.0), "Water", "yes/no")
+    }
+
+    @Test
     fun `decode rejects a target value above the maximum`() {
         assertRejects(backupJson(targetValue = 2.0E9), "Water", "out of range")
     }
