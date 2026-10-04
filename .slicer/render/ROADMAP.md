@@ -20,7 +20,7 @@
 - Advanced analytics suite.
 - Squalor brand marks in the APK (brand marks are all-rights-reserved; the app icon is app-specific and MPL-2.0).
 
-61 items · — 19 · done 31 · later 11
+61 items · — 18 · done 31 · later 11 · review 1
 
 | # | Slice | Title | Size | Effort | Trees | Findings | Status |
 |---|---|---|---|---|---|---|---|
@@ -65,7 +65,7 @@
 | Later | | | | | | | |
 | 28 | S59 | Optional scheduled backup to a user-chosen folder |  | 2 | data |  | later |
 | 29 | [S60](slices/S60.md) | Editor dialogs keep Save and Cancel above the keyboard | S | 1 | ui | S48 walkthrough 2026-10-04: TrackerEditorDialog.kt:83-90 (AlertDialog with LazyColumn heightIn(max = 520.dp)); Save row partly under the IME on API 36, same at targetSdk 34 | — |
-| 30 | [S61](slices/S61.md) | Fix NavigationTest failures | S | 2 | ui | S55 ran `./gradlew pixel6api34DebugAndroidTest` on `aosp-atd`: 29 tests, 5 failures, all in `NavigationTest`. | — |
+| 30 | [S61](slices/S61.md) | Fix NavigationTest failures | S | 2 | ui | S55 ran `./gradlew pixel6api34DebugAndroidTest` on `aosp-atd`: 29 tests, 5 failures, all in `NavigationTest`. | review |
 
 ---
 
