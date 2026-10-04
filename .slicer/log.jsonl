@@ -303,3 +303,4 @@
 {"when": "2026-10-04T00:06:05Z", "item": "S11", "action": "handoff", "from": "started", "to": "review", "note": "claim Codex cleared", "by": "Codex"}
 {"when": "2026-10-04T00:09:10Z", "item": "S11", "action": "note", "from": "", "to": "", "note": "Device verification was subsequently authorized, but emulato"}
 {"when": "2026-10-04T00:11:56Z", "item": "S11", "action": "status", "from": "review", "to": "done", "note": "Merged to main. testDebugUnitTest passed (52, including PaletteContrastTest). Light tertiary is #a14808, as recorded. Screenshots and the dark cold-start check were not run: no device was connected.", "by": "Jon R"}
+{"when": "2026-10-04T00:16:49Z", "item": "S33", "action": "note", "from": "", "to": "", "note": "Step 0 confirmed: BackupCodec.encode with an entry value of "}

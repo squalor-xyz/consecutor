@@ -958,7 +958,9 @@
         "S01",
         "S53"
       ],
-      "notes": [],
+      "notes": [
+        "**2026-10-04** — Step 0 confirmed: BackupCodec.encode with an entry value of Double.POSITIVE_INFINITY throws org.json.JSONException ('JSON does not allow non-finite numbers.') on the JVM org.json used by unit tests (testImplementation libs.org.json); kept as test 'encode fails loudly on non-finite values'. Not checked against android.jar's org.json at runtime. Also switched TrackerAnalytics' private formatNumber (same 3.0E9/roundToInt overflow) to NumberRules.formatNumber (owner approved). Left alone: formatNumber(-0.001) gives '-0' (standard NumberFormat behavior), not in spec."
+      ],
       "claim": null,
       "fields": {
         "size": "S",

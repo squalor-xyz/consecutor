@@ -5,7 +5,6 @@ import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import java.time.temporal.WeekFields
 import java.util.Locale
-import kotlin.math.roundToInt
 
 object TrackerAnalytics {
     fun toDetail(bundle: TrackerBundle, today: LocalDate = LocalDate.now()): TrackerDetail {
@@ -170,7 +169,7 @@ object TrackerAnalytics {
     private fun targetMet(value: Double, target: TargetEntity): Boolean = value >= target.targetValue
 
     private fun formatTarget(target: TargetEntity, type: TrackerType, unit: String?): String {
-        val valueLabel = if (type == TrackerType.YES_NO) "1" else formatNumber(target.targetValue)
+        val valueLabel = if (type == TrackerType.YES_NO) "1" else NumberRules.formatNumber(target.targetValue)
         val suffix = when (target.period) {
             TargetPeriod.DAILY -> "day"
             TargetPeriod.WEEKLY -> "week"
@@ -214,11 +213,6 @@ object TrackerAnalytics {
             minuteOfHour = minuteOfHour,
             daysOfWeek = days
         )
-    }
-
-    private fun formatNumber(value: Double): String {
-        val rounded = value.roundToInt().toDouble()
-        return if (rounded == value) rounded.toInt().toString() else value.toString()
     }
 
     data class StreakStats(

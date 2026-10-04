@@ -28,6 +28,7 @@ class TrackerRepository(
     }
 
     suspend fun createTracker(draft: TrackerDraft): Long {
+        requireValidTarget(draft)
         val now = System.currentTimeMillis()
         return database.withTransaction {
             val trackerId = trackerDao.insertTracker(
@@ -49,6 +50,7 @@ class TrackerRepository(
     }
 
     suspend fun updateTracker(trackerId: Long, draft: TrackerDraft) {
+        requireValidTarget(draft)
         val existing = trackerDao.getTracker(trackerId) ?: throw IllegalArgumentException("Unknown tracker $trackerId")
         val now = System.currentTimeMillis()
         database.withTransaction {
@@ -75,6 +77,7 @@ class TrackerRepository(
     }
 
     suspend fun addEntry(trackerId: Long, trackerType: TrackerType, draft: EntryDraft) {
+        requireValidValue(draft)
         val now = System.currentTimeMillis()
         database.withTransaction {
             trackerDao.insertEntry(
@@ -93,6 +96,7 @@ class TrackerRepository(
     }
 
     suspend fun updateEntry(entryId: Long, trackerId: Long, trackerType: TrackerType, draft: EntryDraft) {
+        requireValidValue(draft)
         val now = System.currentTimeMillis()
         database.withTransaction {
             val existing = trackerDao.getEntryById(entryId) ?: return@withTransaction
@@ -231,6 +235,16 @@ class TrackerRepository(
     private suspend fun bumpTracker(trackerId: Long, now: Long) {
         val tracker = trackerDao.getTracker(trackerId) ?: return
         trackerDao.updateTracker(tracker.copy(updatedAtEpochMs = now))
+    }
+
+    private fun requireValidValue(draft: EntryDraft) {
+        draft.value?.let { require(NumberRules.isValidValue(it)) { "Entry value is out of range." } }
+    }
+
+    private fun requireValidTarget(draft: TrackerDraft) {
+        draft.targetValue?.let {
+            require(NumberRules.isValidValue(it) && it > 0.0) { "Target must be greater than zero and within range." }
+        }
     }
 
     private fun normalizeValue(type: TrackerType, rawValue: Double?): Double? {

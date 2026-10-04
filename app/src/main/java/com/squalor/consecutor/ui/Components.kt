@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.squalor.consecutor.NumberRules
 import com.squalor.consecutor.TrackerType
 
 @Composable
@@ -18,8 +19,7 @@ internal fun EmptyState(text: String, modifier: Modifier = Modifier) {
 }
 
 internal fun formatValue(value: Double, unit: String?): String {
-    val number = if (value == value.toInt().toDouble()) value.toInt().toString() else value.toString()
-    return listOf(number, unit).filterNotNull().joinToString(" ")
+    return listOf(NumberRules.formatNumber(value), unit).filterNotNull().joinToString(" ")
 }
 
 internal fun formatEntryValue(type: TrackerType, value: Double?, unit: String?): String {
