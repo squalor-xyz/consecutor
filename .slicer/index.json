@@ -1137,7 +1137,7 @@
       "id": "S39",
       "title": "One-tap logging with undo (UiEvent and snackbar)",
       "short_title": "One-tap logging with undo (UiEvent and snackbar)",
-      "status": "review",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S38",
