@@ -11,6 +11,13 @@ class TrackerRepository(
     private val database: AppDatabase,
     private val trackerDao: TrackerDao
 ) {
+    companion object {
+        const val PURGE_AFTER_MS = 24 * 60 * 60 * 1000L
+    }
+
+    suspend fun purgeDeletedEntries(now: Long = System.currentTimeMillis()): Int =
+        trackerDao.purgeDeletedEntries(now - PURGE_AFTER_MS)
+
     fun observeDashboard(today: Flow<LocalDate>): Flow<List<TrackerSummary>> {
         return combine(trackerDao.observeTrackerBundles(), today) { bundles, date ->
             bundles.filterNot { it.tracker.isArchived }
@@ -200,7 +207,7 @@ class TrackerRepository(
                         )
                     )
                 }
-                imported.entries.forEach { entry ->
+                imported.entries.filterNot { it.isDeleted }.forEach { entry ->
                     trackerDao.insertEntry(
                         EntryEntity(
                             trackerId = trackerId,

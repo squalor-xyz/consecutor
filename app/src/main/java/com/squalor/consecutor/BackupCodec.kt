@@ -45,7 +45,7 @@ object BackupCodec {
                         }
                     })
                     put("entries", JSONArray().apply {
-                        bundle.entries.forEach { entry ->
+                        bundle.entries.filterNot { it.isDeleted }.forEach { entry ->
                             put(JSONObject().apply {
                                 put("effectiveDate", entry.effectiveDate)
                                 put("occurredAtEpochMs", entry.occurredAtEpochMs)

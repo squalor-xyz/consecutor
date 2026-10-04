@@ -1653,14 +1653,16 @@
       "id": "S56",
       "title": "Deleted entries: never exported, purged after 24 hours",
       "short_title": "Deleted entries: never exported, purged after 24 hours",
-      "status": "open",
+      "status": "review",
       "has_slice": true,
       "depends_on": [
         "S05",
         "S39",
         "S44"
       ],
-      "notes": [],
+      "notes": [
+        "**2026-10-04** — Implemented JSON export filtering, legacy import filtering, 24-hour DAO/repository purge at startup, and Persistence Notes documentation. Verified: 118 JVM tests passed; Android test APK assembled; emulator API 34 suite ran 33 tests with 30 passing, including all S56 DAO/codec tests and editorDeletionUndoRestoresValueAndNote. Three failures in unchanged NavigationTest: editingTrackerNameSurvivesRecreation, selectedTrackerSurvivesRecreation, entryFieldsSurviveRecreation. Main advanced after this branch was created from 0bf6c6b and now contains edits to these navigation tests. Manual file export was not performed. Changes remain uncommitted."
+      ],
       "claim": null,
       "fields": {
         "size": "S",
@@ -1676,7 +1678,7 @@
         "importance": 3,
         "urgency": 2,
         "effort": 1,
-        "attempts": 0
+        "attempts": 1
       }
     },
     {
