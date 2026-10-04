@@ -6,9 +6,10 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,8 +30,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.squalor.consecutor.ui.DashboardScreen
@@ -149,10 +153,11 @@ fun MainScreen(viewModel: TrackerViewModel) {
                 title = {
                     Text(
                         when (screen) {
-                            Screen.DASHBOARD -> "Consecutor"
+                            Screen.DASHBOARD -> "CONSECUTOR"
                             Screen.DETAIL -> "Tracker"
                             Screen.SETTINGS -> "Settings"
-                        }
+                        },
+                        letterSpacing = if (screen == Screen.DASHBOARD) 2.sp else TextUnit.Unspecified
                     )
                 },
                 navigationIcon = {
@@ -215,7 +220,7 @@ fun MainScreen(viewModel: TrackerViewModel) {
             Screen.DETAIL -> {
                 when (val state = detailState) {
                     DetailState.Loading -> Unit
-                    DetailState.NotFound -> EmptyState("Tracker not found.")
+                    DetailState.NotFound -> EmptyState("Tracker not found.", modifier = Modifier.padding(padding))
                     is DetailState.Loaded -> {
                         val detail = state.detail
                         TrackerDetailScreen(

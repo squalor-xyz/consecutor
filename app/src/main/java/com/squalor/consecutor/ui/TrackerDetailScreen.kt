@@ -54,8 +54,8 @@ internal fun TrackerDetailScreen(
                     )
                     detail.tracker.description?.let { Text(it) }
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        MetricChip("Current streak", detail.summary.currentStreak.toString())
-                        MetricChip("Longest", detail.summary.longestStreak.toString())
+                        MetricChip("Current streak", detail.summary.currentStreak.toString(), highlight = true)
+                        MetricChip("Longest", detail.summary.longestStreak.toString(), highlight = true)
                     }
                     detail.summary.targetLabel?.let { Text("Target: $it") }
                     detail.summary.reminderLabel?.let { Text("Reminder: $it") }

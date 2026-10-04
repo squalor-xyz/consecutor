@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -37,7 +38,8 @@ internal fun DashboardScreen(
 ) {
     if (dashboard.isEmpty()) {
         EmptyState(
-            text = "Create your first tracker to start logging habits, events, or measurements."
+            text = "Create your first tracker to start logging habits, events, or measurements.",
+            modifier = Modifier.padding(padding)
         )
         return
     }
@@ -98,8 +100,8 @@ internal fun TrackerSummaryCard(
                 Text(text = it, style = MaterialTheme.typography.bodyMedium)
             }
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                MetricChip("Current", tracker.currentStreak.toString())
-                MetricChip("Longest", tracker.longestStreak.toString())
+                MetricChip("Current", tracker.currentStreak.toString(), highlight = true)
+                MetricChip("Longest", tracker.longestStreak.toString(), highlight = true)
                 MetricChip("Total", formatValue(tracker.totalValue, tracker.unit))
             }
             tracker.targetLabel?.let { AssistChip(onClick = {}, label = { Text(it) }) }
@@ -117,9 +119,12 @@ internal fun TrackerSummaryCard(
 }
 
 @Composable
-internal fun MetricChip(label: String, value: String) {
+internal fun MetricChip(label: String, value: String, highlight: Boolean = false) {
     AssistChip(
         onClick = {},
-        label = { Text("$label: $value") }
+        label = { Text("$label: $value") },
+        colors = AssistChipDefaults.assistChipColors(
+            labelColor = if (highlight) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.onSurface
+        )
     )
 }

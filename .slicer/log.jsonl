@@ -297,3 +297,8 @@
 {"when": "2026-10-03T23:59:27Z", "item": "S08", "action": "note", "from": "", "to": "", "note": "Delivery window, alarm set ~12h ahead (dumpsys alarm, inexac"}
 {"when": "2026-10-04T00:05:28Z", "item": "S08", "action": "status", "from": "open", "to": "done", "note": "Merged to main. testDebugUnitTest (40), lintDebug, and assembleDebug passed. Debug APK requests POST_NOTIFICATIONS and RECEIVE_BOOT_COMPLETED, plus the AndroidX dynamic-receiver permission. SCHEDULE_EXACT_ALARM is gone. Delivery windows are in the earlier note.", "by": "Jon R"}
 {"when": "2026-10-04T00:10:44Z", "item": "S17", "action": "status", "from": "open", "to": "done", "note": "Merged to main. testDebugUnitTest passed (49, including CsvExportTest). Spreadsheet open of an exported file was not checked.", "by": "Jon R"}
+{"when": "2026-10-03T23:53:48Z", "item": "S11", "action": "status", "from": "open", "to": "started", "note": "", "by": "Codex"}
+{"when": "2026-10-04T00:03:29Z", "item": "S11", "action": "note", "from": "", "to": "", "note": "Light tertiary adjusted from #b45309 to #a14808: original co"}
+{"when": "2026-10-04T00:06:05Z", "item": "S11", "action": "note", "from": "", "to": "", "note": "Implemented in .worktrees/S11 on slice/S11, based on main 87"}
+{"when": "2026-10-04T00:06:05Z", "item": "S11", "action": "handoff", "from": "started", "to": "review", "note": "claim Codex cleared", "by": "Codex"}
+{"when": "2026-10-04T00:09:10Z", "item": "S11", "action": "note", "from": "", "to": "", "note": "Device verification was subsequently authorized, but emulato"}
