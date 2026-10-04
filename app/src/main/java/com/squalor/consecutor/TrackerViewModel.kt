@@ -21,6 +21,8 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.IOException
 import java.time.LocalDate
 import java.time.ZonedDateTime
 
@@ -124,26 +126,42 @@ class TrackerViewModel(
             repository.quickLog(summary, today.value)
         }
 
-    fun exportCsv(context: Context) = viewModelScope.launch {
+    fun exportTo(context: Context, uri: Uri, kind: ExportKind) = viewModelScope.launch {
         runCatching {
-            repository.exportCsv(context)
-        }.onSuccess { file ->
-            shareFile(context, file, "text/csv", "Share CSV")
+            withContext(Dispatchers.IO) {
+                val bytes = exportText(kind).toByteArray()
+                val stream = context.contentResolver.openOutputStream(uri, "wt")
+                    ?: throw IOException("No output stream for $uri")
+                stream.use { it.write(bytes) }
+            }
+        }.onSuccess {
+            _message.value = "Saved ${kind.label}."
         }.onFailure {
             if (it is CancellationException) throw it
-            _message.value = "Unable to export CSV."
+            _message.value = "Unable to save ${kind.label}."
         }
     }
 
-    fun exportBackup(context: Context) = viewModelScope.launch {
+    fun share(context: Context, kind: ExportKind) = viewModelScope.launch {
         runCatching {
-            repository.exportBackup(context)
+            withContext(Dispatchers.IO) {
+                val dir = ExportCache.exportsDir(context)
+                ExportCache.clear(dir)
+                val file = File(dir, kind.fileName(today.value))
+                file.writeText(exportText(kind))
+                file
+            }
         }.onSuccess { file ->
-            shareFile(context, file, "application/json", "Share backup")
+            shareFile(context, file, kind.mimeType, kind.chooserTitle)
         }.onFailure {
             if (it is CancellationException) throw it
-            _message.value = "Unable to export backup."
+            _message.value = "Unable to export ${kind.label}."
         }
+    }
+
+    private suspend fun exportText(kind: ExportKind): String = when (kind) {
+        ExportKind.CSV -> repository.entriesCsv()
+        ExportKind.BACKUP -> repository.backupJson()
     }
 
     fun importBackup(context: Context, uri: Uri) = viewModelScope.launch {
@@ -191,7 +209,7 @@ class TrackerViewModel(
         }
     }
 
-    private fun shareFile(context: Context, file: java.io.File, mimeType: String, chooserTitle: String) {
+    private fun shareFile(context: Context, file: File, mimeType: String, chooserTitle: String) {
         val uri = FileProvider.getUriForFile(context, "${context.packageName}.provider", file)
         val intent = Intent(Intent.ACTION_SEND).apply {
             type = mimeType

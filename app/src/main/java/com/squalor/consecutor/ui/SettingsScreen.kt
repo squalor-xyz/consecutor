@@ -17,11 +17,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
+private const val EXPORT_WARNING = "Exports are unencrypted and contain your full history. Store them somewhere private."
+
 @Composable
 internal fun SettingsScreen(
     padding: PaddingValues,
-    onExportCsv: () -> Unit,
-    onExportBackup: () -> Unit,
+    onSaveCsv: () -> Unit,
+    onShareCsv: () -> Unit,
+    onSaveBackup: () -> Unit,
+    onShareBackup: () -> Unit,
     onImportBackup: () -> Unit,
     onEnableNotifications: () -> Unit
 ) {
@@ -42,16 +46,22 @@ internal fun SettingsScreen(
         item {
             SettingsCard(
                 title = "CSV export",
-                body = "Share a spreadsheet-friendly snapshot of trackers and entries."
-            ) { Button(onClick = onExportCsv) { Text("Export CSV") } }
+                body = "Save or share a spreadsheet-friendly snapshot of trackers and entries. $EXPORT_WARNING"
+            ) {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Button(onClick = onSaveCsv) { Text("Save to file…") }
+                    TextButton(onClick = onShareCsv) { Text("Share…") }
+                }
+            }
         }
         item {
             SettingsCard(
                 title = "Full backup",
-                body = "Export or import the full app state as a versioned JSON backup file."
+                body = "Export or import the full app state as a versioned JSON backup file. $EXPORT_WARNING"
             ) {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Button(onClick = onExportBackup) { Text("Export backup") }
+                    Button(onClick = onSaveBackup) { Text("Save to file…") }
+                    TextButton(onClick = onShareBackup) { Text("Share…") }
                     TextButton(onClick = onImportBackup) { Text("Import backup") }
                 }
             }
