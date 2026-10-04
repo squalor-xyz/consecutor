@@ -348,7 +348,18 @@ Be aware:
 - users must trust your distribution path
 - updates are your responsibility
 
-## Deployment Checklist
+## Release checklist
+
+Keep `versionCode` and `versionName` as literals in `app/build.gradle` so F-Droid's
+checkupdates can read them. `versionName` uses semantic `MAJOR.MINOR.PATCH`, and
+`versionCode = MAJOR*10000 + MINOR*100 + PATCH`: `1.0.0` is `10000`, and `1.2.3`
+is `10203`. Keep MINOR and PATCH below 100 so the encoding remains unambiguous.
+Increase `versionCode` for every release and change both values in the same commit.
+
+Release builds enable R8 minification and resource shrinking, and omit dependency
+metadata from APKs and bundles. Smoke test a locally signed release APK using the
+Manual QA Checklist above. Add a ProGuard keep rule only for an observed failure,
+with a one-line comment describing the failure it fixes.
 
 Before shipping anywhere:
 
