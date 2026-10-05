@@ -20,7 +20,7 @@
 - Advanced analytics suite.
 - Squalor brand marks in the APK (brand marks are all-rights-reserved; the app icon is app-specific and MPL-2.0).
 
-65 items · — 4 · done 49 · later 11 · started 1
+65 items · — 3 · done 49 · later 11 · started 1 · review 1
 
 | # | Slice | Title | Size | Effort | Trees | Findings | Status |
 |---|---|---|---|---|---|---|---|
@@ -40,7 +40,7 @@
 | 12 | S52 | Dashboard performance with years of history |  | 3 | data |  | later |
 | 13 | S59 | Optional scheduled backup to a user-chosen folder |  | 2 | data |  | later |
 | P3 Release | | | | | | | |
-| 14 | [S62](slices/S62.md) | Resolve release permission gate for AndroidX signature permission | S | 1 | release | S22 signed minified APK aapt2 dump permissions declares and requests com.squalor.consecutor.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION in addition to the two allowed permissions. | — |
+| 14 | [S62](slices/S62.md) | Resolve release permission gate for AndroidX signature permission | S | 1 | release | S22 signed minified APK aapt2 dump permissions declares and requests com.squalor.consecutor.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION in addition to the two allowed permissions. | review |
 | P2 MVP UX | | | | | | | |
 | 15 | [S64](slices/S64.md) | Refresh today and midnight timer after device clock changes | S | 2 | ui | S22 signed release on API 36: move clock to 23:59:40 while dashboard remains open, wait past midnight; S22 Yes remains Done today. TrackerViewModel.kt:99-104 sleeps for the original monotonic delay; MainScreen.kt refreshes today only on resume. | — |
 | P3 Release | | | | | | | |

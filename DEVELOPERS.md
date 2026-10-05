@@ -376,6 +376,15 @@ Before shipping anywhere:
 9. Tag the release in git: `git tag vX.Y.Z` (the tag must be `v` plus `versionName`) and push it.
    `.github/workflows/release.yml` then builds a signed APK and publishes it, with a `.sha256` file, as a GitHub release; a `versionName` containing a hyphen (for example `1.0.0-rc1`) is published as a prerelease. The job fails at the version check if the tag does not match `versionName`, and fails if any signing secret is missing.
 
+### Release permission check
+
+List the permissions of the built release APK with `aapt dump permissions <apk>` (in `$ANDROID_HOME/build-tools/<version>/`). The expected result is:
+
+- `POST_NOTIFICATIONS` and `RECEIVE_BOOT_COMPLETED`, the only system permissions the app requests. There is no `INTERNET` permission.
+- `com.squalor.consecutor.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION`, which `androidx.core` adds to the merged manifest (declared with `protectionLevel="signature"` and requested by the app). It protects non-exported dynamic receivers on older Android versions. Do not remove it with `tools:node="remove"`.
+
+Anything else is a failure. Check that `PRIVACY.md` still matches.
+
 ### Release signing secrets
 
 The owner creates these four repository secrets (Settings > Secrets and variables > Actions). The agent never creates secrets or a keystore.
