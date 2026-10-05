@@ -1913,7 +1913,7 @@
       "id": "S64",
       "title": "Refresh today and midnight timer after device clock changes",
       "short_title": "Refresh today and midnight timer after device clock changes",
-      "status": "review",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S09"
