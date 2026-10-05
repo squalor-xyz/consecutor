@@ -1944,7 +1944,7 @@
       "id": "S65",
       "title": "Investigate API 33 release walkthrough ANR",
       "short_title": "Investigate API 33 release walkthrough ANR",
-      "status": "review",
+      "status": "done",
       "has_slice": true,
       "depends_on": [],
       "notes": [
