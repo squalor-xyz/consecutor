@@ -2,19 +2,24 @@ package com.squalor.consecutor.ui
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import com.squalor.consecutor.FormError
+import com.squalor.consecutor.R
 
-/** English copy for form errors. S18 moves these to string resources. */
+@Composable
 internal fun formErrorText(error: FormError, limit: Int? = null): String = when (error) {
-    FormError.REQUIRED -> "Required."
-    FormError.TOO_LONG -> if (limit != null) "At most $limit characters." else "Too long."
-    FormError.NOT_A_NUMBER -> "Enter a number."
-    FormError.MUST_BE_POSITIVE -> "Must be greater than zero."
-    FormError.OUT_OF_RANGE -> "Enter a whole number from 1 to 7."
-    FormError.FUTURE_DATE -> "Date can't be in the future."
-    FormError.INVALID_DATE -> "Use the format YYYY-MM-DD"
-    FormError.ONE_CHARACTER_ONLY -> "Use a single emoji or character."
-    FormError.ALREADY_LOGGED -> "Already logged on this date."
+    FormError.REQUIRED -> stringResource(R.string.error_required)
+    FormError.TOO_LONG ->
+        if (limit != null) pluralStringResource(R.plurals.error_too_long_limit, limit, limit)
+        else stringResource(R.string.error_too_long)
+    FormError.NOT_A_NUMBER -> stringResource(R.string.error_not_a_number)
+    FormError.MUST_BE_POSITIVE -> stringResource(R.string.error_must_be_positive)
+    FormError.OUT_OF_RANGE -> stringResource(R.string.error_out_of_range)
+    FormError.FUTURE_DATE -> stringResource(R.string.error_future_date)
+    FormError.INVALID_DATE -> stringResource(R.string.error_invalid_date)
+    FormError.ONE_CHARACTER_ONLY -> stringResource(R.string.error_one_character_only)
+    FormError.ALREADY_LOGGED -> stringResource(R.string.error_already_logged)
 }
 
 internal fun errorSupportingText(error: FormError?, limit: Int? = null): (@Composable () -> Unit)? =

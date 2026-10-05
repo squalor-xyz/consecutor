@@ -12,9 +12,11 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
+import com.squalor.consecutor.R
 import com.squalor.consecutor.TrendPoint
 import com.squalor.consecutor.ui.formatValue
 
@@ -28,7 +30,7 @@ internal fun LineChart(
     val values = points.mapNotNull { it.value }
     if (values.isEmpty()) {
         Text(
-            "No measurements in the last 30 days.",
+            pluralStringResource(R.plurals.chart_line_empty, points.size, points.size),
             modifier = modifier,
             style = MaterialTheme.typography.bodyMedium
         )

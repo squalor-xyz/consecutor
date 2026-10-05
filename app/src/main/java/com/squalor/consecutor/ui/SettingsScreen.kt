@@ -15,9 +15,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-
-private const val EXPORT_WARNING = "Exports are unencrypted and contain your full history. Store them somewhere private."
+import com.squalor.consecutor.R
 
 @Composable
 internal fun SettingsScreen(
@@ -31,54 +31,54 @@ internal fun SettingsScreen(
     canRequestNotifications: Boolean,
     onEnableNotifications: () -> Unit
 ) {
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(padding),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        item {
-            Text("Privacy-first defaults", style = MaterialTheme.typography.titleLarge)
-            Text(
-                "Consecutor keeps tracker data on-device, uses explicit export/import for portability, and avoids account-based sync in v1.",
-                style = MaterialTheme.typography.bodyMedium
-            )
-        }
-        item {
-            SettingsCard(
-                title = "CSV export",
-                body = "Save or share a spreadsheet-friendly snapshot of trackers and entries. $EXPORT_WARNING"
-            ) {
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Button(onClick = onSaveCsv) { Text("Save to file…") }
-                    TextButton(onClick = onShareCsv) { Text("Share…") }
+    ContentColumn(padding) {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            item {
+                Text(stringResource(R.string.settings_privacy_title), style = MaterialTheme.typography.titleLarge)
+                Text(
+                    stringResource(R.string.settings_privacy_body),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+            item {
+                SettingsCard(
+                    title = stringResource(R.string.settings_csv_title),
+                    body = stringResource(R.string.settings_csv_body, stringResource(R.string.settings_export_warning))
+                ) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Button(onClick = onSaveCsv) { Text(stringResource(R.string.settings_save_to_file)) }
+                        TextButton(onClick = onShareCsv) { Text(stringResource(R.string.settings_share)) }
+                    }
                 }
             }
-        }
-        item {
-            SettingsCard(
-                title = "Full backup",
-                body = "Export or import the full app state as a versioned JSON backup file. Import previews the backup before replacing your current data. $EXPORT_WARNING"
-            ) {
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Button(onClick = onSaveBackup) { Text("Save to file…") }
-                    TextButton(onClick = onShareBackup) { Text("Share…") }
-                    TextButton(onClick = onImportBackup) { Text("Import backup") }
+            item {
+                SettingsCard(
+                    title = stringResource(R.string.settings_backup_title),
+                    body = stringResource(R.string.settings_backup_body, stringResource(R.string.settings_export_warning))
+                ) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Button(onClick = onSaveBackup) { Text(stringResource(R.string.settings_save_to_file)) }
+                        TextButton(onClick = onShareBackup) { Text(stringResource(R.string.settings_share)) }
+                        TextButton(onClick = onImportBackup) { Text(stringResource(R.string.settings_import_backup)) }
+                    }
                 }
             }
-        }
-        item {
-            SettingsCard(
-                title = "Notifications: ${if (notificationsEnabled) "On" else "Off"}",
-                body = if (notificationsEnabled) {
-                    "Reminders are local only."
-                } else {
-                    "Reminders are local only. Enable notifications to receive your scheduled reminders."
-                }
-            ) {
-                Button(onClick = onEnableNotifications) {
-                    Text(if (canRequestNotifications) "Allow notifications" else "Open settings")
+            item {
+                SettingsCard(
+                    title = stringResource(
+                        if (notificationsEnabled) R.string.settings_notifications_on_title else R.string.settings_notifications_off_title
+                    ),
+                    body = stringResource(
+                        if (notificationsEnabled) R.string.settings_notifications_on_body else R.string.settings_notifications_off_body
+                    )
+                ) {
+                    Button(onClick = onEnableNotifications) {
+                        Text(stringResource(if (canRequestNotifications) R.string.settings_allow_notifications else R.string.action_open_settings))
+                    }
                 }
             }
         }
