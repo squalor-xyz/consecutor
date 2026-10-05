@@ -1855,11 +1855,12 @@
       "id": "S62",
       "title": "Resolve release permission gate for AndroidX signature permission",
       "short_title": "Resolve release permission gate for AndroidX signature permission",
-      "status": "open",
+      "status": "done",
       "has_slice": true,
       "depends_on": [],
       "notes": [
-        "**2026-10-05** — Score 3/3/1: the literal release-permission gate fails on the signed APK; resolving the AndroidX signature-protection requirement versus the accepted gate is a small, required release decision."
+        "**2026-10-05** — Score 3/3/1: the literal release-permission gate fails on the signed APK; resolving the AndroidX signature-protection requirement versus the accepted gate is a small, required release decision.",
+        "**2026-10-05** — Resolved by relaxing the gate (owner decision). Merged release manifest: androidx.core 1.18.0 declares DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION with protectionLevel=signature and requests it (manifest-merger-release-report). No manifest change, so receiver protection is unchanged. S22's permission criterion and a new DEVELOPERS.md 'Release permission check' now expect POST_NOTIFICATIONS and RECEIVE_BOOT_COMPLETED plus that signature permission. aapt dump permissions on the signed S22 release APK (sha256 96428cdf...5ab, built from 816a80f) lists exactly those three uses-permission entries and the app-defined permission. PRIVACY.md on main predates this; the S20 branch PRIVACY.md already states it. S22's uncommitted DEVELOPERS.md checklist row 15 still says only two permissions and needs the same wording. Uncommitted in the S62 worktree. No build was run (docs and slicer state only)."
       ],
       "claim": null,
       "fields": {
@@ -1876,18 +1877,19 @@
         "importance": 3,
         "urgency": 3,
         "effort": 1,
-        "attempts": 0
+        "attempts": 1
       }
     },
     {
       "id": "S63",
       "title": "Verify current main instrumented CI after S45 merge",
       "short_title": "Verify current main instrumented CI after S45 merge",
-      "status": "open",
+      "status": "done",
       "has_slice": true,
       "depends_on": [],
       "notes": [
-        "**2026-10-05** — Score 3/3/2: latest published main instrumented CI is red, so a required release gate fails; verifying the newer local S45 revision and diagnosing any remaining failure requires a bounded CI investigation."
+        "**2026-10-05** — Score 3/3/2: latest published main instrumented CI is red, so a required release gate fails; verifying the newer local S45 revision and diagnosing any remaining failure requires a bounded CI investigation.",
+        "**2026-10-05** — Resolved; no code or workflow change. Published main 939d9b5 (pushed by the owner's instruction on 2026-10-05): Build run 37338219263, https://github.com/squalor-xyz/consecutor/actions/runs/37338219263, conclusion success. build job success (completed 16:09:51Z) and instrumented job success (16:13:44Z). Earlier failing run 37258797096 at fcd5106: build success, instrumented failed in the 'Instrumented tests on a managed device' step after about 6 minutes (exit code 1); the instrumented-reports artifact (11323373426) exists but needs authentication to download, so the exact failing test was not read. Likely cause, from source (not from the log): at fcd5106 NavigationTest.backFromSettingsReturnsToDashboard still asserted 'Privacy-first defaults' (NavigationTest.kt:78), but S57 (ca36f0a, an ancestor of fcd5106) had replaced that Settings header with settings_privacy_line; S45's 92589b6 updated the test, and that string no longer appears in app/src on main. Local reproducer on 939d9b5: ./gradlew pixel6api34DebugAndroidTest (the CI managed device) ran 56 tests, 0 failed, 0 skipped, BUILD SUCCESSFUL in 4m24s. Data was read with unauthenticated GETs to the public GitHub REST API; gh is not installed. The push printed a remote notice that changes must go through a pull request, and went through (bypass)."
       ],
       "claim": null,
       "fields": {
@@ -1904,20 +1906,21 @@
         "importance": 3,
         "urgency": 3,
         "effort": 2,
-        "attempts": 0
+        "attempts": 1
       }
     },
     {
       "id": "S64",
       "title": "Refresh today and midnight timer after device clock changes",
       "short_title": "Refresh today and midnight timer after device clock changes",
-      "status": "open",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S09"
       ],
       "notes": [
-        "**2026-10-05** — S22 reproduced the same foreground clock-change midnight failure on API 30, API 33 and API 36. Background rollover passed on all three. Each script restored auto_time and the original clock plus elapsed time. Evidence: build/s22-validation/emulator-5558, emulator-5560 and emulator-5554 system-results.json and 05-foreground-midnight screenshots/XML. Score 3/3/2: required release gate fails; bounded day-refresh/timer fix with lifecycle coverage."
+        "**2026-10-05** — S22 reproduced the same foreground clock-change midnight failure on API 30, API 33 and API 36. Background rollover passed on all three. Each script restored auto_time and the original clock plus elapsed time. Evidence: build/s22-validation/emulator-5558, emulator-5560 and emulator-5554 system-results.json and 05-foreground-midnight screenshots/XML. Score 3/3/2: required release gate fails; bounded day-refresh/timer fix with lifecycle coverage.",
+        "**2026-10-05** — Fixed; uncommitted in the S64 worktree. TrackerViewModel now runs refreshAtDayBoundaries (DayClock.kt): it waits for the next midnight (+1 s) or a clock-change signal, then refreshes today and re-computes the wait. MainScreen registers a plain BroadcastReceiver for ACTION_TIME_CHANGED, ACTION_DATE_CHANGED and ACTION_TIMEZONE_CHANGED on the application context (DisposableEffect, unregistered on dispose) and calls viewModel.onClockChanged(). It deliberately avoids ContextCompat.registerReceiver with RECEIVER_NOT_EXPORTED, which on API < 33 would drop system broadcasts. DayClockTest gained 5 virtual-time tests (wait ends just after midnight, a signal ends it early, a signal sent before the wait is not lost, natural midnight refresh, a clock jump to 23:59:40 refreshes and re-arms the wait to 21 s). testDebugUnitTest 139 passed, 0 failures (134 before); lintDebug 0 errors, 14 warnings (unchanged); assembleDebug passed. Device check on s08_api34 (API 34 Google APIs, debug build): YES_NO Gamma logged, auto_time off, clock set with cmd alarm set-time to 23:59:40 while the dashboard stayed in the foreground; screenshot at 00:00:06 the next day shows Gamma back to Not logged today. Clock and auto_time restored, emulator stopped. NOT re-run: API 26, 30, 33 and 36, whose emulators hold the S22 release-signed app (installing a debug build would need an uninstall). Caveat: uiautomator dump timed out and left a stale ui.xml on this emulator, giving false Done today readings; use screencap. Background rollover on resume is unchanged and was not re-tested here."
       ],
       "claim": null,
       "fields": {
@@ -1934,19 +1937,20 @@
         "importance": 3,
         "urgency": 3,
         "effort": 2,
-        "attempts": 0
+        "attempts": 1
       }
     },
     {
       "id": "S65",
       "title": "Investigate API 33 release walkthrough ANR",
       "short_title": "Investigate API 33 release walkthrough ANR",
-      "status": "open",
+      "status": "done",
       "has_slice": true,
       "depends_on": [],
       "notes": [
         "**2026-10-05** — Score 3/3/2: an observed release ANR prevents a trustworthy API 33 gate pass; reproducing and diagnosing it is bounded but its cause is unknown. Evidence is the S22 Android dialog screenshot/XML and ActivityManager input-dispatch timeout; no app root cause is asserted.",
-        "**2026-10-05** — Additional environment observation: the separately launched s48_tablet_api36 test AVD showed System UI is not responding before the S22 dashboard check (build/s22-validation/emulator-5562/tablet-current.png/XML). Tablet AndroidRuntime error log was empty, and am start -W reported MainActivity already topmost. This supports investigating emulator/system responsiveness; it does not establish the cause of the earlier API33 app ANR."
+        "**2026-10-05** — Additional environment observation: the separately launched s48_tablet_api36 test AVD showed System UI is not responding before the S22 dashboard check (build/s22-validation/emulator-5562/tablet-current.png/XML). Tablet AndroidRuntime error log was empty, and am start -W reported MainActivity already topmost. This supports investigating emulator/system responsiveness; it does not establish the cause of the earlier API33 app ANR.",
+        "**2026-10-05** — Not reproduced; no app change. Run 2026-10-05 ~09:33-09:36 EDT on s22_api33_aosp (API 33 AOSP arm64, 2 GB), the only test emulator running; the original API 36 emulator (emulator-5554) was still running but idle. The installed app is S22's signed minified release (versionCode 10000, not debuggable; sha256 of base.apk on the device = 96428cdf...5ab, matching S22). Input was sequential adb input taps with screencap; uiautomator was not used. Run A (pm clear, then create tracker with reminder): save shows the system notification prompt; Don't allow -> 'Notifications are off. Reminders cannot be shown.' snackbar with Open settings and 'Notifications off' on the card; Open settings -> system app notification page; toggled on, Back -> app, 'Notifications off' cleared; three rounds of open detail, Back, Settings, Back; MainActivity stayed focused. Run B (pm clear, new tracker with reminder): Allow -> POST_NOTIFICATIONS granted=true, dashboard normal. logcat -c before each run; afterwards no 'ANR in', 'not responding', 'Input dispatching timed out', am_anr or FATAL lines. The only ActivityManager error in the log was a system 'Sending non-protected broadcast' stack from com.android.bluetooth, unrelated. Cause remains unverified: the original ANR happened with four emulators and concurrent uiautomator commands running, and during this session uiautomator dump on another emulator (API 34) hung and returned a stale ui.xml, which supports a driver/emulator-load explanation but does not prove it. Reliable rerun: one emulator, adb input + screencap, clear data first. Not covered: the second system 'deny twice' dialog (the Open settings path after the first deny was covered), physical device, API 26/30. App data on s22_api33_aosp was cleared by this run."
       ],
       "claim": null,
       "fields": {
@@ -1963,7 +1967,7 @@
         "importance": 3,
         "urgency": 3,
         "effort": 2,
-        "attempts": 0
+        "attempts": 1
       }
     }
   ],
