@@ -112,7 +112,7 @@ internal val EntryEditorStateSaver = listSaver<EntryEditorState?, Any?>(
             existingNote = values[6] as String?
         )
     }
-}
+)
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
