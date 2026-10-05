@@ -1855,7 +1855,7 @@
       "id": "S62",
       "title": "Resolve release permission gate for AndroidX signature permission",
       "short_title": "Resolve release permission gate for AndroidX signature permission",
-      "status": "review",
+      "status": "done",
       "has_slice": true,
       "depends_on": [],
       "notes": [
