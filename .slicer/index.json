@@ -1941,12 +1941,13 @@
       "id": "S65",
       "title": "Investigate API 33 release walkthrough ANR",
       "short_title": "Investigate API 33 release walkthrough ANR",
-      "status": "open",
+      "status": "review",
       "has_slice": true,
       "depends_on": [],
       "notes": [
         "**2026-10-05** — Score 3/3/2: an observed release ANR prevents a trustworthy API 33 gate pass; reproducing and diagnosing it is bounded but its cause is unknown. Evidence is the S22 Android dialog screenshot/XML and ActivityManager input-dispatch timeout; no app root cause is asserted.",
-        "**2026-10-05** — Additional environment observation: the separately launched s48_tablet_api36 test AVD showed System UI is not responding before the S22 dashboard check (build/s22-validation/emulator-5562/tablet-current.png/XML). Tablet AndroidRuntime error log was empty, and am start -W reported MainActivity already topmost. This supports investigating emulator/system responsiveness; it does not establish the cause of the earlier API33 app ANR."
+        "**2026-10-05** — Additional environment observation: the separately launched s48_tablet_api36 test AVD showed System UI is not responding before the S22 dashboard check (build/s22-validation/emulator-5562/tablet-current.png/XML). Tablet AndroidRuntime error log was empty, and am start -W reported MainActivity already topmost. This supports investigating emulator/system responsiveness; it does not establish the cause of the earlier API33 app ANR.",
+        "**2026-10-05** — Not reproduced; no app change. Run 2026-10-05 ~09:33-09:36 EDT on s22_api33_aosp (API 33 AOSP arm64, 2 GB), the only test emulator running; the original API 36 emulator (emulator-5554) was still running but idle. The installed app is S22's signed minified release (versionCode 10000, not debuggable; sha256 of base.apk on the device = 96428cdf...5ab, matching S22). Input was sequential adb input taps with screencap; uiautomator was not used. Run A (pm clear, then create tracker with reminder): save shows the system notification prompt; Don't allow -> 'Notifications are off. Reminders cannot be shown.' snackbar with Open settings and 'Notifications off' on the card; Open settings -> system app notification page; toggled on, Back -> app, 'Notifications off' cleared; three rounds of open detail, Back, Settings, Back; MainActivity stayed focused. Run B (pm clear, new tracker with reminder): Allow -> POST_NOTIFICATIONS granted=true, dashboard normal. logcat -c before each run; afterwards no 'ANR in', 'not responding', 'Input dispatching timed out', am_anr or FATAL lines. The only ActivityManager error in the log was a system 'Sending non-protected broadcast' stack from com.android.bluetooth, unrelated. Cause remains unverified: the original ANR happened with four emulators and concurrent uiautomator commands running, and during this session uiautomator dump on another emulator (API 34) hung and returned a stale ui.xml, which supports a driver/emulator-load explanation but does not prove it. Reliable rerun: one emulator, adb input + screencap, clear data first. Not covered: the second system 'deny twice' dialog (the Open settings path after the first deny was covered), physical device, API 26/30. App data on s22_api33_aosp was cleared by this run."
       ],
       "claim": null,
       "fields": {
@@ -1963,7 +1964,7 @@
         "importance": 3,
         "urgency": 3,
         "effort": 2,
-        "attempts": 0
+        "attempts": 1
       }
     }
   ],
