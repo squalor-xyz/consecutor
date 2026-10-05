@@ -1,0 +1,60 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check tag matches versionName
+        run: |
+          VERSION=$(grep -E '^\s*versionName' app/build.gradle | sed -E 's/.*"([^"]+)".*/\1/')
+          [ "v$VERSION" = "$GITHUB_REF_NAME" ] || { echo "Tag $GITHUB_REF_NAME does not match versionName $VERSION"; exit 1; }
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+      - name: Check signing secrets are present
+        env:
+          KEYSTORE_B64: ${{ secrets.CONSECUTOR_KEYSTORE_BASE64 }}
+          CONSECUTOR_KEYSTORE_PASSWORD: ${{ secrets.CONSECUTOR_KEYSTORE_PASSWORD }}
+          CONSECUTOR_KEY_ALIAS: ${{ secrets.CONSECUTOR_KEY_ALIAS }}
+          CONSECUTOR_KEY_PASSWORD: ${{ secrets.CONSECUTOR_KEY_PASSWORD }}
+        run: |
+          [ -n "$KEYSTORE_B64" ] || { echo "Missing secret CONSECUTOR_KEYSTORE_BASE64"; exit 1; }
+          [ -n "$CONSECUTOR_KEYSTORE_PASSWORD" ] || { echo "Missing secret CONSECUTOR_KEYSTORE_PASSWORD"; exit 1; }
+          [ -n "$CONSECUTOR_KEY_ALIAS" ] || { echo "Missing secret CONSECUTOR_KEY_ALIAS"; exit 1; }
+          [ -n "$CONSECUTOR_KEY_PASSWORD" ] || { echo "Missing secret CONSECUTOR_KEY_PASSWORD"; exit 1; }
+      - name: Decode keystore
+        env:
+          KEYSTORE_B64: ${{ secrets.CONSECUTOR_KEYSTORE_BASE64 }}
+        run: echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/release.jks"
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      - name: Unit test and assemble signed release
+        env:
+          CONSECUTOR_KEYSTORE: ${{ runner.temp }}/release.jks
+          CONSECUTOR_KEYSTORE_PASSWORD: ${{ secrets.CONSECUTOR_KEYSTORE_PASSWORD }}
+          CONSECUTOR_KEY_ALIAS: ${{ secrets.CONSECUTOR_KEY_ALIAS }}
+          CONSECUTOR_KEY_PASSWORD: ${{ secrets.CONSECUTOR_KEY_PASSWORD }}
+        run: ./gradlew testDebugUnitTest assembleRelease
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp app/build/outputs/apk/release/app-release.apk "consecutor-$VERSION.apk"
+          sha256sum "consecutor-$VERSION.apk" > "consecutor-$VERSION.apk.sha256"
+          PRERELEASE=""
+          case "$VERSION" in *-*) PRERELEASE="--prerelease" ;; esac
+          gh release create "$GITHUB_REF_NAME" "consecutor-$VERSION.apk" "consecutor-$VERSION.apk.sha256" \
+            --title "$GITHUB_REF_NAME" --generate-notes $PRERELEASE

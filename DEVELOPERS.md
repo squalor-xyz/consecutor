@@ -373,7 +373,19 @@ Before shipping anywhere:
 6. Verify notification permission flow on Android 13+.
 7. Update `README.md`, `PRIVACY.md`, and release notes if behavior changed.
 8. Confirm license and dependency compatibility.
-9. Tag the release in git.
+9. Tag the release in git: `git tag vX.Y.Z` (the tag must be `v` plus `versionName`) and push it.
+   `.github/workflows/release.yml` then builds a signed APK and publishes it, with a `.sha256` file, as a GitHub release; a `versionName` containing a hyphen (for example `1.0.0-rc1`) is published as a prerelease. The job fails at the version check if the tag does not match `versionName`, and fails if any signing secret is missing.
+
+### Release signing secrets
+
+The owner creates these four repository secrets (Settings > Secrets and variables > Actions). The agent never creates secrets or a keystore.
+
+- `CONSECUTOR_KEYSTORE_BASE64`: the release keystore, base64-encoded.
+- `CONSECUTOR_KEYSTORE_PASSWORD`
+- `CONSECUTOR_KEY_ALIAS`
+- `CONSECUTOR_KEY_PASSWORD`
+
+Produce the base64 value with `base64 -i release.jks | pbcopy` on macOS, or `base64 -w0 release.jks` on Linux.
 
 ## Architecture Notes
 
