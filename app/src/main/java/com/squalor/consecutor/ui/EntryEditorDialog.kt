@@ -3,12 +3,11 @@ package com.squalor.consecutor.ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -138,83 +137,74 @@ internal fun EntryEditorDialog(
     val errors = validateEntryForm(state.trackerType, date, valueText, note, today, otherYesNoDates, locale)
     fun errorFor(field: EntryField) = if (showErrors) errors[field] else null
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(if (state.entryId == null) "Log entry" else "Edit entry") },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    FilterChip(
-                        selected = date == today,
-                        onClick = { dateText = today.toString() },
-                        label = { Text("Today") }
-                    )
-                    FilterChip(
-                        selected = date == today.minusDays(1),
-                        onClick = { dateText = today.minusDays(1).toString() },
-                        label = { Text("Yesterday") }
-                    )
-                }
-                OutlinedButton(
-                    onClick = { showDatePicker = true },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)))
-                }
-                errorSupportingText(errorFor(EntryField.DATE))?.invoke()
-                if (state.trackerType != TrackerType.YES_NO) {
-                    OutlinedTextField(
-                        value = valueText,
-                        onValueChange = { valueText = it },
-                        label = { Text("Value ${state.unit?.let { "($it)" } ?: ""}".trim()) },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                        isError = errorFor(EntryField.VALUE) != null,
-                        supportingText = errorSupportingText(errorFor(EntryField.VALUE)),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
+    EditorDialog(
+        title = if (state.entryId == null) "Log entry" else "Edit entry",
+        onDismiss = onDismiss,
+        onConfirm = {
+            showErrors = true
+            if (errors.isNotEmpty()) return@EditorDialog
+            val value = when (state.trackerType) {
+                TrackerType.YES_NO -> 1.0
+                else -> NumberRules.parseDecimal(valueText, locale) ?: return@EditorDialog
+            }
+            onSave(
+                EntryDraft(
+                    effectiveDate = date,
+                    value = value,
+                    note = note.ifBlank { null }
+                )
+            )
+        }
+    ) {
+        Column(
+            modifier = Modifier.verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FilterChip(
+                    selected = date == today,
+                    onClick = { dateText = today.toString() },
+                    label = { Text("Today") }
+                )
+                FilterChip(
+                    selected = date == today.minusDays(1),
+                    onClick = { dateText = today.minusDays(1).toString() },
+                    label = { Text("Yesterday") }
+                )
+            }
+            OutlinedButton(
+                onClick = { showDatePicker = true },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)))
+            }
+            errorSupportingText(errorFor(EntryField.DATE))?.invoke()
+            if (state.trackerType != TrackerType.YES_NO) {
                 OutlinedTextField(
-                    value = note,
-                    onValueChange = { note = it },
-                    label = { Text("Note") },
-                    isError = errorFor(EntryField.NOTE) != null,
-                    supportingText = errorSupportingText(errorFor(EntryField.NOTE), EditorLimits.NOTE),
+                    value = valueText,
+                    onValueChange = { valueText = it },
+                    label = { Text("Value ${state.unit?.let { "($it)" } ?: ""}".trim()) },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    isError = errorFor(EntryField.VALUE) != null,
+                    supportingText = errorSupportingText(errorFor(EntryField.VALUE)),
                     modifier = Modifier.fillMaxWidth()
                 )
             }
-        },
-        confirmButton = {
-            Button(onClick = {
-                showErrors = true
-                if (errors.isNotEmpty()) return@Button
-                val value = when (state.trackerType) {
-                    TrackerType.YES_NO -> 1.0
-                    else -> NumberRules.parseDecimal(valueText, locale) ?: return@Button
-                }
-                onSave(
-                    EntryDraft(
-                        effectiveDate = date,
-                        value = value,
-                        note = note.ifBlank { null }
-                    )
-                )
-            }) {
-                Text("Save")
-            }
-        },
-        dismissButton = {
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                onDelete?.let {
-                    TextButton(onClick = it) {
-                        Text("Delete")
-                    }
-                }
-                TextButton(onClick = onDismiss) {
-                    Text("Cancel")
+            OutlinedTextField(
+                value = note,
+                onValueChange = { note = it },
+                label = { Text("Note") },
+                isError = errorFor(EntryField.NOTE) != null,
+                supportingText = errorSupportingText(errorFor(EntryField.NOTE), EditorLimits.NOTE),
+                modifier = Modifier.fillMaxWidth()
+            )
+            onDelete?.let {
+                TextButton(onClick = it) {
+                    Text("Delete")
                 }
             }
         }
-    )
+    }
     if (showDatePicker) {
         val pickerState = rememberDatePickerState(
             initialSelectedDateMillis = date.toPickerMillis(),
