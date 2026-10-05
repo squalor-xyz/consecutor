@@ -1446,7 +1446,7 @@
       "id": "S49",
       "title": "Store listing: fastlane metadata and screenshots",
       "short_title": "Store listing: fastlane metadata and screenshots",
-      "status": "open",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S12",
