@@ -442,3 +442,7 @@
 {"when": "2026-10-05T12:31:37Z", "item": "S65", "action": "note", "from": "", "to": "", "note": "Additional environment observation: the separately launched "}
 {"when": "2026-10-05T12:34:34Z", "item": "S22", "action": "note", "from": "", "to": "", "note": "S22 release gate result: NO-GO. This supersedes the initial "}
 {"when": "2026-10-05T12:40:42Z", "item": "S22", "action": "note", "from": "", "to": "", "note": "S22 release gate result: NO-GO. This supersedes the initial "}
+{"when": "2026-10-05T13:16:40Z", "item": "S62", "action": "status", "from": "open", "to": "started", "note": "", "by": "Jon R"}
+{"when": "2026-10-05T13:17:07Z", "item": "S22", "action": "edit", "from": "", "to": "", "note": "Implement"}
+{"when": "2026-10-05T13:17:39Z", "item": "S62", "action": "note", "from": "", "to": "", "note": "Resolved by relaxing the gate (owner decision). Merged relea"}
+{"when": "2026-10-05T13:17:40Z", "item": "S62", "action": "handoff", "from": "started", "to": "review", "note": "Gate relaxed; manifest unchanged; aapt re-verified; claim Jon R cleared", "by": "Jon R"}
