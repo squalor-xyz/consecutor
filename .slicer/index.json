@@ -1777,7 +1777,7 @@
       "id": "S60",
       "title": "Editor dialogs keep Save and Cancel above the keyboard",
       "short_title": "Editor dialogs keep Save and Cancel above the keyboard",
-      "status": "open",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S40"
