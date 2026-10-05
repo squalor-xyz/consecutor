@@ -620,13 +620,15 @@
       "id": "S21",
       "title": "Tagged release workflow publishing signed APK to GitHub releases",
       "short_title": "Tagged release workflow publishing signed APK to GitHub releases",
-      "status": "open",
+      "status": "review",
       "has_slice": true,
       "depends_on": [
         "S19",
         "S47"
       ],
-      "notes": [],
+      "notes": [
+        "**2026-10-05** — Ready for review: release.yml added; DEVELOPERS.md release checklist documents secrets. Owner test on a fork with secrets still pending."
+      ],
       "claim": null,
       "fields": {
         "size": "S",
@@ -642,7 +644,7 @@
         "importance": 2,
         "urgency": 1,
         "effort": 2,
-        "attempts": 0
+        "attempts": 1
       }
     },
     {
