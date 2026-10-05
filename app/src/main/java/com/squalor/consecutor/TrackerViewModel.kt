@@ -18,7 +18,6 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -96,17 +95,21 @@ class TrackerViewModel(
     private var importContext: Context? = null
     private var importJob: Job? = null
 
+    private val clockChanges = Channel<Unit>(Channel.CONFLATED)
+
     init {
         viewModelScope.launch {
-            while (true) {
-                delay(millisUntilNextMidnight(ZonedDateTime.now()) + 1_000)
-                refreshToday()
-            }
+            refreshAtDayBoundaries({ ZonedDateTime.now() }, clockChanges, ::refreshToday)
         }
     }
 
     fun refreshToday() {
         _today.value = LocalDate.now()
+    }
+
+    /** The device date, time or time zone changed while the app was running. */
+    fun onClockChanged() {
+        clockChanges.trySend(Unit)
     }
 
     fun select(id: Long?) {
