@@ -453,6 +453,12 @@ fun MainScreen(viewModel: TrackerViewModel) {
                     } else {
                         openNotificationSettings(context)
                     }
+                },
+                onLinkFailed = {
+                    scope.launch {
+                        snackbarHostState.currentSnackbarData?.dismiss()
+                        snackbarHostState.showSnackbar(resources.getString(R.string.settings_no_link_app))
+                    }
                 }
             )
         }
