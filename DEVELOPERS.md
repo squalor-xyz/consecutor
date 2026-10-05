@@ -207,8 +207,9 @@ not applicable with a reason where appropriate.
 14. Use TalkBack through create, log, detail, calendar, and settings. Check 200%
     font scale on a 360dp screen, and light and dark mode with no white flash at
     cold start.
-15. Inspect the release APK permissions: only `POST_NOTIFICATIONS` and
-    `RECEIVE_BOOT_COMPLETED`; confirm `PRIVACY.md` matches the app's behavior.
+15. Inspect the release APK permissions as described in Release permission check
+    below: `POST_NOTIFICATIONS` and `RECEIVE_BOOT_COMPLETED`, plus the AndroidX
+    app-signature permission; confirm `PRIVACY.md` matches the app's behavior.
 16. Delete an entry with a note and export a backup; the note is absent. Kill the
     background app process on Detail and confirm the detail screen is restored
     when returning to the app.
