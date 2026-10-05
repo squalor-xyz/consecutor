@@ -1,0 +1,18 @@
+Track habits, recurring actions and measurements with Consecutor. Your entries stay on your device, and your history is yours to edit and export.
+
+Choose a tracker for what matters to you:
+• Yes/no for habits such as meditating or journaling.
+• Count for glasses of water, pages read or workouts.
+• Measure for values such as weight or sleep hours, with your own units.
+
+Set daily or weekly targets for habits and counts. Log from the dashboard and see your progress for the current day or week. Streaks and totals are calculated from your entries: correcting a past entry updates your progress too.
+
+Explore recent trends in charts and a calendar. Add, edit or delete entries in your history, attach notes and archive trackers you no longer need.
+
+Set local reminders with a time and selected days of the week. Reminders work on your device and require notification permission.
+
+Save or share a spreadsheet-friendly CSV export, or export a full JSON backup. Preview a backup before importing it; importing replaces your current data. Exports are unencrypted, so keep them somewhere private.
+
+Consecutor has no accounts, cloud sync, ads or analytics. Automatic Android backup is disabled. Data leaves the app only when you choose to export or share it.
+
+Free and open source, licensed under MPL-2.0.
