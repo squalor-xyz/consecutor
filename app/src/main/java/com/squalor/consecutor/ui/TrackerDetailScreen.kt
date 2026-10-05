@@ -1,6 +1,7 @@
 package com.squalor.consecutor.ui
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -49,7 +50,7 @@ internal fun TrackerDetailScreen(
     ContentColumn(padding) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 88.dp),
+            contentPadding = PaddingValues(start = 12.dp, top = 16.dp, end = 12.dp, bottom = 88.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             item {
@@ -70,7 +71,7 @@ internal fun TrackerDetailScreen(
                         }
                         summary.reminder?.let { Text(stringResource(R.string.detail_reminder, reminderLabel(it))) }
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Button(onClick = onAddEntry) {
+                            Button(onClick = onAddEntry, modifier = Modifier.heightIn(min = 48.dp)) {
                                 Icon(Icons.Default.Add, contentDescription = null)
                                 Spacer(Modifier.width(8.dp))
                                 Text(stringResource(R.string.detail_log_entry))
@@ -108,7 +109,8 @@ internal fun TrackerDetailScreen(
                                 .maxByOrNull { it.occurredAtEpochMs }
                             if (entry != null) onEditEntry(entry) else onAddEntryForDate(date)
                         },
-                        modifier = Modifier.padding(16.dp)
+                        // 360dp - 24dp outer padding = seven non-overlapping 48dp day targets.
+                        modifier = Modifier.padding(vertical = 16.dp)
                     )
                 }
             }
