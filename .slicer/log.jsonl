@@ -459,3 +459,4 @@
 {"when": "2026-10-05T16:33:03Z", "item": "S62", "action": "status", "from": "review", "to": "done", "note": "", "by": "Jon R"}
 {"when": "2026-10-05T16:38:17Z", "item": "S64", "action": "status", "from": "review", "to": "done", "note": "", "by": "Jon R"}
 {"when": "2026-10-05T16:43:27Z", "item": "S65", "action": "status", "from": "review", "to": "done", "note": "", "by": "Jon R"}
+{"when": "2026-10-05T17:10:48Z", "item": "S22", "action": "note", "from": "", "to": "", "note": "**2026-10-05 (re-run after S62-S65)** — S22 release gate: ST"}
