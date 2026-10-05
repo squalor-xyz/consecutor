@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialogDefaults
@@ -59,7 +60,7 @@ internal fun EditorDialog(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    TextButton(onClick = onDismiss) {
+                    TextButton(onClick = onDismiss, modifier = Modifier.heightIn(min = 48.dp)) {
                         Text(stringResource(R.string.action_cancel))
                     }
                     Text(
@@ -70,7 +71,11 @@ internal fun EditorDialog(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
-                    Button(onClick = onConfirm, contentPadding = PaddingValues(horizontal = 20.dp)) {
+                    Button(
+                        onClick = onConfirm,
+                        modifier = Modifier.heightIn(min = 48.dp),
+                        contentPadding = PaddingValues(horizontal = 20.dp)
+                    ) {
                         Text(stringResource(R.string.action_save))
                     }
                 }

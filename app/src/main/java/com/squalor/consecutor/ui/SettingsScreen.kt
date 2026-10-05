@@ -3,10 +3,12 @@ package com.squalor.consecutor.ui
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -34,6 +36,7 @@ import com.squalor.consecutor.R
 
 private const val SOURCE_URL = "https://github.com/squalor-xyz/consecutor"
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun SettingsScreen(
     padding: PaddingValues,
@@ -63,9 +66,9 @@ internal fun SettingsScreen(
                     title = stringResource(R.string.settings_csv_title),
                     body = stringResource(R.string.settings_csv_body, stringResource(R.string.settings_export_warning))
                 ) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Button(onClick = onSaveCsv) { Text(stringResource(R.string.settings_save_to_file)) }
-                        TextButton(onClick = onShareCsv) { Text(stringResource(R.string.settings_share)) }
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Button(onClick = onSaveCsv, modifier = Modifier.heightIn(min = 48.dp)) { Text(stringResource(R.string.settings_save_to_file)) }
+                        TextButton(onClick = onShareCsv, modifier = Modifier.heightIn(min = 48.dp)) { Text(stringResource(R.string.settings_share)) }
                     }
                 }
             }
@@ -74,10 +77,10 @@ internal fun SettingsScreen(
                     title = stringResource(R.string.settings_backup_title),
                     body = stringResource(R.string.settings_backup_body, stringResource(R.string.settings_export_warning))
                 ) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Button(onClick = onSaveBackup) { Text(stringResource(R.string.settings_save_to_file)) }
-                        TextButton(onClick = onShareBackup) { Text(stringResource(R.string.settings_share)) }
-                        TextButton(onClick = onImportBackup) { Text(stringResource(R.string.settings_import_backup)) }
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Button(onClick = onSaveBackup, modifier = Modifier.heightIn(min = 48.dp)) { Text(stringResource(R.string.settings_save_to_file)) }
+                        TextButton(onClick = onShareBackup, modifier = Modifier.heightIn(min = 48.dp)) { Text(stringResource(R.string.settings_share)) }
+                        TextButton(onClick = onImportBackup, modifier = Modifier.heightIn(min = 48.dp)) { Text(stringResource(R.string.settings_import_backup)) }
                     }
                 }
             }
@@ -90,7 +93,7 @@ internal fun SettingsScreen(
                         if (notificationsEnabled) R.string.settings_notifications_on_body else R.string.settings_notifications_off_body
                     )
                 ) {
-                    Button(onClick = onEnableNotifications) {
+                    Button(onClick = onEnableNotifications, modifier = Modifier.heightIn(min = 48.dp)) {
                         Text(stringResource(if (canRequestNotifications) R.string.settings_allow_notifications else R.string.action_open_settings))
                     }
                 }
@@ -100,15 +103,21 @@ internal fun SettingsScreen(
                     title = stringResource(R.string.settings_about_title, BuildConfig.VERSION_NAME),
                     body = stringResource(R.string.settings_about_body)
                 ) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        TextButton(onClick = {
-                            try {
-                                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(SOURCE_URL)))
-                            } catch (e: ActivityNotFoundException) {
-                                onLinkFailed()
-                            }
-                        }) { Text(stringResource(R.string.settings_source_code)) }
-                        TextButton(onClick = { showLicences = true }) { Text(stringResource(R.string.settings_licences)) }
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        TextButton(
+                            onClick = {
+                                try {
+                                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(SOURCE_URL)))
+                                } catch (e: ActivityNotFoundException) {
+                                    onLinkFailed()
+                                }
+                            },
+                            modifier = Modifier.heightIn(min = 48.dp)
+                        ) { Text(stringResource(R.string.settings_source_code)) }
+                        TextButton(
+                            onClick = { showLicences = true },
+                            modifier = Modifier.heightIn(min = 48.dp)
+                        ) { Text(stringResource(R.string.settings_licences)) }
                     }
                 }
             }
@@ -127,7 +136,10 @@ internal fun SettingsScreen(
                 }
             },
             confirmButton = {
-                TextButton(onClick = { showLicences = false }) { Text(stringResource(R.string.action_close)) }
+                TextButton(
+                    onClick = { showLicences = false },
+                    modifier = Modifier.heightIn(min = 48.dp)
+                ) { Text(stringResource(R.string.action_close)) }
             }
         )
     }

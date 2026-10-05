@@ -1,9 +1,11 @@
 package com.squalor.consecutor.ui
 
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -20,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.squalor.consecutor.R
 import com.squalor.consecutor.TrackerEntity
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun ArchivedScreen(
     archived: List<TrackerEntity>,
@@ -41,9 +44,9 @@ internal fun ArchivedScreen(
                 Card(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(listOfNotNull(tracker.emoji, tracker.name).joinToString(" "), style = MaterialTheme.typography.titleMedium)
-                        Row {
-                            TextButton(onClick = { onRestore(tracker.id) }) { Text(stringResource(R.string.action_restore)) }
-                            TextButton(onClick = { onDelete(tracker) }) {
+                        FlowRow {
+                            TextButton(onClick = { onRestore(tracker.id) }, modifier = Modifier.heightIn(min = 48.dp)) { Text(stringResource(R.string.action_restore)) }
+                            TextButton(onClick = { onDelete(tracker) }, modifier = Modifier.heightIn(min = 48.dp)) {
                                 Text(stringResource(R.string.action_delete), color = MaterialTheme.colorScheme.error)
                             }
                         }

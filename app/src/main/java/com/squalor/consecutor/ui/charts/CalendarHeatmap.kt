@@ -9,7 +9,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -100,7 +101,7 @@ internal fun CalendarHeatmap(
                 Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = stringResource(R.string.calendar_next_month))
             }
         }
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
             (0 until DAYS_IN_WEEK).forEach { offset ->
                 Text(
                     weekFields.firstDayOfWeek.plus(offset.toLong()).getDisplayName(TextStyle.NARROW, locale),
@@ -113,11 +114,11 @@ internal fun CalendarHeatmap(
         }
         val slots = List(grid.leadingBlanks) { null } + grid.cells
         slots.chunked(DAYS_IN_WEEK).forEach { week ->
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
                 (0 until DAYS_IN_WEEK).forEach { column ->
                     val cell = week.getOrNull(column)
                     if (cell == null) {
-                        Box(modifier = Modifier.weight(1f).aspectRatio(1f))
+                        Box(modifier = Modifier.weight(1f).heightIn(min = 48.dp))
                     } else {
                         DayCellView(
                             cell = cell,
@@ -167,12 +168,13 @@ private fun DayCellView(
                     }
                 }
             }
-            .aspectRatio(1f)
+            .heightIn(min = 48.dp)
             .background(fill, shape)
             .let { if (border != null) it.border(border, shape) else it }
             .let { if (tappable) it.clickable(onClick = onClick) else it }
     ) {
-        Text(cell.date.dayOfMonth.toString(), color = textColor, style = MaterialTheme.typography.bodyMedium)
+        Text(cell.date.dayOfMonth.toString(), color = textColor, style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(vertical = 8.dp))
     }
 }
 

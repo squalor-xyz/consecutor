@@ -3,8 +3,10 @@ package com.squalor.consecutor.ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -164,11 +166,13 @@ internal fun EntryEditorDialog(
         ) {
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 FilterChip(
+                    modifier = Modifier.sizeIn(minWidth = 48.dp, minHeight = 48.dp),
                     selected = date == today,
                     onClick = { dateText = today.toString() },
                     label = { Text(stringResource(R.string.entry_today)) }
                 )
                 FilterChip(
+                    modifier = Modifier.sizeIn(minWidth = 48.dp, minHeight = 48.dp),
                     selected = date == today.minusDays(1),
                     onClick = { dateText = today.minusDays(1).toString() },
                     label = { Text(stringResource(R.string.entry_yesterday)) }
@@ -176,7 +180,7 @@ internal fun EntryEditorDialog(
             }
             OutlinedButton(
                 onClick = { showDatePicker = true },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)
             ) {
                 Text(date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)))
             }
@@ -206,7 +210,7 @@ internal fun EntryEditorDialog(
                 modifier = Modifier.fillMaxWidth()
             )
             onDelete?.let {
-                TextButton(onClick = it) {
+                TextButton(onClick = it, modifier = Modifier.heightIn(min = 48.dp)) {
                     Text(stringResource(R.string.action_delete))
                 }
             }
@@ -222,7 +226,7 @@ internal fun EntryEditorDialog(
         DatePickerDialog(
             onDismissRequest = { showDatePicker = false },
             confirmButton = {
-                TextButton(onClick = {
+                TextButton(modifier = Modifier.heightIn(min = 48.dp), onClick = {
                     pickerState.selectedDateMillis?.let { dateText = it.fromPickerMillis().toString() }
                     showDatePicker = false
                 }) {
@@ -230,7 +234,7 @@ internal fun EntryEditorDialog(
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showDatePicker = false }) {
+                TextButton(onClick = { showDatePicker = false }, modifier = Modifier.heightIn(min = 48.dp)) {
                     Text(stringResource(R.string.action_cancel))
                 }
             }

@@ -5,6 +5,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.AlertDialog
@@ -154,6 +158,7 @@ internal fun TrackerEditorDialog(
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     TrackerType.entries.forEach { option ->
                         FilterChip(
+                            modifier = Modifier.sizeIn(minWidth = 48.dp, minHeight = 48.dp),
                             selected = option == type,
                             onClick = { type = option },
                             enabled = !typeLocked,
@@ -189,9 +194,13 @@ internal fun TrackerEditorDialog(
             }
             if (type != TrackerType.MEASURE) {
                 item {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)
+                            .toggleable(value = targetEnabled, role = Role.Switch, onValueChange = { targetEnabled = it }),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Text(stringResource(R.string.editor_track_target), modifier = Modifier.weight(1f))
-                        Switch(checked = targetEnabled, onCheckedChange = { targetEnabled = it })
+                        Switch(checked = targetEnabled, onCheckedChange = null)
                     }
                 }
                 if (targetEnabled) {
@@ -199,6 +208,7 @@ internal fun TrackerEditorDialog(
                         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             TargetPeriod.entries.forEach { option ->
                                 FilterChip(
+                                    modifier = Modifier.sizeIn(minWidth = 48.dp, minHeight = 48.dp),
                                     selected = option == targetPeriod,
                                     onClick = { targetPeriod = option },
                                     label = {
@@ -233,16 +243,20 @@ internal fun TrackerEditorDialog(
                 }
             }
             item {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)
+                        .toggleable(value = reminderEnabled, role = Role.Switch, onValueChange = { reminderEnabled = it }),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Text(stringResource(R.string.editor_reminder), modifier = Modifier.weight(1f))
-                    Switch(checked = reminderEnabled, onCheckedChange = { reminderEnabled = it })
+                    Switch(checked = reminderEnabled, onCheckedChange = null)
                 }
             }
             if (reminderEnabled) {
                 item {
                     OutlinedButton(
                         onClick = { showTimePicker = true },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)
                     ) {
                         Text(
                             LocalTime.of(reminderHour, reminderMinute)
@@ -255,6 +269,7 @@ internal fun TrackerEditorDialog(
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         weekDays.forEach { day ->
                             FilterChip(
+                                modifier = Modifier.sizeIn(minWidth = 48.dp, minHeight = 48.dp),
                                 selected = day in reminderDays,
                                 onClick = {
                                     reminderDays = if (day in reminderDays) reminderDays - day else reminderDays + day
@@ -280,7 +295,7 @@ internal fun TrackerEditorDialog(
             onDismissRequest = { showTimePicker = false },
             text = { TimePicker(state = timeState) },
             confirmButton = {
-                TextButton(onClick = {
+                TextButton(modifier = Modifier.heightIn(min = 48.dp), onClick = {
                     reminderHour = timeState.hour
                     reminderMinute = timeState.minute
                     showTimePicker = false
@@ -289,7 +304,7 @@ internal fun TrackerEditorDialog(
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showTimePicker = false }) {
+                TextButton(onClick = { showTimePicker = false }, modifier = Modifier.heightIn(min = 48.dp)) {
                     Text(stringResource(R.string.action_cancel))
                 }
             }

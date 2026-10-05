@@ -595,7 +595,10 @@
         "S51",
         "S15",
         "S56",
-        "S57"
+        "S57",
+        "S21",
+        "S22",
+        "S45"
       ],
       "notes": [],
       "claim": null,
@@ -620,13 +623,15 @@
       "id": "S21",
       "title": "Tagged release workflow publishing signed APK to GitHub releases",
       "short_title": "Tagged release workflow publishing signed APK to GitHub releases",
-      "status": "open",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S19",
         "S47"
       ],
-      "notes": [],
+      "notes": [
+        "**2026-10-05** — Ready for review: release.yml added; DEVELOPERS.md release checklist documents secrets. Owner test on a fork with secrets still pending."
+      ],
       "claim": null,
       "fields": {
         "size": "S",
@@ -642,7 +647,7 @@
         "importance": 2,
         "urgency": 1,
         "effort": 2,
-        "attempts": 0
+        "attempts": 1
       }
     },
     {
@@ -1325,12 +1330,15 @@
       "id": "S45",
       "title": "Accessibility: merged semantics, 48dp targets, 200% font scale",
       "short_title": "Accessibility: merged semantics, 48dp targets, 200% font scale",
-      "status": "open",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S18"
       ],
-      "notes": [],
+      "notes": [
+        "**2026-10-05** — 200% font-scale validation: emulator-5554 (s48_pixel6_api36, Android 16), wm size 720x1280 and density 320 (360dp wide), font_scale 2.0. All 8 DashboardSemanticsTest cases passed, including real 48dp calendar bounds, 48dp reminder-day chip bounds, label-side touches toggling each whole Switch row exactly once, independent named logging actions, settings reachability, and create/save. Inspected screenshots of create, log/edit entry, dashboard, detail, calendar, and settings: text wraps, action rows wrap, content remains reachable by scrolling, and inspected controls do not overlap. Calendar uses 12dp outer margins and no horizontal grid gaps, yielding seven 48dp columns. Material text buttons needed explicit 48dp layout heights. Evidence is in worktree build/s45-validation/large-*.png and .xml (local build artifacts). TalkBack focus/activation walkthrough completed on the same emulator with the installed TalkBack service bound and touch exploration active. Hardware touch swipes and double taps traversed the merged dashboard card, its independent Add 1 action (one activation added exactly one), new-tracker creation/save, detail, calendar-day entry editing/cancel, and settings actions through Notifications. Focus captures are build/s45-validation/talkback-real-*.png; accessible labels are captured in matching XML. Speech audio was not evaluated. Ordinary adb input injections were unsuitable for gesture validation; emulator hardware events were used with native-panel letterbox coordinates. No app defects were found in that walkthrough. Display size/density overrides were reset, font_scale restored to 1.0, and accessibility restored to its original disabled state. Keyboard positioning remains S60 scope.",
+        "**2026-10-05** — Ready for review: implemented merged resource-based dashboard descriptions with independent named logging controls; full-row Switch toggles; real 48dp buttons, chips and calendar targets; wrapping action rows and scrollable entry-editor content. Final checks passed: testDebugUnitTest (134 tests), connectedDebugAndroidTest (56 tests), DashboardSemanticsTest at 360dp/200% (8 tests), git diff --check, and slicer check. The 200% and TalkBack walkthrough evidence and limitations are in the preceding note. No new dependencies. Code committed separately from slicer state on slice/S45; no merge or push."
+      ],
       "claim": null,
       "fields": {
         "size": "M",
@@ -1346,7 +1354,7 @@
         "importance": 2,
         "urgency": 2,
         "effort": 2,
-        "attempts": 0
+        "attempts": 1
       }
     },
     {

@@ -1,5 +1,6 @@
 package com.squalor.consecutor.ui
 
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,7 +44,7 @@ internal fun EmptyState(
         ) {
             Text(text = text)
             if (actionLabel != null && onAction != null) {
-                Button(onClick = onAction) { Text(actionLabel) }
+                Button(onClick = onAction, modifier = Modifier.heightIn(min = 48.dp)) { Text(actionLabel) }
             }
         }
     }
@@ -71,7 +72,7 @@ internal fun StreakLine(summary: TrackerSummary, modifier: Modifier = Modifier) 
 }
 
 @Composable
-internal fun statusText(summary: TrackerSummary): String {
+internal fun statusText(summary: TrackerSummary, spoken: Boolean = false): String {
     val weekly = summary.targetPeriod == TargetPeriod.WEEKLY
     val target = summary.periodTarget
     return when (summary.type) {
@@ -79,7 +80,7 @@ internal fun statusText(summary: TrackerSummary): String {
             val today = stringResource(if (summary.doneToday) R.string.status_done_today else R.string.status_not_logged_today)
             if (weekly && target != null) {
                 stringResource(
-                    R.string.status_yes_no_weekly,
+                    if (spoken) R.string.status_yes_no_weekly_spoken else R.string.status_yes_no_weekly,
                     today,
                     NumberRules.formatNumber(summary.periodValue),
                     NumberRules.formatNumber(target)
@@ -90,9 +91,9 @@ internal fun statusText(summary: TrackerSummary): String {
         }
         TrackerType.COUNT -> when {
             target != null && weekly ->
-                stringResource(R.string.status_this_week, progress(summary.periodValue, target, summary.unit))
+                stringResource(R.string.status_this_week, progress(summary.periodValue, target, summary.unit, spoken))
             target != null ->
-                stringResource(R.string.status_today, progress(summary.todayValue, target, summary.unit))
+                stringResource(R.string.status_today, progress(summary.todayValue, target, summary.unit, spoken))
             else -> stringResource(R.string.status_today, formatValue(summary.todayValue, summary.unit))
         }
         TrackerType.MEASURE -> summary.lastEntryDate
@@ -111,8 +112,15 @@ internal fun streakText(summary: TrackerSummary): String? {
 
 internal fun formatDate(date: LocalDate): String = date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))
 
-private fun progress(value: Double, target: Double, unit: String?): String =
-    listOfNotNull("${NumberRules.formatNumber(value)} / ${NumberRules.formatNumber(target)}", unit).joinToString(" ")
+@Composable
+private fun progress(value: Double, target: Double, unit: String?, spoken: Boolean): String {
+    val amount = if (spoken) {
+        stringResource(R.string.status_progress_spoken, NumberRules.formatNumber(value), NumberRules.formatNumber(target))
+    } else {
+        "${NumberRules.formatNumber(value)} / ${NumberRules.formatNumber(target)}"
+    }
+    return listOfNotNull(amount, unit).joinToString(" ")
+}
 
 internal fun formatValue(value: Double, unit: String?): String {
     return listOf(NumberRules.formatNumber(value), unit).filterNotNull().joinToString(" ")
