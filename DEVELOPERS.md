@@ -12,7 +12,7 @@ The current repository is Android-first:
 - local reminder notifications
 - CSV export and JSON backup import/export
 
-Future plans such as iOS support and shared-core extraction live in [ROADMAP.md](ROADMAP.md). Current MVP work is tracked as slicer items (`slicer status`, `slicer next`). This repository does not yet include an iOS client or Kotlin Multiplatform module.
+Future plans such as iOS support and shared-core extraction live in [ROADMAP.md](ROADMAP.md). Work is tracked as slicer items (`slicer status`, `slicer next`). This repository does not yet include an iOS client or Kotlin Multiplatform module.
 
 ## Requirements
 
@@ -93,8 +93,8 @@ Linux emulator notes:
 
 Core commands:
 
-- `./gradlew assembleDebug`
-- `./gradlew test`
+- `./gradlew testDebugUnitTest lintDebug assembleDebug` (the same checks as CI's build job)
+- `./gradlew connectedDebugAndroidTest` (instrumented tests; needs an emulator)
 - `./gradlew installDebug`
 - `./gradlew assembleRelease`
 - `./gradlew bundleRelease`
@@ -136,7 +136,11 @@ Current unit coverage includes analytics logic in:
 
 Unit tests:
 
-- `./gradlew test`
+- `./gradlew testDebugUnitTest`
+
+Unit tests, lint, and a debug build together:
+
+- `./gradlew testDebugUnitTest lintDebug assembleDebug`
 
 Instrumented tests run in CI (the `instrumented` job) on a Gradle Managed Device, and you can run the same thing locally without a device. The first run downloads an emulator system image.
 
@@ -160,8 +164,8 @@ Before merging or shipping a release:
 2. Add entries for today and past dates.
 3. Edit and delete entries and confirm summaries update.
 4. Archive a tracker and confirm it no longer behaves like an active tracker.
-5. Export CSV and inspect the output for correctness.
-6. Export a backup, clear app data or reinstall, then import the backup.
+5. Save a CSV and inspect the output for correctness. Share one too.
+6. Save a backup, clear app data or reinstall, then import the backup and check the preview before confirming.
 7. Enable reminders and verify notification behavior.
 8. On Android 13+, confirm notification permission flow.
 9. Verify backup import failure handling with an invalid file.
@@ -281,6 +285,23 @@ Official reference:
 
 - https://developer.android.com/guide/publishing/app-signing.html
 
+### Privacy policy page
+
+`docs/index.html` is a self-contained page (plain HTML and CSS, no scripts, no external requests) with the text of `PRIVACY.md`. Update it whenever `PRIVACY.md` changes.
+
+The agent does not enable GitHub Pages. The owner turns it on: repository Settings > Pages > Build and deployment > Deploy from a branch > `main`, folder `/docs`. With no custom domain, GitHub serves the page at `https://squalor-xyz.github.io/consecutor/` (GitHub's default project-site URL for the `squalor-xyz/consecutor` repository). Confirm the URL that Settings > Pages shows and use it as the privacy policy URL in Play Console.
+
+### Google Play data safety draft
+
+Answers to give in the Play Console data safety form, based on `PRIVACY.md` and the manifest at the time of writing:
+
+- Data collected: none. The app has no network permission and no analytics or crash-reporting SDKs.
+- Data shared: none.
+- Data transferred off the device by the app: none. Files leave the device only when the user saves or shares an export.
+- Data removal: uninstalling the app removes everything it stores. The app has no accounts, so there is no deletion request flow.
+
+The Play Console forms change, so check each question against the current console before submitting.
+
 ### Store Listing Preparation
 
 Expect to prepare:
@@ -289,7 +310,7 @@ Expect to prepare:
 - short description
 - full description
 - screenshots
-- privacy policy URL
+- privacy policy URL (see Privacy policy page below)
 - app icon and feature graphic
 - content rating questionnaire
 - data safety form
@@ -332,7 +353,7 @@ Official F-Droid references:
 
 - stable application ID
 - signed tags or at least clean version tags
-- app description and screenshots
+- app description and screenshots (already in `fastlane/metadata/android/en-US/`)
 - license clarity
 - reproducible release process
 
@@ -365,7 +386,7 @@ with a one-line comment describing the failure it fixes.
 
 Before shipping anywhere:
 
-1. Run `./gradlew test`.
+1. Run `./gradlew testDebugUnitTest lintDebug assembleDebug`.
 2. Run `./gradlew assembleRelease` and `./gradlew bundleRelease`.
 3. Verify installability of the release APK on a real device.
 4. Verify backup export/import on a real device.
@@ -398,11 +419,13 @@ Produce the base64 value with `base64 -i release.jks | pbcopy` on macOS, or `bas
 ## Persistence Notes
 
 - Deleted entries are kept for 24 hours (for Undo), then removed at the next app start; they are never written to backups or CSV.
-- Room schema version is currently `1` (the frozen baseline).
+- Room schema version is currently `1` (the frozen baseline), with its schema exported to `app/schemas/`.
 - Schemas are exported to `app/schemas/` and committed; regenerate and commit them with every schema change.
 - `fallbackToDestructiveMigration()` is enabled in debug builds only. Pre-1.0 data loss is acceptable (owner decision).
 - From 1.0 on every schema change needs an explicit `Migration`. In release builds a version bump without one fails loudly instead of wiping data.
 - `entries`, `targets` and `reminders` have a cascading foreign key to `trackers`; `targets` and `reminders` are unique per tracker (0..1).
+- Before an import replaces existing data, the app writes `pre-import-<UTC timestamp>.json` to `files/backups/` in its private storage and keeps the newest three (`BackupFiles.prune`).
+- Sharing an export writes a temporary file to `cache/exports/`. It is cleared before the next share and at app start (`ExportCache`).
 - See Privacy Notes below for the current (no extra) at-rest encryption posture and history.
 
 ## Reminders
@@ -413,10 +436,12 @@ Produce the base64 value with `base64 -i release.jks | pbcopy` on macOS, or `bas
 
 ## Privacy Notes
 
-- Automatic Android backup is disabled.
-- There is no account system or cloud sync in the MVP.
-- Exported files are user-managed and may contain sensitive data.
-- The current MVP does not add extra at-rest encryption on top of the local Room database.
+- The manifest requests only `POST_NOTIFICATIONS` and `RECEIVE_BOOT_COMPLETED`. There is no `INTERNET` permission. `aapt dump permissions` on a release build also lists `com.squalor.consecutor.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION`, which an AndroidX library adds and the app defines for itself.
+- Automatic Android backup and device transfer are disabled (`allowBackup="false"`, plus `backup_rules.xml` and `data_extraction_rules.xml` that exclude every domain).
+- There is no account system or cloud sync.
+- Exported files are user-managed, unencrypted, and may contain sensitive data.
+- The app does not add extra at-rest encryption on top of the local Room database.
+- `PRIVACY.md` is the policy. `docs/index.html` repeats its text; keep the two in step.
 
 Early commits in the repository history (`5fcabda`, `e60d2b2`) explored SQLCipher (with keys wrapped by Android Keystore) for at-rest protection of the Room DB. This was intentionally omitted from the current implementation to keep the data model, backup format (BackupCodec), and import/export semantics stable during the MVP rebuild. Per the roadmap, local encryption and/or password-protected backups should be revisited once the schema and round-tripping behavior have been validated on device. Update PRIVACY.md and this section if/when that changes.
 

@@ -32,11 +32,11 @@ Basic local flow:
 
 Useful commands:
 
-- `./gradlew assembleDebug`
-- `./gradlew test`
+- `./gradlew testDebugUnitTest lintDebug assembleDebug` (the same checks CI runs)
+- `./gradlew connectedDebugAndroidTest` (needs an emulator; see [DEVELOPERS.md](DEVELOPERS.md))
 - `./gradlew installDebug`
 
-## Fire It Up For MVP Testing
+## Fire It Up
 
 From a machine with Android Studio, JDK 17, and Android SDK 36.1 installed:
 
@@ -49,7 +49,7 @@ Command-line flow:
 
 1. Verify Java: `java -version`
 2. Verify Gradle: `./gradlew -version`
-3. Run unit tests: `./gradlew test`
+3. Run unit tests: `./gradlew testDebugUnitTest`
 4. Build a debug APK: `./gradlew assembleDebug`
 5. Install to a connected emulator/device: `./gradlew installDebug`
 6. Launch from the device launcher, or run `adb shell monkey -p com.squalor.consecutor -c android.intent.category.LAUNCHER 1`
@@ -58,21 +58,22 @@ Debug APK output:
 
 - `app/build/outputs/apk/debug/app-debug.apk`
 
-MVP smoke test:
+Smoke test (the full release checklist is the Manual QA section of [DEVELOPERS.md](DEVELOPERS.md)):
 
 1. Create a `YES_NO` tracker with a daily target, then quick-log it from the dashboard.
 2. Create a `COUNT` tracker with a weekly target, add entries for current and past dates, and confirm streaks update.
 3. Create a `MEASURE` tracker, open its detail screen, and log a numeric value.
 4. Edit and delete at least one entry.
 5. Archive a tracker and confirm it leaves the active dashboard.
-6. Export CSV from Settings and confirm Android opens the share sheet.
-7. Export a JSON backup, clear app data or reinstall, import that backup, and confirm trackers return.
+6. Save a CSV from Settings and confirm Android opens the file picker.
+7. Save a JSON backup, clear app data or reinstall, import that backup, confirm the preview, and confirm trackers return.
 8. On Android 13+, enable notifications and create a reminder to verify the permission prompt and local notification behavior.
 
 ## Build Notes
 
 - The app is Android-first in the current repository.
 - The persistence layer is Room over SQLite.
-- Automatic Android backup is disabled intentionally.
+- Automatic Android backup and device transfer are disabled intentionally.
 - Portability is handled through explicit CSV export and JSON backup import/export.
+- Release builds are unsigned unless signing is configured; see [DEVELOPERS.md](DEVELOPERS.md).
 - Reminder notifications require notification permission on Android 13+.
