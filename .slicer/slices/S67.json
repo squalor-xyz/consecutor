@@ -1,0 +1,39 @@
+{
+  "id": "S67",
+  "title": "Editor dialog title wraps to two lines at large font",
+  "lead": [],
+  "depends_note": null,
+  "findings_note": "S22 row 14 on API 36 at font scale 2.0 on 360dp: the editor dialog title is truncated to 'New …' by maxLines = 1 in ui/EditorDialog.kt. Owner chose maxLines = 2.",
+  "size": "S",
+  "flags": [],
+  "trees_note": "release",
+  "trees_plural": false,
+  "boundary": "Not in this slice: other dialog layout changes or new strings.",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "At font scale 200% on a 360dp screen the editor dialog title shows 'New …' because the title Text has maxLines = 1 with an ellipsis. The owner chose to let it wrap to two lines."
+    },
+    {
+      "heading": "Files",
+      "body": "app/src/main/java/com/squalor/consecutor/ui/EditorDialog.kt"
+    },
+    {
+      "heading": "Failing tests",
+      "body": "None automated; observed in the S22 row 14 walkthrough."
+    },
+    {
+      "heading": "Implement",
+      "body": "Change the EditorDialog title Text to maxLines = 2, keeping TextOverflow.Ellipsis and the pinned Cancel/Save header."
+    },
+    {
+      "heading": "Check",
+      "body": "On API 36 at 360dp (wm density 480) and font_scale 2.0, the New tracker and Edit tracker titles show in full, and Cancel and Save stay visible with the keyboard open in portrait and landscape. testDebugUnitTest, lintDebug and the API 36 instrumented suite pass."
+    },
+    {
+      "heading": "Git",
+      "body": "Commit only when asked; use the project slice worktree workflow."
+    }
+  ],
+  "notes": []
+}

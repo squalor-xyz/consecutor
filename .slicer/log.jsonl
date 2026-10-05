@@ -461,3 +461,21 @@
 {"when": "2026-10-05T16:43:27Z", "item": "S65", "action": "status", "from": "review", "to": "done", "note": "", "by": "Jon R"}
 {"when": "2026-10-05T17:10:48Z", "item": "S22", "action": "note", "from": "", "to": "", "note": "**2026-10-05 (re-run after S62-S65)** — S22 release gate: ST"}
 {"when": "2026-10-05T17:17:42Z", "item": "S22", "action": "note", "from": "", "to": "", "note": "**2026-10-05 (follow-up, same build)** — S22 still NO-GO. Mo"}
+{"when": "2026-10-05T20:10:36Z", "item": "S66", "action": "add", "from": "", "to": "open", "note": "Investigate intermittent API 26 typedTrackerNameSurvivesRecreation failure"}
+{"when": "2026-10-05T20:10:36Z", "item": "S67", "action": "add", "from": "", "to": "open", "note": "Editor dialog title wraps to two lines at large font"}
+{"when": "2026-10-05T20:10:42Z", "item": "S22", "action": "set", "from": "", "to": "", "note": "depends_on S09,S19,S36,S45,S47,S48,S50,S51,S12,S55,S56,S57,S58,S62,S63,S64,S65→S09,S19,S36,S45,S47,S48,S50,S51,S12,S55,S56,S57,S58,S62,S63,S64,S65,S66,S67"}
+{"when": "2026-10-05T20:10:57Z", "item": "S66", "action": "promote", "from": "", "to": "", "note": ""}
+{"when": "2026-10-05T20:10:57Z", "item": "S66", "action": "edit", "from": "", "to": "", "note": "Why"}
+{"when": "2026-10-05T20:10:57Z", "item": "S66", "action": "edit", "from": "", "to": "", "note": "Files"}
+{"when": "2026-10-05T20:10:58Z", "item": "S66", "action": "edit", "from": "", "to": "", "note": "Failing tests"}
+{"when": "2026-10-05T20:10:58Z", "item": "S66", "action": "edit", "from": "", "to": "", "note": "Implement"}
+{"when": "2026-10-05T20:10:58Z", "item": "S66", "action": "edit", "from": "", "to": "", "note": "Check"}
+{"when": "2026-10-05T20:10:58Z", "item": "S66", "action": "edit", "from": "", "to": "", "note": "Git"}
+{"when": "2026-10-05T20:10:58Z", "item": "S67", "action": "promote", "from": "", "to": "", "note": ""}
+{"when": "2026-10-05T20:10:58Z", "item": "S67", "action": "edit", "from": "", "to": "", "note": "Why"}
+{"when": "2026-10-05T20:10:58Z", "item": "S67", "action": "edit", "from": "", "to": "", "note": "Files"}
+{"when": "2026-10-05T20:10:58Z", "item": "S67", "action": "edit", "from": "", "to": "", "note": "Failing tests"}
+{"when": "2026-10-05T20:10:58Z", "item": "S67", "action": "edit", "from": "", "to": "", "note": "Implement"}
+{"when": "2026-10-05T20:10:58Z", "item": "S67", "action": "edit", "from": "", "to": "", "note": "Check"}
+{"when": "2026-10-05T20:10:59Z", "item": "S67", "action": "edit", "from": "", "to": "", "note": "Git"}
+{"when": "2026-10-05T20:11:05Z", "item": "S22", "action": "edit", "from": "", "to": "", "note": "Check"}
