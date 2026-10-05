@@ -222,4 +222,8 @@
     <string name="notification_channel_description">Reminders for scheduled trackers.</string>
     <string name="notification_title_fallback">Tracker reminder</string>
     <string name="notification_text">Log today\'s progress in Consecutor.</string>
+    <string name="accessibility_separator">", "</string>
+    <string name="dashboard_increment_description">Add 1 to %1$s</string>
+    <string name="status_progress_spoken">%1$s of %2$s</string>
+    <string name="status_yes_no_weekly_spoken">%1$s, %2$s of %3$s this week</string>
 </resources>

@@ -20,7 +20,7 @@
 - Advanced analytics suite.
 - Squalor brand marks in the APK (brand marks are all-rights-reserved; the app icon is app-specific and MPL-2.0).
 
-61 items · — 3 · done 47 · later 11
+61 items · — 2 · done 47 · later 11 · review 1
 
 | # | Slice | Title | Size | Effort | Trees | Findings | Status |
 |---|---|---|---|---|---|---|---|
@@ -38,7 +38,7 @@
 | 10 | S30 | Extract domain; streak and backup logic into a Kotlin Multiplatform shared core |  | 3 | build |  | later |
 | 11 | S31 | iOS client on the shared core |  | 3 | build |  | later |
 | P2 MVP UX | | | | | | | |
-| 12 | [S45](slices/S45.md) | Accessibility: merged semantics, 48dp targets, 200% font scale | M | 2 | ui | MainScreen.kt (icons with null descriptions, fixed widths such as width(110.dp)) | — |
+| 12 | [S45](slices/S45.md) | Accessibility: merged semantics, 48dp targets, 200% font scale | M | 2 | ui | MainScreen.kt (icons with null descriptions, fixed widths such as width(110.dp)) | review |
 | Later | | | | | | | |
 | 13 | S52 | Dashboard performance with years of history |  | 3 | data |  | later |
 | 14 | S59 | Optional scheduled backup to a user-chosen folder |  | 2 | data |  | later |

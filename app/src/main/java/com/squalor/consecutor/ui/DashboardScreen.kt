@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.Checkbox
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -70,7 +72,7 @@ internal fun DashboardScreen(
                 item {
                     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                         Text(stringResource(R.string.dashboard_empty))
-                        TextButton(onClick = onCreate) { Text(stringResource(R.string.dashboard_create_tracker)) }
+                        TextButton(onClick = onCreate, modifier = Modifier.heightIn(min = 48.dp)) { Text(stringResource(R.string.dashboard_create_tracker)) }
                     }
                 }
             }
@@ -86,7 +88,7 @@ internal fun DashboardScreen(
             }
             if (archivedCount > 0) {
                 item {
-                    TextButton(onClick = onOpenArchived, modifier = Modifier.fillMaxWidth()) {
+                    TextButton(onClick = onOpenArchived, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
                         Text(stringResource(R.string.dashboard_archived_link, archivedCount))
                     }
                 }
@@ -104,10 +106,32 @@ internal fun TrackerSummaryCard(
     onToggleToday: () -> Unit,
     onEditToday: () -> Unit
 ) {
+    val status = statusText(tracker, spoken = true)
+    val streak = streakText(tracker)
+    val completion = tracker.completionRate?.let { rate ->
+        val percent = (rate * 100).toInt()
+        if (tracker.targetPeriod == TargetPeriod.WEEKLY) {
+            pluralStringResource(R.plurals.dashboard_completion_weeks, COMPLETION_WEEKS, COMPLETION_WEEKS, percent)
+        } else {
+            pluralStringResource(R.plurals.dashboard_completion_days, COMPLETION_DAYS, COMPLETION_DAYS, percent)
+        }
+    }
+    val reminder = tracker.reminder?.let {
+        val label = reminderLabel(it)
+        if (notificationsEnabled) label else stringResource(R.string.dashboard_reminder_notifications_off, label)
+    }
+    val cardDescription = listOfNotNull(
+        tracker.name, tracker.description?.takeIf { it.isNotBlank() }, status, streak, completion, reminder
+    ).joinToString(stringResource(R.string.accessibility_separator))
+    // TalkBack announces the card description; nested logging controls remain independent.
+    val summaryContent = Modifier.clearAndSetSemantics { }
+    val logDescription = stringResource(R.string.dashboard_log_today_description, tracker.name)
+    val incrementDescription = stringResource(R.string.dashboard_increment_description, tracker.name)
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onOpen),
+            .clickable(onClick = onOpen)
+            .semantics(mergeDescendants = true) { contentDescription = cardDescription },
         colors = if (tracker.doneToday) {
             CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
         } else {
@@ -147,12 +171,14 @@ internal fun TrackerSummaryCard(
                                 onLongClickLabel = logCustomAmount,
                                 onLongClick = onEditToday
                             )
+                            .semantics { contentDescription = incrementDescription }
                     ) {
                         Text(stringResource(R.string.dashboard_increment), color = MaterialTheme.colorScheme.primary)
                     }
                     TrackerType.MEASURE -> TextButton(
                         onClick = onEditToday,
                         modifier = Modifier.sizeIn(minWidth = 48.dp, minHeight = 48.dp)
+                            .semantics { contentDescription = logDescription }
                     ) {
                         Text(stringResource(R.string.action_log))
                     }
@@ -163,15 +189,9 @@ internal fun TrackerSummaryCard(
             }
             StatusLine(tracker)
             StreakLine(tracker)
-            tracker.completionRate?.let { rate ->
-                val percent = (rate * 100).toInt()
-                val completionText = if (tracker.targetPeriod == TargetPeriod.WEEKLY) {
-                    pluralStringResource(R.plurals.dashboard_completion_weeks, COMPLETION_WEEKS, COMPLETION_WEEKS, percent)
-                } else {
-                    pluralStringResource(R.plurals.dashboard_completion_days, COMPLETION_DAYS, COMPLETION_DAYS, percent)
-                }
-                Text(completionText, style = MaterialTheme.typography.bodySmall)
-                LinearProgressIndicator(progress = { rate }, modifier = Modifier.fillMaxWidth())
+            completion?.let {
+                Text(it, style = MaterialTheme.typography.bodySmall)
+                LinearProgressIndicator(progress = { tracker.completionRate }, modifier = Modifier.fillMaxWidth().then(summaryContent))
             }
             tracker.reminder?.let {
                 ReminderLabel(reminderLabel(it), notificationsEnabled)

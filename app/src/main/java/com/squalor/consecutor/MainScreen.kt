@@ -1,9 +1,12 @@
 package com.squalor.consecutor
 
 import android.Manifest
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.material.icons.Icons
@@ -222,13 +225,13 @@ fun MainScreen(viewModel: TrackerViewModel) {
                 )
             },
             confirmButton = {
-                TextButton(onClick = {
+                TextButton(modifier = Modifier.heightIn(min = 48.dp), onClick = {
                     viewModel.cancelDelete()
                     viewModel.deletePermanently(pending.trackerId)
                 }) { Text(stringResource(R.string.action_delete_permanently), color = MaterialTheme.colorScheme.error) }
             },
             dismissButton = {
-                TextButton(onClick = viewModel::cancelDelete) { Text(stringResource(R.string.action_cancel)) }
+                TextButton(onClick = viewModel::cancelDelete, modifier = Modifier.heightIn(min = 48.dp)) { Text(stringResource(R.string.action_cancel)) }
             }
         )
     }
@@ -256,12 +259,12 @@ fun MainScreen(viewModel: TrackerViewModel) {
                 )
             },
             confirmButton = {
-                TextButton(onClick = viewModel::confirmImport) {
+                TextButton(onClick = viewModel::confirmImport, modifier = Modifier.heightIn(min = 48.dp)) {
                     Text(stringResource(R.string.main_import_replace), color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {
-                TextButton(onClick = viewModel::cancelImport) { Text(stringResource(R.string.action_cancel)) }
+                TextButton(onClick = viewModel::cancelImport, modifier = Modifier.heightIn(min = 48.dp)) { Text(stringResource(R.string.action_cancel)) }
             }
         )
     }

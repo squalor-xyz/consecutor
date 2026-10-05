@@ -391,3 +391,7 @@
 {"when": "2026-10-05T02:19:52Z", "item": "S21", "action": "handoff", "from": "started", "to": "review", "note": "claim Jon R cleared", "by": "Jon R"}
 {"when": "2026-10-05T03:03:33Z", "item": "S20", "action": "set", "from": "", "to": "", "note": "depends_on S19,S44,S51,S15,S56,S57→S19,S44,S51,S15,S56,S57,S21,S22,S45"}
 {"when": "2026-10-05T03:03:39Z", "item": "S21", "action": "status", "from": "review", "to": "done", "note": "release.yml publishes a signed APK on v* tags. It checks the tag against versionName, refuses to build when any of the four signing secrets is missing, decodes the keystore outside the workspace, and publishes the APK plus sha256 with gh. A hyphen in versionName marks a prerelease. DEVELOPERS.md names the four secrets and both base64 commands. The workflow YAML parses. A local dry run of the version check accepted v1.0.0 and rejected a mismatch. The owner fork test with real secrets, apksigner, and install was not run.", "by": "Jon R"}
+{"when": "2026-10-05T03:10:52Z", "item": "S45", "action": "status", "from": "open", "to": "started", "note": "", "by": "Jon R"}
+{"when": "2026-10-05T03:10:52Z", "item": "S45", "action": "note", "from": "", "to": "", "note": "200% font-scale validation: emulator-5554 (s48_pixel6_api36,"}
+{"when": "2026-10-05T03:10:53Z", "item": "S45", "action": "note", "from": "", "to": "", "note": "Ready for review: implemented merged resource-based dashboar"}
+{"when": "2026-10-05T03:10:53Z", "item": "S45", "action": "handoff", "from": "started", "to": "review", "note": "claim Jon R cleared", "by": "Jon R"}
