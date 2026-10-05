@@ -20,7 +20,7 @@
 - Advanced analytics suite.
 - Squalor brand marks in the APK (brand marks are all-rights-reserved; the app icon is app-specific and MPL-2.0).
 
-65 items · — 2 · done 51 · later 11 · started 1
+65 items · — 1 · done 51 · later 11 · started 1 · review 1
 
 | # | Slice | Title | Size | Effort | Trees | Findings | Status |
 |---|---|---|---|---|---|---|---|
@@ -40,7 +40,7 @@
 | 12 | S52 | Dashboard performance with years of history |  | 3 | data |  | later |
 | 13 | S59 | Optional scheduled backup to a user-chosen folder |  | 2 | data |  | later |
 | P3 Release | | | | | | | |
-| 14 | [S65](slices/S65.md) | Investigate API 33 release walkthrough ANR | S | 2 | release | S22 API 33 signed release showed Consecutor is not responding during notification permission walkthrough; ActivityManager recorded input dispatch timeout at 2026-10-05 07:37:34. Root cause unverified; four emulators and concurrent uiautomator commands were active. | — |
+| 14 | [S65](slices/S65.md) | Investigate API 33 release walkthrough ANR | S | 2 | release | S22 API 33 signed release showed Consecutor is not responding during notification permission walkthrough; ActivityManager recorded input dispatch timeout at 2026-10-05 07:37:34. Root cause unverified; four emulators and concurrent uiautomator commands were active. | review |
 
 ---
 
