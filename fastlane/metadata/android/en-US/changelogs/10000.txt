@@ -1,0 +1,6 @@
+Initial release.
+• Yes/no, count and measurement trackers.
+• Daily and weekly targets, streaks derived from editable history, charts and a calendar.
+• Local reminders.
+• CSV export and JSON backup export/import with a preview before replacing data.
+• Light and dark themes. No accounts, ads or analytics.

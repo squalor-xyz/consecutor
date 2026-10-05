@@ -1,8 +1,6 @@
 package com.squalor.consecutor.ui.charts
 
-import com.squalor.consecutor.NumberRules
 import com.squalor.consecutor.TrendPoint
-import java.util.Locale
 
 data class ChartSummary(
     val daysMet: Int,
@@ -34,17 +32,5 @@ internal object ChartMath {
     fun barHeight(value: Double, maxY: Double, chartHeightPx: Float): Float {
         if (maxY <= 0.0) return 0f
         return (value / maxY * chartHeightPx).toFloat().coerceIn(0f, chartHeightPx)
-    }
-
-    fun summaryText(
-        summary: ChartSummary,
-        hasTarget: Boolean,
-        unit: String?,
-        locale: Locale = Locale.getDefault()
-    ): String {
-        val average = summary.average ?: return "Last ${summary.totalDays} days: no data."
-        val met = if (hasTarget) "met target" else "with an entry"
-        val averageLabel = listOfNotNull(NumberRules.formatNumber(average, locale), unit).joinToString(" ")
-        return "Last ${summary.totalDays} days: ${summary.daysMet} of ${summary.totalDays} days $met, average $averageLabel"
     }
 }

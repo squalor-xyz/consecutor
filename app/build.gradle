@@ -50,6 +50,10 @@ android {
     }
 
     buildTypes {
+        debug {
+            // Pseudo-locales (en-XA, ar-XB) make any string that is still hardcoded stand out.
+            pseudoLocalesEnabled true
+        }
         release {
             minifyEnabled true
             shrinkResources true

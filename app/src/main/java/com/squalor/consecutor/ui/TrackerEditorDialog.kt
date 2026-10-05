@@ -22,11 +22,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -37,8 +39,11 @@ import java.time.DayOfWeek
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
+import java.time.format.TextStyle
+import java.time.temporal.WeekFields
 import com.squalor.consecutor.EditorLimits
 import com.squalor.consecutor.NumberRules
+import com.squalor.consecutor.R
 import com.squalor.consecutor.TrackerField
 import com.squalor.consecutor.resolveTargetValue
 import com.squalor.consecutor.validateTrackerForm
@@ -79,13 +84,17 @@ internal fun TrackerEditorDialog(
     var showErrors by rememberSaveable { mutableStateOf(false) }
     val locale = LocalConfiguration.current.locales[0]
     val typeLocked = initial?.entries?.isNotEmpty() == true
+    val weekDays = remember(locale) {
+        val first = WeekFields.of(locale).firstDayOfWeek
+        DayOfWeek.entries.sortedBy { Math.floorMod(it.value - first.value, 7) }
+    }
     val errors = validateTrackerForm(
         name, emoji, description, unit, type, targetEnabled, targetPeriod, targetValue, locale
     )
     fun errorFor(field: TrackerField) = if (showErrors) errors[field] else null
 
     EditorDialog(
-        title = if (initial == null) "New tracker" else "Edit tracker",
+        title = stringResource(if (initial == null) R.string.editor_title_new_tracker else R.string.editor_title_edit_tracker),
         onDismiss = onDismiss,
         onConfirm = {
             showErrors = true
@@ -109,14 +118,12 @@ internal fun TrackerEditorDialog(
             )
         }
     ) {
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
+        LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             item {
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text("Name") },
+                    label = { Text(stringResource(R.string.editor_name)) },
                     isError = errorFor(TrackerField.NAME) != null,
                     supportingText = errorSupportingText(errorFor(TrackerField.NAME), EditorLimits.NAME),
                     modifier = Modifier.fillMaxWidth()
@@ -126,7 +133,7 @@ internal fun TrackerEditorDialog(
                 OutlinedTextField(
                     value = emoji,
                     onValueChange = { emoji = it },
-                    label = { Text("Emoji") },
+                    label = { Text(stringResource(R.string.editor_emoji)) },
                     isError = errorFor(TrackerField.EMOJI) != null,
                     supportingText = errorSupportingText(errorFor(TrackerField.EMOJI)),
                     modifier = Modifier.fillMaxWidth()
@@ -136,26 +143,36 @@ internal fun TrackerEditorDialog(
                 OutlinedTextField(
                     value = description,
                     onValueChange = { description = it },
-                    label = { Text("Description") },
+                    label = { Text(stringResource(R.string.editor_description)) },
                     isError = errorFor(TrackerField.DESCRIPTION) != null,
                     supportingText = errorSupportingText(errorFor(TrackerField.DESCRIPTION), EditorLimits.DESCRIPTION),
                     modifier = Modifier.fillMaxWidth()
                 )
             }
             item {
-                Text("Type", fontWeight = FontWeight.SemiBold)
+                Text(stringResource(R.string.editor_type), fontWeight = FontWeight.SemiBold)
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     TrackerType.entries.forEach { option ->
                         FilterChip(
                             selected = option == type,
                             onClick = { type = option },
                             enabled = !typeLocked,
-                            label = { Text(option.name.replace("_", " ")) }
+                            label = {
+                                Text(
+                                    stringResource(
+                                        when (option) {
+                                            TrackerType.YES_NO -> R.string.editor_type_yes_no
+                                            TrackerType.COUNT -> R.string.editor_type_count
+                                            TrackerType.MEASURE -> R.string.editor_type_measure
+                                        }
+                                    )
+                                )
+                            }
                         )
                     }
                 }
                 if (typeLocked) {
-                    Text("Type can't change after logging.", style = MaterialTheme.typography.bodySmall)
+                    Text(stringResource(R.string.editor_type_locked), style = MaterialTheme.typography.bodySmall)
                 }
             }
             if (type != TrackerType.YES_NO) {
@@ -163,7 +180,7 @@ internal fun TrackerEditorDialog(
                     OutlinedTextField(
                         value = unit,
                         onValueChange = { unit = it },
-                        label = { Text("Unit") },
+                        label = { Text(stringResource(R.string.editor_unit)) },
                         isError = errorFor(TrackerField.UNIT) != null,
                         supportingText = errorSupportingText(errorFor(TrackerField.UNIT), EditorLimits.UNIT),
                         modifier = Modifier.fillMaxWidth()
@@ -173,7 +190,7 @@ internal fun TrackerEditorDialog(
             if (type != TrackerType.MEASURE) {
                 item {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("Track streak target", modifier = Modifier.weight(1f))
+                        Text(stringResource(R.string.editor_track_target), modifier = Modifier.weight(1f))
                         Switch(checked = targetEnabled, onCheckedChange = { targetEnabled = it })
                     }
                 }
@@ -184,7 +201,16 @@ internal fun TrackerEditorDialog(
                                 FilterChip(
                                     selected = option == targetPeriod,
                                     onClick = { targetPeriod = option },
-                                    label = { Text(option.name.lowercase().replaceFirstChar(Char::titlecase)) }
+                                    label = {
+                                        Text(
+                                            stringResource(
+                                                when (option) {
+                                                    TargetPeriod.DAILY -> R.string.editor_period_daily
+                                                    TargetPeriod.WEEKLY -> R.string.editor_period_weekly
+                                                }
+                                            )
+                                        )
+                                    }
                                 )
                             }
                         }
@@ -195,7 +221,7 @@ internal fun TrackerEditorDialog(
                                 value = targetValue,
                                 onValueChange = { targetValue = it },
                                 label = {
-                                    Text(if (type == TrackerType.YES_NO) "Days per week" else "Target value")
+                                    Text(stringResource(if (type == TrackerType.YES_NO) R.string.editor_days_per_week else R.string.editor_target_value))
                                 },
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                                 isError = errorFor(TrackerField.TARGET) != null,
@@ -208,7 +234,7 @@ internal fun TrackerEditorDialog(
             }
             item {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("Reminder", modifier = Modifier.weight(1f))
+                    Text(stringResource(R.string.editor_reminder), modifier = Modifier.weight(1f))
                     Switch(checked = reminderEnabled, onCheckedChange = { reminderEnabled = it })
                 }
             }
@@ -225,20 +251,20 @@ internal fun TrackerEditorDialog(
                     }
                 }
                 item {
-                    Text("Reminder days", fontWeight = FontWeight.SemiBold)
+                    Text(stringResource(R.string.editor_reminder_days), fontWeight = FontWeight.SemiBold)
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        DayOfWeek.entries.forEach { day ->
+                        weekDays.forEach { day ->
                             FilterChip(
                                 selected = day in reminderDays,
                                 onClick = {
                                     reminderDays = if (day in reminderDays) reminderDays - day else reminderDays + day
                                 },
-                                label = { Text(day.name.take(3)) }
+                                label = { Text(day.getDisplayName(TextStyle.SHORT, locale)) }
                             )
                         }
                     }
                     if (reminderDays.isEmpty()) {
-                        Text("No days selected means every day.", style = MaterialTheme.typography.bodySmall)
+                        Text(stringResource(R.string.editor_reminder_days_hint), style = MaterialTheme.typography.bodySmall)
                     }
                 }
             }
@@ -259,12 +285,12 @@ internal fun TrackerEditorDialog(
                     reminderMinute = timeState.minute
                     showTimePicker = false
                 }) {
-                    Text("OK")
+                    Text(stringResource(R.string.action_ok))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showTimePicker = false }) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.action_cancel))
                 }
             }
         )

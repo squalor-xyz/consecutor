@@ -19,10 +19,12 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import com.squalor.consecutor.R
 
 /**
  * Editor dialog whose Cancel / title / Save header stays pinned while [content] scrolls in the
@@ -58,7 +60,7 @@ internal fun EditorDialog(
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     TextButton(onClick = onDismiss) {
-                        Text("Cancel")
+                        Text(stringResource(R.string.action_cancel))
                     }
                     Text(
                         title,
@@ -69,7 +71,7 @@ internal fun EditorDialog(
                         overflow = TextOverflow.Ellipsis
                     )
                     Button(onClick = onConfirm, contentPadding = PaddingValues(horizontal = 20.dp)) {
-                        Text("Save")
+                        Text(stringResource(R.string.action_save))
                     }
                 }
                 Box(

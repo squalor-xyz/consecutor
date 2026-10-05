@@ -43,7 +43,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
@@ -94,8 +97,8 @@ fun MainScreen(viewModel: TrackerViewModel) {
         scope.launch(start = CoroutineStart.UNDISPATCHED) {
             snackbarHostState.currentSnackbarData?.dismiss()
             val result = snackbarHostState.showSnackbar(
-                message = "Notifications are off. Reminders cannot be shown.",
-                actionLabel = "Open settings",
+                message = resources.getString(R.string.main_notifications_off_warning),
+                actionLabel = resources.getString(R.string.action_open_settings),
                 withDismissAction = true,
                 duration = SnackbarDuration.Long
             )
@@ -172,7 +175,7 @@ fun MainScreen(viewModel: TrackerViewModel) {
         viewModel.events.collect { event ->
             // Saving may finish after the permission result; keep its settings action visible.
             if (event !is UiEvent.Message ||
-                snackbarHostState.currentSnackbarData?.visuals?.actionLabel != "Open settings"
+                snackbarHostState.currentSnackbarData?.visuals?.actionLabel != resources.getString(R.string.action_open_settings)
             ) {
                 snackbarHostState.currentSnackbarData?.dismiss()
             }
@@ -206,19 +209,26 @@ fun MainScreen(viewModel: TrackerViewModel) {
     }
 
     pendingDelete?.let { pending ->
-        val entryLabel = if (pending.entryCount == 1) "entry" else "entries"
         AlertDialog(
             onDismissRequest = viewModel::cancelDelete,
-            title = { Text("Delete tracker permanently?") },
-            text = { Text("Delete \"${pending.name}\" and its ${pending.entryCount} $entryLabel? This cannot be undone.") },
+            title = { Text(stringResource(R.string.main_delete_dialog_title)) },
+            text = {
+                Text(
+                    stringResource(
+                        R.string.main_delete_dialog_text,
+                        pending.name,
+                        pluralStringResource(R.plurals.count_entries, pending.entryCount, pending.entryCount)
+                    )
+                )
+            },
             confirmButton = {
                 TextButton(onClick = {
                     viewModel.cancelDelete()
                     viewModel.deletePermanently(pending.trackerId)
-                }) { Text("Delete permanently", color = MaterialTheme.colorScheme.error) }
+                }) { Text(stringResource(R.string.action_delete_permanently), color = MaterialTheme.colorScheme.error) }
             },
             dismissButton = {
-                TextButton(onClick = viewModel::cancelDelete) { Text("Cancel") }
+                TextButton(onClick = viewModel::cancelDelete) { Text(stringResource(R.string.action_cancel)) }
             }
         )
     }
@@ -226,21 +236,32 @@ fun MainScreen(viewModel: TrackerViewModel) {
     pendingImport?.let { pending ->
         val exportDate = pending.exportedAtEpochMs?.let {
             val date = Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault())
-            "exported ${date.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM))}"
-        } ?: "export date unknown"
+            stringResource(
+                R.string.main_import_exported_at,
+                date.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM))
+            )
+        } ?: stringResource(R.string.main_import_export_date_unknown)
         AlertDialog(
             onDismissRequest = viewModel::cancelImport,
-            title = { Text("Replace all data?") },
+            title = { Text(stringResource(R.string.main_import_dialog_title)) },
             text = {
-                Text("This backup has ${pending.trackerCount} trackers and ${pending.activeEntryCount} entries ($exportDate). Your current ${pending.currentTrackerCount} trackers will be removed.")
+                Text(
+                    stringResource(
+                        R.string.main_import_dialog_text,
+                        pluralStringResource(R.plurals.count_trackers, pending.trackerCount, pending.trackerCount),
+                        pluralStringResource(R.plurals.count_entries, pending.activeEntryCount, pending.activeEntryCount),
+                        exportDate,
+                        pluralStringResource(R.plurals.count_trackers, pending.currentTrackerCount, pending.currentTrackerCount)
+                    )
+                )
             },
             confirmButton = {
                 TextButton(onClick = viewModel::confirmImport) {
-                    Text("Replace", color = MaterialTheme.colorScheme.error)
+                    Text(stringResource(R.string.main_import_replace), color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {
-                TextButton(onClick = viewModel::cancelImport) { Text("Cancel") }
+                TextButton(onClick = viewModel::cancelImport) { Text(stringResource(R.string.action_cancel)) }
             }
         )
     }
@@ -304,12 +325,12 @@ fun MainScreen(viewModel: TrackerViewModel) {
                 title = {
                     Text(
                         when (screen) {
-                            Screen.DASHBOARD -> "CONSECUTOR"
+                            Screen.DASHBOARD -> stringResource(R.string.app_name).uppercase(LocalLocale.current.platformLocale)
                             Screen.DETAIL -> selectedDetail?.tracker
                                 ?.let { listOfNotNull(it.emoji, it.name).joinToString(" ").trim() }
                                 .orEmpty()
-                            Screen.SETTINGS -> "Settings"
-                            Screen.ARCHIVED -> "Archived"
+                            Screen.SETTINGS -> stringResource(R.string.main_title_settings)
+                            Screen.ARCHIVED -> stringResource(R.string.main_title_archived)
                         },
                         letterSpacing = if (screen == Screen.DASHBOARD) 2.sp else TextUnit.Unspecified,
                         maxLines = 1,
@@ -319,7 +340,7 @@ fun MainScreen(viewModel: TrackerViewModel) {
                 navigationIcon = {
                     if (screen != Screen.DASHBOARD) {
                         IconButton(onClick = returnToDashboard) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.cd_back))
                         }
                     }
                 },
@@ -327,24 +348,24 @@ fun MainScreen(viewModel: TrackerViewModel) {
                     when (screen) {
                         Screen.DASHBOARD -> {
                             IconButton(onClick = { screen = Screen.SETTINGS }) {
-                                Icon(Icons.Default.Settings, contentDescription = "Settings")
+                                Icon(Icons.Default.Settings, contentDescription = stringResource(R.string.cd_settings))
                             }
                         }
                         Screen.DETAIL -> {
                             selectedDetail?.let { detail ->
                                 IconButton(onClick = { editingTrackerId = detail.tracker.id }) {
-                                    Icon(Icons.Default.Edit, contentDescription = "Edit tracker")
+                                    Icon(Icons.Default.Edit, contentDescription = stringResource(R.string.cd_edit_tracker))
                                 }
                                 Box {
                                     IconButton(onClick = { showOverflow = true }) {
-                                        Icon(Icons.Default.MoreVert, contentDescription = "Tracker options")
+                                        Icon(Icons.Default.MoreVert, contentDescription = stringResource(R.string.cd_tracker_options))
                                     }
                                     DropdownMenu(expanded = showOverflow, onDismissRequest = { showOverflow = false }) {
-                                        DropdownMenuItem(text = { Text("Archive tracker") }, onClick = {
+                                        DropdownMenuItem(text = { Text(stringResource(R.string.main_menu_archive_tracker)) }, onClick = {
                                             showOverflow = false
                                             viewModel.archive(detail.tracker.id)
                                         })
-                                        DropdownMenuItem(text = { Text("Delete permanently") }, onClick = {
+                                        DropdownMenuItem(text = { Text(stringResource(R.string.action_delete_permanently)) }, onClick = {
                                             showOverflow = false
                                             viewModel.prepareDelete(detail.tracker.id, detail.tracker.name, detail.entries.size)
                                         })
@@ -361,7 +382,7 @@ fun MainScreen(viewModel: TrackerViewModel) {
             when (screen) {
                 Screen.DASHBOARD -> {
                     FloatingActionButton(onClick = { showNewTrackerDialog = true }) {
-                        Icon(Icons.Default.Add, contentDescription = "Add tracker")
+                        Icon(Icons.Default.Add, contentDescription = stringResource(R.string.cd_add_tracker))
                     }
                 }
                 Screen.DETAIL -> {
@@ -369,7 +390,7 @@ fun MainScreen(viewModel: TrackerViewModel) {
                         FloatingActionButton(onClick = {
                             entryEditorState = EntryEditorState.new(detail)
                         }) {
-                            Icon(Icons.Default.Add, contentDescription = "Add entry")
+                            Icon(Icons.Default.Add, contentDescription = stringResource(R.string.cd_add_entry))
                         }
                     }
                 }
@@ -397,7 +418,7 @@ fun MainScreen(viewModel: TrackerViewModel) {
             Screen.DETAIL -> {
                 when (val state = detailState) {
                     DetailState.Loading -> Unit
-                    DetailState.NotFound -> EmptyState("Tracker not found.", padding = padding)
+                    DetailState.NotFound -> EmptyState(stringResource(R.string.detail_not_found), padding = padding)
                     is DetailState.Loaded -> {
                         val detail = state.detail
                         TrackerDetailScreen(
