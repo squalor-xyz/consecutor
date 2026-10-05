@@ -75,7 +75,7 @@ class NavigationTest {
     @Test
     fun backFromSettingsReturnsToDashboard() {
         composeRule.onNodeWithContentDescription("Settings").performClick()
-        composeRule.onNodeWithText("Privacy-first defaults").assertIsDisplayed()
+        composeRule.onNodeWithText(composeRule.activity.getString(R.string.settings_privacy_line)).assertIsDisplayed()
         pressBack()
         composeRule.onNodeWithContentDescription("Add tracker").assertIsDisplayed()
     }
