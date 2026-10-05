@@ -1,0 +1,39 @@
+{
+  "id": "S66",
+  "title": "Investigate intermittent API 26 typedTrackerNameSurvivesRecreation failure",
+  "lead": [],
+  "depends_note": null,
+  "findings_note": "S22 on API 26 (s08_api26): NavigationTest.typedTrackerNameSurvivesRecreation failed 2 of 10 full-suite runs; the Name field was empty after recreate(). Unlike editingTrackerNameSurvivesRecreation, the test does not assert the typed text before recreate(), so a test race is possible; lost user input is not ruled out. Owner: investigate the app first.",
+  "size": "S",
+  "flags": [],
+  "trees_note": "release",
+  "trees_plural": false,
+  "boundary": "Not in this slice: other test changes, unrelated editor refactors, and S22 walkthrough rows.",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "S22's gate needs a clean instrumented suite on API 26. NavigationTest.typedTrackerNameSurvivesRecreation failed 2 of 10 runs with the Name field empty after recreate(). Either typed input can be lost on recreation (a user-facing defect) or the test races. The owner asked to investigate the app first."
+    },
+    {
+      "heading": "Files",
+      "body": "app/src/androidTest/java/com/squalor/consecutor/NavigationTest.kt; app/src/main/java/com/squalor/consecutor/ui/TrackerEditorDialog.kt and ui/EditorDialog.kt only if a defect is shown."
+    },
+    {
+      "heading": "Failing tests",
+      "body": "NavigationTest.typedTrackerNameSurvivesRecreation (intermittent on API 26, s08_api26)."
+    },
+    {
+      "heading": "Implement",
+      "body": "1. On the API 26 emulator with the debug build and an idle host, open the create dialog, type a name, and recreate the activity about 20 times by rotation and configuration change; check the Name field each time.\n2. If input is ever lost, find why the rememberSaveable state does not survive and fix it; keep the test unchanged.\n3. If it never reproduces, make the test assert the typed text before recreate(), like editingTrackerNameSurvivesRecreation, and record that the app was not shown to lose input."
+    },
+    {
+      "heading": "Check",
+      "body": "10 consecutive full-suite runs on API 26 pass 56/56 via am instrument; one run on API 36 passes; testDebugUnitTest and lintDebug pass. Record the repro result and the cause or remaining uncertainty."
+    },
+    {
+      "heading": "Git",
+      "body": "Commit only when asked; use the project slice worktree workflow."
+    }
+  ],
+  "notes": []
+}
