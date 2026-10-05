@@ -1,0 +1,39 @@
+{
+  "id": "S64",
+  "title": "Refresh today and midnight timer after device clock changes",
+  "lead": [],
+  "depends_note": null,
+  "findings_note": "S22 signed release on API 36: move clock to 23:59:40 while dashboard remains open, wait past midnight; S22 Yes remains Done today. TrackerViewModel.kt:99-104 sleeps for the original monotonic delay; MainScreen.kt refreshes today only on resume.",
+  "size": "S",
+  "flags": [],
+  "trees_note": "ui",
+  "trees_plural": false,
+  "boundary": "Fix the foreground day rollover failure reproduced by S22 after changing the emulator clock. Reminder delivery and release tagging are separate work.",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "A clock change while the dashboard stays open leaves the original coroutine delay in place. S22 observed a YES_NO tracker still marked Done today after the system date crossed midnight on the signed API 36 release. Background rollover passed."
+    },
+    {
+      "heading": "Files",
+      "body": "app/src/main/java/com/squalor/consecutor/TrackerViewModel.kt; MainScreen.kt or a scoped clock observer; existing DayClock tests and focused lifecycle/instrumented coverage."
+    },
+    {
+      "heading": "Failing tests",
+      "body": "S22 build/s22-validation/emulator-5554/05-foreground-before-midnight and 05-foreground-midnight screenshots/XML: initial logged YES_NO state, clock moved to 23:59:40 while foreground, 24 seconds elapsed, device date advanced, Done today remained. Clock and auto_time restored afterward."
+    },
+    {
+      "heading": "Implement",
+      "body": "1. Reproduce the signed-release foreground clock-change rollover.\n2. Refresh the effective day and recalculate the next midnight wait when the device clock changes while the app is active. Handle lifecycle registration and cleanup without retaining an Activity.\n3. Add focused coverage for the observed clock-change behavior and preserve the existing resume refresh and natural-midnight behavior.\n4. Re-run S22 foreground and background rollover checks on affected APIs."
+    },
+    {
+      "heading": "Check",
+      "body": "When the clock moves to 23:59 while the dashboard remains foregrounded, the done-today state resets after midnight. Background rollover still resets on resume; existing day-clock tests and instrumented navigation tests pass."
+    },
+    {
+      "heading": "Git",
+      "body": "Commit only when asked; use the project's slice worktree workflow."
+    }
+  ],
+  "notes": []
+}
