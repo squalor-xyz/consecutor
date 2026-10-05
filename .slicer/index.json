@@ -1913,13 +1913,14 @@
       "id": "S64",
       "title": "Refresh today and midnight timer after device clock changes",
       "short_title": "Refresh today and midnight timer after device clock changes",
-      "status": "open",
+      "status": "review",
       "has_slice": true,
       "depends_on": [
         "S09"
       ],
       "notes": [
-        "**2026-10-05** — S22 reproduced the same foreground clock-change midnight failure on API 30, API 33 and API 36. Background rollover passed on all three. Each script restored auto_time and the original clock plus elapsed time. Evidence: build/s22-validation/emulator-5558, emulator-5560 and emulator-5554 system-results.json and 05-foreground-midnight screenshots/XML. Score 3/3/2: required release gate fails; bounded day-refresh/timer fix with lifecycle coverage."
+        "**2026-10-05** — S22 reproduced the same foreground clock-change midnight failure on API 30, API 33 and API 36. Background rollover passed on all three. Each script restored auto_time and the original clock plus elapsed time. Evidence: build/s22-validation/emulator-5558, emulator-5560 and emulator-5554 system-results.json and 05-foreground-midnight screenshots/XML. Score 3/3/2: required release gate fails; bounded day-refresh/timer fix with lifecycle coverage.",
+        "**2026-10-05** — Fixed; uncommitted in the S64 worktree. TrackerViewModel now runs refreshAtDayBoundaries (DayClock.kt): it waits for the next midnight (+1 s) or a clock-change signal, then refreshes today and re-computes the wait. MainScreen registers a plain BroadcastReceiver for ACTION_TIME_CHANGED, ACTION_DATE_CHANGED and ACTION_TIMEZONE_CHANGED on the application context (DisposableEffect, unregistered on dispose) and calls viewModel.onClockChanged(). It deliberately avoids ContextCompat.registerReceiver with RECEIVER_NOT_EXPORTED, which on API < 33 would drop system broadcasts. DayClockTest gained 5 virtual-time tests (wait ends just after midnight, a signal ends it early, a signal sent before the wait is not lost, natural midnight refresh, a clock jump to 23:59:40 refreshes and re-arms the wait to 21 s). testDebugUnitTest 139 passed, 0 failures (134 before); lintDebug 0 errors, 14 warnings (unchanged); assembleDebug passed. Device check on s08_api34 (API 34 Google APIs, debug build): YES_NO Gamma logged, auto_time off, clock set with cmd alarm set-time to 23:59:40 while the dashboard stayed in the foreground; screenshot at 00:00:06 the next day shows Gamma back to Not logged today. Clock and auto_time restored, emulator stopped. NOT re-run: API 26, 30, 33 and 36, whose emulators hold the S22 release-signed app (installing a debug build would need an uninstall). Caveat: uiautomator dump timed out and left a stale ui.xml on this emulator, giving false Done today readings; use screencap. Background rollover on resume is unchanged and was not re-tested here."
       ],
       "claim": null,
       "fields": {
@@ -1936,7 +1937,7 @@
         "importance": 3,
         "urgency": 3,
         "effort": 2,
-        "attempts": 0
+        "attempts": 1
       }
     },
     {

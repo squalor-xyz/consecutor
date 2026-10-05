@@ -1,6 +1,10 @@
 package com.squalor.consecutor
 
 import android.Manifest
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.activity.compose.BackHandler
@@ -134,6 +138,24 @@ fun MainScreen(viewModel: TrackerViewModel) {
         }
         lifecycleOwner.lifecycle.addObserver(observer)
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+
+    // Protected system broadcasts need no export flag. ContextCompat's NOT_EXPORTED wrapper would
+    // make API < 33 drop them, because the sender does not hold its signature permission.
+    DisposableEffect(context, viewModel) {
+        val appContext = context.applicationContext
+        val receiver = object : BroadcastReceiver() {
+            override fun onReceive(ignored: Context, intent: Intent) = viewModel.onClockChanged()
+        }
+        appContext.registerReceiver(
+            receiver,
+            IntentFilter().apply {
+                addAction(Intent.ACTION_TIME_CHANGED)
+                addAction(Intent.ACTION_DATE_CHANGED)
+                addAction(Intent.ACTION_TIMEZONE_CHANGED)
+            }
+        )
+        onDispose { appContext.unregisterReceiver(receiver) }
     }
 
     val importLauncher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
