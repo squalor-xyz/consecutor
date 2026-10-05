@@ -20,7 +20,7 @@
 - Advanced analytics suite.
 - Squalor brand marks in the APK (brand marks are all-rights-reserved; the app icon is app-specific and MPL-2.0).
 
-65 items · — 5 · done 48 · later 11 · started 1
+65 items · — 4 · done 48 · later 11 · started 1 · review 1
 
 | # | Slice | Title | Size | Effort | Trees | Findings | Status |
 |---|---|---|---|---|---|---|---|
@@ -43,7 +43,7 @@
 | 14 | [S62](slices/S62.md) | Resolve release permission gate for AndroidX signature permission | S | 1 | release | S22 signed minified APK aapt2 dump permissions declares and requests com.squalor.consecutor.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION in addition to the two allowed permissions. | — |
 | 15 | [S63](slices/S63.md) | Verify current main instrumented CI after S45 merge | S | 2 | build | S22: latest published main Build run 37258797096 at fcd5106 has build success and instrumented failure; local 816a80f includes subsequent S45 changes and passes 56 API 36 tests. | — |
 | P2 MVP UX | | | | | | | |
-| 16 | [S64](slices/S64.md) | Refresh today and midnight timer after device clock changes | S | 2 | ui | S22 signed release on API 36: move clock to 23:59:40 while dashboard remains open, wait past midnight; S22 Yes remains Done today. TrackerViewModel.kt:99-104 sleeps for the original monotonic delay; MainScreen.kt refreshes today only on resume. | — |
+| 16 | [S64](slices/S64.md) | Refresh today and midnight timer after device clock changes | S | 2 | ui | S22 signed release on API 36: move clock to 23:59:40 while dashboard remains open, wait past midnight; S22 Yes remains Done today. TrackerViewModel.kt:99-104 sleeps for the original monotonic delay; MainScreen.kt refreshes today only on resume. | review |
 | P3 Release | | | | | | | |
 | 17 | [S65](slices/S65.md) | Investigate API 33 release walkthrough ANR | S | 2 | release | S22 API 33 signed release showed Consecutor is not responding during notification permission walkthrough; ActivityManager recorded input dispatch timeout at 2026-10-05 07:37:34. Root cause unverified; four emulators and concurrent uiautomator commands were active. | — |
 
