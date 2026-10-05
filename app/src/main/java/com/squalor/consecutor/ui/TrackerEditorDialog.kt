@@ -3,20 +3,13 @@ package com.squalor.consecutor.ui
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -100,200 +93,183 @@ internal fun TrackerEditorDialog(
     )
     fun errorFor(field: TrackerField) = if (showErrors) errors[field] else null
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(if (initial == null) R.string.editor_title_new_tracker else R.string.editor_title_edit_tracker)) },
-        text = {
-            LazyColumn(
-                modifier = Modifier.heightIn(max = 520.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                item {
-                    OutlinedTextField(
-                        value = name,
-                        onValueChange = { name = it },
-                        label = { Text(stringResource(R.string.editor_name)) },
-                        isError = errorFor(TrackerField.NAME) != null,
-                        supportingText = errorSupportingText(errorFor(TrackerField.NAME), EditorLimits.NAME),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-                item {
-                    OutlinedTextField(
-                        value = emoji,
-                        onValueChange = { emoji = it },
-                        label = { Text(stringResource(R.string.editor_emoji)) },
-                        isError = errorFor(TrackerField.EMOJI) != null,
-                        supportingText = errorSupportingText(errorFor(TrackerField.EMOJI)),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-                item {
-                    OutlinedTextField(
-                        value = description,
-                        onValueChange = { description = it },
-                        label = { Text(stringResource(R.string.editor_description)) },
-                        isError = errorFor(TrackerField.DESCRIPTION) != null,
-                        supportingText = errorSupportingText(errorFor(TrackerField.DESCRIPTION), EditorLimits.DESCRIPTION),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-                item {
-                    Text(stringResource(R.string.editor_type), fontWeight = FontWeight.SemiBold)
-                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        TrackerType.entries.forEach { option ->
-                            FilterChip(
-                                selected = option == type,
-                                onClick = { type = option },
-                                enabled = !typeLocked,
-                                label = {
-                                    Text(
-                                        stringResource(
-                                            when (option) {
-                                                TrackerType.YES_NO -> R.string.editor_type_yes_no
-                                                TrackerType.COUNT -> R.string.editor_type_count
-                                                TrackerType.MEASURE -> R.string.editor_type_measure
-                                            }
-                                        )
-                                    )
-                                }
-                            )
-                        }
-                    }
-                    if (typeLocked) {
-                        Text(stringResource(R.string.editor_type_locked), style = MaterialTheme.typography.bodySmall)
-                    }
-                }
-                if (type != TrackerType.YES_NO) {
-                    item {
-                        OutlinedTextField(
-                            value = unit,
-                            onValueChange = { unit = it },
-                            label = { Text(stringResource(R.string.editor_unit)) },
-                            isError = errorFor(TrackerField.UNIT) != null,
-                            supportingText = errorSupportingText(errorFor(TrackerField.UNIT), EditorLimits.UNIT),
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-                }
-                if (type != TrackerType.MEASURE) {
-                    item {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(stringResource(R.string.editor_track_target), modifier = Modifier.weight(1f))
-                            Switch(checked = targetEnabled, onCheckedChange = { targetEnabled = it })
-                        }
-                    }
-                    if (targetEnabled) {
-                        item {
-                            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                TargetPeriod.entries.forEach { option ->
-                                    FilterChip(
-                                        selected = option == targetPeriod,
-                                        onClick = { targetPeriod = option },
-                                        label = {
-                                            Text(
-                                                stringResource(
-                                                    when (option) {
-                                                        TargetPeriod.DAILY -> R.string.editor_period_daily
-                                                        TargetPeriod.WEEKLY -> R.string.editor_period_weekly
-                                                    }
-                                                )
-                                            )
+    EditorDialog(
+        title = stringResource(if (initial == null) R.string.editor_title_new_tracker else R.string.editor_title_edit_tracker),
+        onDismiss = onDismiss,
+        onConfirm = {
+            showErrors = true
+            if (errors.isNotEmpty()) return@EditorDialog
+            val parsedTarget = resolveTargetValue(type, targetEnabled, targetPeriod, targetValue, locale)
+            onSave(
+                TrackerDraft(
+                    name = name,
+                    emoji = emoji.ifBlank { null },
+                    description = description.ifBlank { null },
+                    type = type,
+                    unit = if (type == TrackerType.YES_NO) null else unit.ifBlank { null },
+                    colorHex = initial?.tracker?.colorHex ?: "#1F6FEB",
+                    targetPeriod = if (targetEnabled && type != TrackerType.MEASURE) targetPeriod else null,
+                    targetValue = parsedTarget,
+                    reminderEnabled = reminderEnabled,
+                    reminderHour = reminderHour,
+                    reminderMinute = reminderMinute,
+                    reminderDays = reminderDays
+                )
+            )
+        }
+    ) {
+        LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            item {
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text(stringResource(R.string.editor_name)) },
+                    isError = errorFor(TrackerField.NAME) != null,
+                    supportingText = errorSupportingText(errorFor(TrackerField.NAME), EditorLimits.NAME),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+            item {
+                OutlinedTextField(
+                    value = emoji,
+                    onValueChange = { emoji = it },
+                    label = { Text(stringResource(R.string.editor_emoji)) },
+                    isError = errorFor(TrackerField.EMOJI) != null,
+                    supportingText = errorSupportingText(errorFor(TrackerField.EMOJI)),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+            item {
+                OutlinedTextField(
+                    value = description,
+                    onValueChange = { description = it },
+                    label = { Text(stringResource(R.string.editor_description)) },
+                    isError = errorFor(TrackerField.DESCRIPTION) != null,
+                    supportingText = errorSupportingText(errorFor(TrackerField.DESCRIPTION), EditorLimits.DESCRIPTION),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+            item {
+                Text(stringResource(R.string.editor_type), fontWeight = FontWeight.SemiBold)
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    TrackerType.entries.forEach { option ->
+                        FilterChip(
+                            selected = option == type,
+                            onClick = { type = option },
+                            enabled = !typeLocked,
+                            label = {
+                                Text(
+                                    stringResource(
+                                        when (option) {
+                                            TrackerType.YES_NO -> R.string.editor_type_yes_no
+                                            TrackerType.COUNT -> R.string.editor_type_count
+                                            TrackerType.MEASURE -> R.string.editor_type_measure
                                         }
                                     )
-                                }
+                                )
                             }
-                        }
-                        if (type != TrackerType.YES_NO || targetPeriod == TargetPeriod.WEEKLY) {
-                            item {
-                                OutlinedTextField(
-                                    value = targetValue,
-                                    onValueChange = { targetValue = it },
+                        )
+                    }
+                }
+                if (typeLocked) {
+                    Text(stringResource(R.string.editor_type_locked), style = MaterialTheme.typography.bodySmall)
+                }
+            }
+            if (type != TrackerType.YES_NO) {
+                item {
+                    OutlinedTextField(
+                        value = unit,
+                        onValueChange = { unit = it },
+                        label = { Text(stringResource(R.string.editor_unit)) },
+                        isError = errorFor(TrackerField.UNIT) != null,
+                        supportingText = errorSupportingText(errorFor(TrackerField.UNIT), EditorLimits.UNIT),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
+            if (type != TrackerType.MEASURE) {
+                item {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(stringResource(R.string.editor_track_target), modifier = Modifier.weight(1f))
+                        Switch(checked = targetEnabled, onCheckedChange = { targetEnabled = it })
+                    }
+                }
+                if (targetEnabled) {
+                    item {
+                        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            TargetPeriod.entries.forEach { option ->
+                                FilterChip(
+                                    selected = option == targetPeriod,
+                                    onClick = { targetPeriod = option },
                                     label = {
-                                        Text(stringResource(if (type == TrackerType.YES_NO) R.string.editor_days_per_week else R.string.editor_target_value))
-                                    },
-                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                                    isError = errorFor(TrackerField.TARGET) != null,
-                                    supportingText = errorSupportingText(errorFor(TrackerField.TARGET)),
-                                    modifier = Modifier.fillMaxWidth()
+                                        Text(
+                                            stringResource(
+                                                when (option) {
+                                                    TargetPeriod.DAILY -> R.string.editor_period_daily
+                                                    TargetPeriod.WEEKLY -> R.string.editor_period_weekly
+                                                }
+                                            )
+                                        )
+                                    }
                                 )
                             }
                         }
                     }
-                }
-                item {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(stringResource(R.string.editor_reminder), modifier = Modifier.weight(1f))
-                        Switch(checked = reminderEnabled, onCheckedChange = { reminderEnabled = it })
-                    }
-                }
-                if (reminderEnabled) {
-                    item {
-                        OutlinedButton(
-                            onClick = { showTimePicker = true },
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(
-                                LocalTime.of(reminderHour, reminderMinute)
-                                    .format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT))
+                    if (type != TrackerType.YES_NO || targetPeriod == TargetPeriod.WEEKLY) {
+                        item {
+                            OutlinedTextField(
+                                value = targetValue,
+                                onValueChange = { targetValue = it },
+                                label = {
+                                    Text(stringResource(if (type == TrackerType.YES_NO) R.string.editor_days_per_week else R.string.editor_target_value))
+                                },
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                                isError = errorFor(TrackerField.TARGET) != null,
+                                supportingText = errorSupportingText(errorFor(TrackerField.TARGET)),
+                                modifier = Modifier.fillMaxWidth()
                             )
                         }
                     }
-                    item {
-                        Text(stringResource(R.string.editor_reminder_days), fontWeight = FontWeight.SemiBold)
-                        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            weekDays.forEach { day ->
-                                FilterChip(
-                                    selected = day in reminderDays,
-                                    onClick = {
-                                        reminderDays = if (day in reminderDays) reminderDays - day else reminderDays + day
-                                    },
-                                    label = { Text(day.getDisplayName(TextStyle.SHORT, locale)) }
-                                )
-                            }
+                }
+            }
+            item {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(stringResource(R.string.editor_reminder), modifier = Modifier.weight(1f))
+                    Switch(checked = reminderEnabled, onCheckedChange = { reminderEnabled = it })
+                }
+            }
+            if (reminderEnabled) {
+                item {
+                    OutlinedButton(
+                        onClick = { showTimePicker = true },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            LocalTime.of(reminderHour, reminderMinute)
+                                .format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT))
+                        )
+                    }
+                }
+                item {
+                    Text(stringResource(R.string.editor_reminder_days), fontWeight = FontWeight.SemiBold)
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        weekDays.forEach { day ->
+                            FilterChip(
+                                selected = day in reminderDays,
+                                onClick = {
+                                    reminderDays = if (day in reminderDays) reminderDays - day else reminderDays + day
+                                },
+                                label = { Text(day.getDisplayName(TextStyle.SHORT, locale)) }
+                            )
                         }
-                        if (reminderDays.isEmpty()) {
-                            Text(stringResource(R.string.editor_reminder_days_hint), style = MaterialTheme.typography.bodySmall)
-                        }
+                    }
+                    if (reminderDays.isEmpty()) {
+                        Text(stringResource(R.string.editor_reminder_days_hint), style = MaterialTheme.typography.bodySmall)
                     }
                 }
             }
-        },
-        confirmButton = {
-            Button(
-                onClick = {
-                    showErrors = true
-                    if (errors.isNotEmpty()) return@Button
-                    val parsedTarget = resolveTargetValue(type, targetEnabled, targetPeriod, targetValue, locale)
-                    onSave(
-                        TrackerDraft(
-                            name = name,
-                            emoji = emoji.ifBlank { null },
-                            description = description.ifBlank { null },
-                            type = type,
-                            unit = if (type == TrackerType.YES_NO) null else unit.ifBlank { null },
-                            colorHex = initial?.tracker?.colorHex ?: "#1F6FEB",
-                            targetPeriod = if (targetEnabled && type != TrackerType.MEASURE) targetPeriod else null,
-                            targetValue = parsedTarget,
-                            reminderEnabled = reminderEnabled,
-                            reminderHour = reminderHour,
-                            reminderMinute = reminderMinute,
-                            reminderDays = reminderDays
-                        )
-                    )
-                }
-            ) {
-                Icon(Icons.Default.Save, contentDescription = null)
-                Spacer(Modifier.width(8.dp))
-                Text(stringResource(R.string.action_save))
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.action_cancel))
-            }
         }
-    )
+    }
     if (showTimePicker) {
         val timeState = rememberTimePickerState(
             initialHour = reminderHour,
