@@ -595,7 +595,10 @@
         "S51",
         "S15",
         "S56",
-        "S57"
+        "S57",
+        "S21",
+        "S22",
+        "S45"
       ],
       "notes": [],
       "claim": null,
@@ -620,7 +623,7 @@
       "id": "S21",
       "title": "Tagged release workflow publishing signed APK to GitHub releases",
       "short_title": "Tagged release workflow publishing signed APK to GitHub releases",
-      "status": "review",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S19",
