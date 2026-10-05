@@ -1689,7 +1689,7 @@
       "id": "S57",
       "title": "Settings About card: version, licence, source link and third-party notices",
       "short_title": "Settings About card: version, licence, source link and third-party notices",
-      "status": "open",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S18",
