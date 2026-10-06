@@ -20,54 +20,54 @@
 - Advanced analytics suite.
 - Squalor brand marks in the APK (brand marks are all-rights-reserved; the app icon is app-specific and MPL-2.0).
 
-67 items · done 56 · later 10 · review 1
+67 items · done 57 · later 10
 
 | # | Slice | Title | Size | Effort | Trees | Findings | Status |
 |---|---|---|---|---|---|---|---|
-| v1.0.0 | | | | | | | |
-| 1 | [S23](slices/S23.md) | Notification "Mark done" action | S | 1 | reminders | ReminderScheduler.kt:62-86 (notification has a content intent only, no actions) | review |
 | Later | | | | | | | |
-| 2 | S24 | Manual tracker reordering |  | 2 | ui |  | later |
-| 3 | S25 | Password-protected backup export |  | 2 | data |  | later |
-| 4 | S26 | Revisit at-rest database encryption (SQLCipher + Keystore explored in commits 5fcabda, e60d2b2) |  | 3 | data |  | later |
-| 5 | S27 | Tags; filtering and richer tracker organization |  | 3 | ui |  | later |
-| 6 | S28 | More flexible targets and schedule rules (e.g. N times per week, specific weekdays) |  | 3 | data |  | later |
-| 7 | S29 | Home-screen widget |  | 3 | ui |  | later |
-| 8 | S30 | Extract domain; streak and backup logic into a Kotlin Multiplatform shared core |  | 3 | build |  | later |
-| 9 | S31 | iOS client on the shared core |  | 3 | build |  | later |
-| 10 | S52 | Dashboard performance with years of history |  | 3 | data |  | later |
-| 11 | S59 | Optional scheduled backup to a user-chosen folder |  | 2 | data |  | later |
+| 1 | S24 | Manual tracker reordering |  | 2 | ui |  | later |
+| 2 | S25 | Password-protected backup export |  | 2 | data |  | later |
+| 3 | S26 | Revisit at-rest database encryption (SQLCipher + Keystore explored in commits 5fcabda, e60d2b2) |  | 3 | data |  | later |
+| 4 | S27 | Tags; filtering and richer tracker organization |  | 3 | ui |  | later |
+| 5 | S28 | More flexible targets and schedule rules (e.g. N times per week, specific weekdays) |  | 3 | data |  | later |
+| 6 | S29 | Home-screen widget |  | 3 | ui |  | later |
+| 7 | S30 | Extract domain; streak and backup logic into a Kotlin Multiplatform shared core |  | 3 | build |  | later |
+| 8 | S31 | iOS client on the shared core |  | 3 | build |  | later |
+| 9 | S52 | Dashboard performance with years of history |  | 3 | data |  | later |
+| 10 | S59 | Optional scheduled backup to a user-chosen folder |  | 2 | data |  | later |
 
 ---
 
 | # | Slice | Title | Size | Effort | Trees | Findings | Status |
 |---|---|---|---|---|---|---|---|
 | P0 Build green | | | | | | | |
-| 12 | [S01](slices/S01.md) | Build green: remove machine-specific JDK path and fix compile errors | S | 1 | build | gradle.properties:25, TrackerAnalytics.kt:80, no JDK in prior agent env | done |
-| 13 | [S02](slices/S02.md) | Test real reminder scheduling logic instead of a copy | S | 1 | reminders | ReminderSchedulerTest.kt:106 | done |
-| 14 | [S03](slices/S03.md) | Run BackupCodec tests on the JVM and validate imported data | M | 2 | data | BackupCodecTest.kt, BackupCodec.kt:62-118 | done |
-| 15 | [S04](slices/S04.md) | CI: build; unit test and lint on every push and PR | S | 1 | build | .github/workflows/build.yml | done |
+| 11 | [S01](slices/S01.md) | Build green: remove machine-specific JDK path and fix compile errors | S | 1 | build | gradle.properties:25, TrackerAnalytics.kt:80, no JDK in prior agent env | done |
+| 12 | [S02](slices/S02.md) | Test real reminder scheduling logic instead of a copy | S | 1 | reminders | ReminderSchedulerTest.kt:106 | done |
+| 13 | [S03](slices/S03.md) | Run BackupCodec tests on the JVM and validate imported data | M | 2 | data | BackupCodecTest.kt, BackupCodec.kt:62-118 | done |
+| 14 | [S04](slices/S04.md) | CI: build; unit test and lint on every push and PR | S | 1 | build | .github/workflows/build.yml | done |
 | P1 Correctness | | | | | | | |
-| 16 | [S05](slices/S05.md) | Freeze schema v1 baseline with foreign keys and 0..1 constraints | M | 2 | data | AppDatabase.kt:12,29; TrackerModels.kt; TrackerRepository.kt:49,69,218 | done |
-| 17 | [S06](slices/S06.md) | Move IO off the main thread and handle every ViewModel failure | S | 1 | data | TrackerViewModel.kt:39-63,86; TrackerRepository.kt:127,134 | done |
-| 18 | [S07](slices/S07.md) | Fix detail-screen flow resubscription and midnight rollover | S | 1 | ui | MainScreen.kt:85; TrackerAnalytics.kt:11,38; TrackerRepository.kt:117 | done |
-| 19 | [S08](slices/S08.md) | Reminder reliability: inexact alarms and stale-alarm cleanup | S | 1 | reminders | ReminderScheduler.kt:26-52,107-109; AndroidManifest.xml SCHEDULE_EXACT_ALARM; TrackerViewModel.kt:85-100 | done |
-| 20 | [S09](slices/S09.md) | Notification permission UX that reflects real state | S | 1 | ui | MainScreen.kt:111,123,247-251,514-521 | done |
+| 15 | [S05](slices/S05.md) | Freeze schema v1 baseline with foreign keys and 0..1 constraints | M | 2 | data | AppDatabase.kt:12,29; TrackerModels.kt; TrackerRepository.kt:49,69,218 | done |
+| 16 | [S06](slices/S06.md) | Move IO off the main thread and handle every ViewModel failure | S | 1 | data | TrackerViewModel.kt:39-63,86; TrackerRepository.kt:127,134 | done |
+| 17 | [S07](slices/S07.md) | Fix detail-screen flow resubscription and midnight rollover | S | 1 | ui | MainScreen.kt:85; TrackerAnalytics.kt:11,38; TrackerRepository.kt:117 | done |
+| 18 | [S08](slices/S08.md) | Reminder reliability: inexact alarms and stale-alarm cleanup | S | 1 | reminders | ReminderScheduler.kt:26-52,107-109; AndroidManifest.xml SCHEDULE_EXACT_ALARM; TrackerViewModel.kt:85-100 | done |
+| 19 | [S09](slices/S09.md) | Notification permission UX that reflects real state | S | 1 | ui | MainScreen.kt:111,123,247-251,514-521 | done |
 | P2 MVP UX | | | | | | | |
-| 21 | [S10](slices/S10.md) | System back navigation and state that survives rotation | S | 1 | ui | MainScreen.kt:67-255 (no BackHandler); editor dialogs use remember | done |
-| 22 | [S11](slices/S11.md) | Brand theme: light and dark palettes following the system | S | 1 | ui | ConsecutorTheme.kt (template #6200EE light-only); res/values/themes.xml DarkActionBar | done |
-| 23 | [S12](slices/S12.md) | Consecutor app icon (adaptive and themed; FLOSS-licensed) | M | 2 | release | res/drawable/ic_launcher_foreground.xml (template); branding/LICENSE reserves all marks | done |
-| 24 | [S13](slices/S13.md) | Dashboard analytics: today and period progress on TrackerSummary | M | 2 | ui | TrackerModels.kt:114-129; TrackerAnalytics.kt:38-70 | done |
-| 25 | [S14](slices/S14.md) | Editor validation: inline errors, numeric input, type lock, emoji limit | M | 2 | ui | MainScreen.kt:523-790 (text fields for date/hour/minute; Save no-ops at :650,:656,:760,:764) | done |
-| 26 | [S15](slices/S15.md) | Archive; restore and permanently delete trackers | M | 2 | ui | TrackerRepository.kt:16,68; MainScreen.kt:233-237,388 | done |
-| 27 | [S16](slices/S16.md) | Trend analytics: nullable MEASURE points, 30-day window, buildMonth | M | 2 | ui | TrackerAnalytics.kt:72-83 (14-day trend, MEASURE gaps become 0); no month view | done |
-| 28 | [S17](slices/S17.md) | Flat CSV export as a pure function (with formula-injection guard) | S | 1 | data | TrackerRepository.kt:230-289 (buildCsv) | done |
-| 29 | [S18](slices/S18.md) | Move UI strings to resources and plurals | M | 2 | ui | all UI strings hardcoded in Kotlin; TrackerAnalytics.kt:172-190 English labels | done |
+| 20 | [S10](slices/S10.md) | System back navigation and state that survives rotation | S | 1 | ui | MainScreen.kt:67-255 (no BackHandler); editor dialogs use remember | done |
+| 21 | [S11](slices/S11.md) | Brand theme: light and dark palettes following the system | S | 1 | ui | ConsecutorTheme.kt (template #6200EE light-only); res/values/themes.xml DarkActionBar | done |
+| 22 | [S12](slices/S12.md) | Consecutor app icon (adaptive and themed; FLOSS-licensed) | M | 2 | release | res/drawable/ic_launcher_foreground.xml (template); branding/LICENSE reserves all marks | done |
+| 23 | [S13](slices/S13.md) | Dashboard analytics: today and period progress on TrackerSummary | M | 2 | ui | TrackerModels.kt:114-129; TrackerAnalytics.kt:38-70 | done |
+| 24 | [S14](slices/S14.md) | Editor validation: inline errors, numeric input, type lock, emoji limit | M | 2 | ui | MainScreen.kt:523-790 (text fields for date/hour/minute; Save no-ops at :650,:656,:760,:764) | done |
+| 25 | [S15](slices/S15.md) | Archive; restore and permanently delete trackers | M | 2 | ui | TrackerRepository.kt:16,68; MainScreen.kt:233-237,388 | done |
+| 26 | [S16](slices/S16.md) | Trend analytics: nullable MEASURE points, 30-day window, buildMonth | M | 2 | ui | TrackerAnalytics.kt:72-83 (14-day trend, MEASURE gaps become 0); no month view | done |
+| 27 | [S17](slices/S17.md) | Flat CSV export as a pure function (with formula-injection guard) | S | 1 | data | TrackerRepository.kt:230-289 (buildCsv) | done |
+| 28 | [S18](slices/S18.md) | Move UI strings to resources and plurals | M | 2 | ui | all UI strings hardcoded in Kotlin; TrackerAnalytics.kt:172-190 English labels | done |
 | P3 Release | | | | | | | |
-| 30 | [S19](slices/S19.md) | Release build: R8, shrinkResources, versioning scheme, dependenciesInfo | S | 1 | release | app/build.gradle:20-21,25-30 | done |
-| 31 | [S20](slices/S20.md) | Docs refresh: PRIVACY, README, DEVELOPERS, Play data-safety draft, docs/ site | M | 2 | docs | PRIVACY.md; DEVELOPERS.md; docs/index.html | done |
-| 32 | [S21](slices/S21.md) | Tagged release workflow publishing signed APK to GitHub releases | S | 2 | release |  | done |
-| 33 | [S22](slices/S22.md) | Device validation gate for 1.0 | M | 2 | release |  | done |
+| 29 | [S19](slices/S19.md) | Release build: R8, shrinkResources, versioning scheme, dependenciesInfo | S | 1 | release | app/build.gradle:20-21,25-30 | done |
+| 30 | [S20](slices/S20.md) | Docs refresh: PRIVACY, README, DEVELOPERS, Play data-safety draft, docs/ site | M | 2 | docs | PRIVACY.md; DEVELOPERS.md; docs/index.html | done |
+| 31 | [S21](slices/S21.md) | Tagged release workflow publishing signed APK to GitHub releases | S | 2 | release |  | done |
+| 32 | [S22](slices/S22.md) | Device validation gate for 1.0 | M | 2 | release |  | done |
+| v1.0.0 | | | | | | | |
+| 33 | [S23](slices/S23.md) | Notification "Mark done" action | S | 1 | reminders | ReminderScheduler.kt:62-86 (notification has a content intent only, no actions) | done |
 | P1 Correctness | | | | | | | |
 | 34 | [S32](slices/S32.md) | Split MainScreen.kt into per-screen files (no behaviour change) | S | 1 | ui | MainScreen.kt (one file of ~800 lines holding every screen and dialog) | done |
 | 35 | [S33](slices/S33.md) | Numeric input and display rules: finite, bounded, locale-aware | S | 1 | data | MainScreen.kt:651,764-765 (toDoubleOrNull accepts NaN and Infinity); BackupCodec.kt:51; MainScreen.kt:793 (formatValue prints 3.0E9) | done |

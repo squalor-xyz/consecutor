@@ -893,7 +893,7 @@
       "id": "S23",
       "title": "Notification \"Mark done\" action",
       "short_title": "Notification \"Mark done\" action",
-      "status": "review",
+      "status": "done",
       "has_slice": true,
       "depends_on": [],
       "note_records": [
