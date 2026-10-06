@@ -20,7 +20,7 @@
 - Advanced analytics suite.
 - Squalor brand marks in the APK (brand marks are all-rights-reserved; the app icon is app-specific and MPL-2.0).
 
-67 items · — 3 · done 52 · later 11 · started 1
+67 items · — 2 · done 52 · later 11 · started 1 · review 1
 
 | # | Slice | Title | Size | Effort | Trees | Findings | Status |
 |---|---|---|---|---|---|---|---|
@@ -40,7 +40,7 @@
 | 12 | S52 | Dashboard performance with years of history |  | 3 | data |  | later |
 | 13 | S59 | Optional scheduled backup to a user-chosen folder |  | 2 | data |  | later |
 | 14 | [S66](slices/S66.md) | API 26 recreation test flake | S | 1 | release | S22 on API 26 (s08_api26): NavigationTest.typedTrackerNameSurvivesRecreation failed 2 of 10 full-suite runs; the Name field was empty after recreate(). Unlike editingTrackerNameSurvivesRecreation, the test does not assert the typed text before recreate(), so a test race is possible; lost user input is not ruled out. Owner: investigate the app first. | — |
-| 15 | [S67](slices/S67.md) | Editor title wraps at large font | S | 1 | release | S22 row 14 on API 36 at font scale 2.0 on 360dp: the editor dialog title is truncated to 'New …' by maxLines = 1 in ui/EditorDialog.kt. Owner chose maxLines = 2. | — |
+| 15 | [S67](slices/S67.md) | Editor title wraps at large font | S | 1 | release | S22 row 14 on API 36 at font scale 2.0 on 360dp: the editor dialog title is truncated to 'New …' by maxLines = 1 in ui/EditorDialog.kt. Owner chose maxLines = 2. | review |
 
 ---
 
