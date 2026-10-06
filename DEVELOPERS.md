@@ -156,15 +156,95 @@ Manual install to a connected device:
 
 Before merging or shipping a release:
 
-1. Create each tracker type: `YES_NO`, `COUNT`, `MEASURE`.
-2. Add entries for today and past dates.
-3. Edit and delete entries and confirm summaries update.
-4. Archive a tracker and confirm it no longer behaves like an active tracker.
-5. Export CSV and inspect the output for correctness.
-6. Export a backup, clear app data or reinstall, then import the backup.
-7. Enable reminders and verify notification behavior.
-8. On Android 13+, confirm notification permission flow.
-9. Verify backup import failure handling with an invalid file.
+Run `./gradlew testDebugUnitTest lintDebug connectedDebugAndroidTest` on an
+emulator and record the results. Build the minified release APK with
+`./gradlew assembleRelease`, then sign a local walkthrough copy with a throwaway
+keystore; keep that keystore and its passwords out of version control.
+
+For the 1.0 device validation gate (S22), walk through the signed release APK on
+API 26, API 30, API 33, the target API level (currently 36), and one physical
+Android device. Use a tablet emulator and a landscape phone for the layout row.
+Record the build revision, APK checksum, device/API, and evidence with each run.
+Record one results table with a column for each target using `slicer note S22`.
+Leave unexecuted checks explicitly pending; a debug test result alone does not
+establish that the release walkthrough passed. Mark platform-specific checks
+not applicable with a reason where appropriate.
+
+1. Create a tracker of each type (`YES_NO`, `COUNT`, `MEASURE`); edit one and
+   confirm its type is locked once it has entries.
+2. Toggle a `YES_NO` check and Undo it; rapid taps never create two entries for
+   one day.
+3. Use `COUNT` +1, long-press for a custom amount, and Undo; use `MEASURE` Log.
+4. Confirm dashboard order does not change when logging, and a tracker with no
+   target has no completion bar.
+5. On an emulator, set the clock to 23:59 with the app open and check that
+   done-today resets at midnight; repeat with the app backgrounded across midnight.
+6. Check the date picker disallows future dates and offers Today and Yesterday;
+   check the time picker and inline validation errors. In a comma locale,
+   confirm a decimal comma is accepted.
+7. Check detail charts and the calendar heatmap, including tap-to-log a past day.
+   Edit and delete entries and confirm summaries update.
+8. Archive, restore, and permanently delete a tracker. After deletion its reminder
+   is gone and an exported backup no longer contains it.
+9. Save a backup and CSV to files. Open the CSV in a spreadsheet and confirm no
+   formulas run; check sharing still works and no stale files remain in
+   `cache/exports` after an app restart.
+10. Import a backup: preview counts are correct, Cancel changes nothing, and
+    Replace imports the data and leaves a `pre-import` safety copy (keeps three).
+    An invalid file shows an error.
+11. Check reminder delivery, tapping opens the intended tracker, and reminders
+    are skipped when already done. Check delivery after reboot, rescheduling on
+    a timezone change, and that old reminders do not fire after an import.
+    Delivery must never be early and must occur within one hour while the device
+    is awake, outside Doze, and Battery Saver is off. Measure power-saving delays
+    separately. Record scheduled and actual delivery times; reminders use inexact
+    alarms (see Reminders below).
+12. On API 33+, allow, deny, and deny twice then follow Open settings for
+    notification permission. On API 30, turn notifications off in system
+    settings and confirm the app shows Off.
+13. Check Back from Detail, Settings, and Archived. Rotate in both editor dialogs
+    and confirm typed input survives.
+14. Use TalkBack through create, log, detail, calendar, and settings. Check 200%
+    font scale on a 360dp screen, and light and dark mode with no white flash at
+    cold start.
+15. Inspect the release APK permissions as described in Release permission check
+    below: `POST_NOTIFICATIONS` and `RECEIVE_BOOT_COMPLETED`, plus the AndroidX
+    app-signature permission; confirm `PRIVACY.md` matches the app's behavior.
+16. Delete an entry with a note and export a backup; the note is absent. Kill the
+    background app process on Detail and confirm the detail screen is restored
+    when returning to the app.
+17. In Settings, About, confirm the version matches `versionName`, Source code
+    opens the repository, and licences open and scroll.
+18. On a tablet emulator and landscape phone, confirm content is centred and at
+    most 640dp wide.
+19. Confirm the latest CI run on `main` is green for both `build` and `instrumented`.
+
+Every applicable row must pass on every required target before S22 is ready for
+review. File each observed failure with `slicer add` and make S22 depend on that
+slice; fixes and release tagging are separate work. Confirm no open P0, P1, or
+P2 items remain, nor open S19, S46, S47, S48, S50, or S51. S20, S21, and S49 may
+remain open for docs, release workflow, and store listing work.
+
+For 1.0 the owner narrowed this gate. Rows the instrumented suite covers on all
+four APIs (2, 3, 8, 13, 16) counted through the suite. Rows that do not depend on
+the API level were walked once on API 36. Rows 9 to 11 were walked on API 26 and
+36, and row 12 on API 33 and 30. TalkBack was covered by `DashboardSemanticsTest`,
+the tablet result carried over from an earlier build, and the physical device was
+waived. The S22 slice notes record the decisions and results.
+
+### Physical device check (owner)
+
+Emulators cannot show real hardware behaviour. Before 1.0, the owner runs this short check on any Android phone (their own or borrowed; Android 8.0 or newer). It takes about 10 minutes plus one overnight observation. Use the signed release APK (`consecutor-<versionName>.apk`) rather than a debug build, and note the phone model, Android version, and the APK's SHA-256.
+
+1. Install the APK with `adb install -r <apk>` or by opening it on the phone. Open the app, create one tracker of each type, and log each once.
+2. Reminders: create a tracker with a reminder a few minutes ahead and allow notifications. Confirm it arrives, never early, and tapping it opens that tracker. Create a second reminder for the next morning and note when it actually arrives with the screen off overnight (record the scheduled and actual times).
+3. Save a backup and a CSV through the system file picker, then share one. Open the CSV in a real spreadsheet app and confirm no formulas run.
+4. Import the saved backup. Confirm the preview counts are right and that Replace restores the data.
+5. Turn on TalkBack and use it to create a tracker, log it, open its detail, and open Settings. Set the system font size to the largest value and check that nothing is cut off.
+6. Rotate the phone in both editor dialogs and confirm typed input survives.
+7. Record each step as pass or fail with `slicer note S22`. File any failure with `slicer add` and make S22 depend on it.
+
+If no physical device will be used for 1.0, the owner records that as an explicit waiver in `slicer note S22`, with the reason and the checks above that remain unverified. A waiver is the owner's decision; it does not turn a pending result into a pass.
 
 ## Release Artifacts
 
