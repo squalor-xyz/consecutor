@@ -20,7 +20,7 @@
 - Advanced analytics suite.
 - Squalor brand marks in the APK (brand marks are all-rights-reserved; the app icon is app-specific and MPL-2.0).
 
-67 items · — 2 · done 53 · later 11 · started 1
+67 items · — 1 · done 53 · later 11 · started 1 · review 1
 
 | # | Slice | Title | Size | Effort | Trees | Findings | Status |
 |---|---|---|---|---|---|---|---|
@@ -39,7 +39,7 @@
 | 11 | S31 | iOS client on the shared core |  | 3 | build |  | later |
 | 12 | S52 | Dashboard performance with years of history |  | 3 | data |  | later |
 | 13 | S59 | Optional scheduled backup to a user-chosen folder |  | 2 | data |  | later |
-| 14 | [S67](slices/S67.md) | Editor title wraps at large font | S | 1 | release | S22 row 14 on API 36 at font scale 2.0 on 360dp: the editor dialog title is truncated to 'New …' by maxLines = 1 in ui/EditorDialog.kt. Owner chose maxLines = 2. | — |
+| 14 | [S67](slices/S67.md) | Editor title wraps at large font | S | 1 | release | S22 row 14 on API 36 at font scale 2.0 on 360dp: the editor dialog title is truncated to 'New …' by maxLines = 1 in ui/EditorDialog.kt. Owner chose maxLines = 2. | review |
 
 ---
 

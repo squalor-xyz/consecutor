@@ -68,7 +68,7 @@ internal fun EditorDialog(
                         modifier = Modifier.weight(1f),
                         style = MaterialTheme.typography.titleMedium,
                         textAlign = TextAlign.Center,
-                        maxLines = 1,
+                        maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )
                     Button(

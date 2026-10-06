@@ -477,6 +477,9 @@
 {"when": "2026-10-05T20:10:58Z", "item": "S67", "action": "edit", "from": "", "to": "", "note": "Check"}
 {"when": "2026-10-05T20:10:59Z", "item": "S67", "action": "edit", "from": "", "to": "", "note": "Git"}
 {"when": "2026-10-05T20:11:05Z", "item": "S22", "action": "edit", "from": "", "to": "", "note": "Check"}
+{"when": "2026-10-05T20:24:15Z", "item": "S67", "action": "status", "from": "open", "to": "started", "note": "", "by": "Jon R"}
+{"when": "2026-10-05T20:41:27Z", "item": "S67", "action": "note", "from": "", "to": "", "note": "Changed the EditorDialog title to maxLines = 2; the ellipsis"}
+{"when": "2026-10-05T20:41:27Z", "item": "S67", "action": "handoff", "from": "started", "to": "review", "note": "claim Jon R cleared", "by": "Jon R"}
 {"when": "2026-10-05T20:11:57Z", "item": "S66", "action": "status", "from": "open", "to": "started", "note": "", "by": "Jon R"}
 {"when": "2026-10-05T20:41:27Z", "item": "S66", "action": "note", "from": "", "to": "", "note": "Investigated the app first, as the owner asked. On API 26 (s"}
 {"when": "2026-10-05T20:41:27Z", "item": "S66", "action": "handoff", "from": "started", "to": "review", "note": "claim Jon R cleared", "by": "Jon R"}
