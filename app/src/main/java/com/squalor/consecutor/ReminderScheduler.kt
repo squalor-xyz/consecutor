@@ -9,6 +9,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import androidx.annotation.StringRes
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -59,7 +60,13 @@ class ReminderScheduler(private val context: Context) {
         manager.createNotificationChannel(channel)
     }
 
-    fun showNotification(context: Context, trackerId: Long, trackerName: String, trackerEmoji: String?) {
+    fun showNotification(
+        context: Context,
+        trackerId: Long,
+        trackerName: String,
+        trackerEmoji: String?,
+        trackerType: TrackerType
+    ) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             ContextCompat.checkSelfPermission(context, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
         ) {
@@ -74,15 +81,23 @@ class ReminderScheduler(private val context: Context) {
             intent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
-        val notification = NotificationCompat.Builder(context, CHANNEL_ID)
+        val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(if (title.isBlank()) context.getString(R.string.notification_title_fallback) else title)
             .setContentText(context.getString(R.string.notification_text))
             .setContentIntent(contentIntent)
             .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .build()
-        NotificationManagerCompat.from(context).notify(trackerId.toInt(), notification)
+        reminderAction(trackerType)?.let { action ->
+            val actionIntent = PendingIntent.getBroadcast(
+                context,
+                trackerId.toInt(),
+                Intent(context, ReminderActionReceiver::class.java).putExtra(EXTRA_TRACKER_ID, trackerId),
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            )
+            builder.addAction(0, context.getString(action.labelRes), actionIntent)
+        }
+        NotificationManagerCompat.from(context).notify(trackerId.toInt(), builder.build())
     }
 
     private fun nextTrigger(reminder: ReminderEntity): Long =
@@ -124,6 +139,18 @@ internal fun nextReminderTrigger(reminder: ReminderEntity, now: ZonedDateTime): 
     }
 }
 
+internal enum class ReminderAction(@StringRes val labelRes: Int) {
+    MARK_DONE(R.string.notification_action_mark_done),
+    ADD_ONE(R.string.notification_action_add_one)
+}
+
+/** The one-tap notification action for [type]; measurements need a typed value, so they have none. */
+internal fun reminderAction(type: TrackerType): ReminderAction? = when (type) {
+    TrackerType.YES_NO -> ReminderAction.MARK_DONE
+    TrackerType.COUNT -> ReminderAction.ADD_ONE
+    TrackerType.MEASURE -> null
+}
+
 class ReminderReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val pendingResult = goAsync()
@@ -147,11 +174,36 @@ class ReminderReceiver : BroadcastReceiver() {
                         context = context,
                         trackerId = trackerId,
                         trackerName = bundle.tracker.name,
-                        trackerEmoji = bundle.tracker.emoji
+                        trackerEmoji = bundle.tracker.emoji,
+                        trackerType = bundle.tracker.type
                     )
                 }
                 scheduler.scheduleTracker(bundle)
             } finally {
+                pendingResult.finish()
+            }
+        }
+    }
+}
+
+/** Logs today from a reminder's action button, then dismisses the reminder. */
+class ReminderActionReceiver : BroadcastReceiver() {
+    override fun onReceive(context: Context, intent: Intent) {
+        val pendingResult = goAsync()
+        val app = context.applicationContext as? ConsecutorApp
+        if (app == null) {
+            pendingResult.finish()
+            return
+        }
+        val trackerId = intent.getLongExtra(ReminderScheduler.EXTRA_TRACKER_ID, 0L)
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val tracker = app.repository.getTrackerBundle(trackerId)?.tracker
+                if (tracker != null && !tracker.isArchived && reminderAction(tracker.type) != null) {
+                    app.repository.addEntry(trackerId, tracker.type, EntryDraft(LocalDate.now(), 1.0, null))
+                }
+            } finally {
+                NotificationManagerCompat.from(context).cancel(trackerId.toInt())
                 pendingResult.finish()
             }
         }

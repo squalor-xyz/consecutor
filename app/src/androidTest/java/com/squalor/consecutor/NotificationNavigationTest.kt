@@ -124,8 +124,8 @@ class NotificationNavigationTest {
         scheduler.ensureNotificationChannel()
         val manager = app.getSystemService(NotificationManager::class.java)
         try {
-            scheduler.showNotification(app, firstId, "First notification tracker", null)
-            scheduler.showNotification(app, secondId, "Second notification tracker", null)
+            scheduler.showNotification(app, firstId, "First notification tracker", null, TrackerType.COUNT)
+            scheduler.showNotification(app, secondId, "Second notification tracker", null, TrackerType.COUNT)
             lateinit var firstIntent: PendingIntent
             lateinit var secondIntent: PendingIntent
             composeRule.waitUntil(5_000) {
@@ -156,9 +156,75 @@ class NotificationNavigationTest {
         }
     }
 
-    private suspend fun createTracker(name: String): Long = app.repository.createTracker(
+    @Test
+    fun countActionAddsOneEntryAndDismissesNotification() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val automation = InstrumentationRegistry.getInstrumentation().uiAutomation
+            ParcelFileDescriptor.AutoCloseInputStream(
+                automation.executeShellCommand("pm grant ${app.packageName} ${Manifest.permission.POST_NOTIFICATIONS}")
+            ).use { it.readBytes() }
+        }
+        val scheduler = ReminderScheduler(app)
+        scheduler.ensureNotificationChannel()
+        val manager = app.getSystemService(NotificationManager::class.java)
+        try {
+            scheduler.showNotification(app, firstId, "First notification tracker", null, TrackerType.COUNT)
+            lateinit var action: android.app.Notification.Action
+            composeRule.waitUntil(5_000) {
+                val found = manager.activeNotifications.firstOrNull { it.id == firstId.toInt() }
+                    ?.notification?.actions?.singleOrNull()
+                if (found != null) action = found
+                found != null
+            }
+            assertEquals("+1", action.title.toString())
+            action.actionIntent.send()
+            composeRule.waitUntil(5_000) {
+                val entries = runBlocking(Dispatchers.IO) { app.repository.countActiveEntries(firstId) }
+                entries == 1 && manager.activeNotifications.none { it.id == firstId.toInt() }
+            }
+        } finally {
+            manager.cancel(firstId.toInt())
+        }
+    }
+
+    @Test
+    fun markDoneTwiceLogsYesNoOnce() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val automation = InstrumentationRegistry.getInstrumentation().uiAutomation
+            ParcelFileDescriptor.AutoCloseInputStream(
+                automation.executeShellCommand("pm grant ${app.packageName} ${Manifest.permission.POST_NOTIFICATIONS}")
+            ).use { it.readBytes() }
+        }
+        val yesNoId = runBlocking(Dispatchers.IO) { createTracker("Yes/no notification tracker", TrackerType.YES_NO) }
+        val scheduler = ReminderScheduler(app)
+        scheduler.ensureNotificationChannel()
+        val manager = app.getSystemService(NotificationManager::class.java)
+        try {
+            scheduler.showNotification(app, yesNoId, "Yes/no notification tracker", null, TrackerType.YES_NO)
+            lateinit var action: android.app.Notification.Action
+            composeRule.waitUntil(5_000) {
+                val found = manager.activeNotifications.firstOrNull { it.id == yesNoId.toInt() }
+                    ?.notification?.actions?.singleOrNull()
+                if (found != null) action = found
+                found != null
+            }
+            assertEquals("Mark done", action.title.toString())
+            action.actionIntent.send()
+            composeRule.waitUntil(5_000) {
+                runBlocking(Dispatchers.IO) { app.repository.countActiveEntries(yesNoId) } == 1
+            }
+            action.actionIntent.send()
+            InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+            Thread.sleep(1_000)
+            assertEquals(1, runBlocking(Dispatchers.IO) { app.repository.countActiveEntries(yesNoId) })
+        } finally {
+            manager.cancel(yesNoId.toInt())
+        }
+    }
+
+    private suspend fun createTracker(name: String, type: TrackerType = TrackerType.COUNT): Long = app.repository.createTracker(
         TrackerDraft(
-            name = name, emoji = null, description = null, type = TrackerType.COUNT,
+            name = name, emoji = null, description = null, type = type,
             unit = null, colorHex = "#1F6FEB", targetPeriod = null, targetValue = null,
             reminderEnabled = false, reminderHour = 20, reminderMinute = 0, reminderDays = emptySet()
         )
