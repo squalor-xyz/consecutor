@@ -893,26 +893,26 @@
       "id": "S23",
       "title": "Notification \"Mark done\" action",
       "short_title": "Notification \"Mark done\" action",
-      "status": "later",
-      "has_slice": false,
+      "status": "open",
+      "has_slice": true,
       "depends_on": [],
       "note_records": [],
       "claim": null,
       "fields": {
-        "size": "",
+        "size": "S",
         "flags": [],
         "trees": [
           "reminders"
         ],
         "trees_literal": false,
-        "findings": "",
+        "findings": "ReminderScheduler.kt:62-86 (notification has a content intent only, no actions)",
         "discovered_from": "",
         "key": "",
         "pass": "",
-        "group": "Later",
+        "group": "v1.0.0",
         "reason": "",
         "importance": 2,
-        "urgency": 1,
+        "urgency": 3,
         "effort": 1,
         "attempts": 0
       }

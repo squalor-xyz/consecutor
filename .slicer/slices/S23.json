@@ -1,0 +1,41 @@
+{
+  "id": "S23",
+  "title": "Notification \"Mark done\" action",
+  "lead": [
+    "Pulled into 1.0 by the owner. Yes/no reminders get a \"Mark done\" action and count reminders get a \"+1\" action. Measurement reminders keep tap-to-open only, because a value has to be typed."
+  ],
+  "depends_note": null,
+  "findings_note": "ReminderScheduler.kt:62-86 (notification has a content intent only, no actions)",
+  "size": "S",
+  "flags": [],
+  "trees_note": "reminders",
+  "trees_plural": false,
+  "boundary": "**Not in this slice:**",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "A reminder can only open the app. Logging a yes/no or a single count from the notification saves a launch for the most common reminder response."
+    },
+    {
+      "heading": "Files",
+      "body": "- `app/src/main/java/com/squalor/consecutor/ReminderScheduler.kt`\n- `app/src/main/AndroidManifest.xml`\n- `app/src/main/res/values/strings.xml`\n- `app/src/test/java/com/squalor/consecutor/ReminderSchedulerTest.kt` or a new `ReminderActionTest.kt`\n- `CHANGELOG.md`, `fastlane/metadata/android/en-US/changelogs/10000.txt` if it lists features"
+    },
+    {
+      "heading": "Failing tests",
+      "body": "JVM, for a pure `reminderAction(type: TrackerType): ReminderAction?`:\n- `yes_no gets mark done`\n- `count gets plus one`\n- `measure gets no action`"
+    },
+    {
+      "heading": "Implement",
+      "body": "1. Add a pure `reminderAction(type)` returning `MARK_DONE` for `YES_NO`, `ADD_ONE` for `COUNT` and `null` for `MEASURE`.\n2. Pass the tracker type to `showNotification`. When the action is not null, add one `NotificationCompat.Action` whose `PendingIntent.getBroadcast` targets a new `ReminderActionReceiver`, with `EXTRA_TRACKER_ID`, request code `trackerId.toInt()`, and `FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT`. Labels come from new string resources (\"Mark done\", \"+1\" with a content description such as \"Add 1\").\n3. Register `ReminderActionReceiver` in the manifest with `android:exported=\"false\"`.\n4. In the receiver, use `goAsync()` and `Dispatchers.IO` with `try/finally` around `pendingResult.finish()`, as `ReminderReceiver` does. Load the bundle by id. If it is missing, archived, or `MEASURE`, cancel the notification and stop. Otherwise call `repository.addEntry(id, type, EntryDraft(LocalDate.now(), 1.0, null))`; `YES_NO` is already idempotent per date. Then cancel the notification with `NotificationManagerCompat.cancel(trackerId.toInt())`.\n5. Do not open the activity. The dashboard updates through its existing Room flow when the app is open.\n6. Add the action to the 1.0.0 entry in `CHANGELOG.md`."
+    },
+    {
+      "heading": "Check",
+      "body": "- `./gradlew testDebugUnitTest` and `./gradlew lintDebug` pass.\n- Manual, on the emulator: a yes/no reminder 2 minutes out shows \"Mark done\". Tapping it logs today, dismisses the notification and the app does not open. The dashboard shows the tracker done.\n- A count reminder shows \"+1\". Tapping it adds one entry of 1. A measurement reminder shows no action. Tapping the notification body still opens the tracker (S37).\n- Tapping \"Mark done\" for a tracker already logged today adds no second entry.\n- Re-walk the S22 reminder and notification gate rows in `DEVELOPERS.md` on the release APK."
+    },
+    {
+      "heading": "Git",
+      "body": "Work in `.worktrees/S23` on `slice/S23`. Commit as `S23: <summary>` when asked."
+    }
+  ],
+  "notes": []
+}
