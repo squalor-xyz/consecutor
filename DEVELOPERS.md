@@ -414,28 +414,35 @@ Official F-Droid references:
 - https://fdroid.gitlab.io/jekyll-fdroid/docs/Submitting_to_F-Droid_Quick_Start_Guide/
 - https://fdroid.gitlab.io/jekyll-fdroid/docs/Build_Metadata_Reference/
 
-### Typical F-Droid Submission Path
+### Reproducible builds with the release signature
 
-1. Make sure the app builds cleanly from source.
-2. Ensure all dependencies and build steps are compatible with F-Droid policies.
-3. Add app metadata in the source repository or via F-Droid metadata files.
-4. Submit the app to the F-Droid data repository following their quick-start guide.
-5. Respond to review comments or build issues.
+The owner decided (S69) that F-Droid ships the APK signed with the release key, the same signature as the GitHub releases and Google Play. F-Droid builds the app from the release tag without signing it. Its `Binaries` URL points at the GitHub release APK; F-Droid copies that APK's signature onto its own build and publishes the result only if the signature verifies. `AllowedAPKSigningKeys` pins the release certificate SHA-256 (`ffaaa1ce30a4467892245bbfa0c89375e2927bac322f872177b8407f28ceec49`).
 
-### F-Droid-Specific Practical Notes
+`v1.0.0` passed this check locally. The unsigned build from a fresh clone, on macOS with Homebrew OpenJDK 17, matched the GitHub APK, which CI builds on Ubuntu with Temurin 17. A forced rebuild (`--no-build-cache --rerun-tasks`) was byte-identical.
 
-- Avoid proprietary SDK dependencies.
-- Avoid closed-source analytics or crash-reporting libraries.
-- Ensure release builds do not depend on secrets that F-Droid cannot access.
-- Make sure versioning and tags are clean so F-Droid can track releases.
+To check a release before submitting it (needs `apksigcopier` and `apksigner` on `PATH`):
 
-### What You Will Likely Need
+1. Download `consecutor-<versionName>.apk` and its `.sha256` from the GitHub release, then run `shasum -a 256 -c consecutor-<versionName>.apk.sha256`.
+2. Clone the tag into a new directory. Do not provide `keystore.properties` or any `CONSECUTOR_*` variable. Run `./gradlew clean assembleRelease` with JDK 17.
+3. Run `apksigcopier compare consecutor-<versionName>.apk --unsigned app/build/outputs/apk/release/app-release-unsigned.apk`. Exit status 0 means the build is reproducible. If it fails, compare the two APKs with `diffoscope` to find the difference.
 
-- stable application ID
-- signed tags or at least clean version tags
-- app description and screenshots (already in `fastlane/metadata/android/en-US/`)
-- license clarity
-- reproducible release process
+To keep releases reproducible:
+
+- Build the release in CI with JDK 17, and do not change the signing key.
+- Name tags `v<versionName>` and keep the release APK name `consecutor-<versionName>.apk`. The `Binaries` pattern depends on both.
+- Keep `versionCode` and `versionName` as literals in `app/build.gradle`. F-Droid's update check reads them at each tag.
+- Release builds must not depend on secrets, network services, timestamps, or the build path.
+
+### Submission
+
+The metadata is in fdroiddata, in `metadata/com.squalor.consecutor.yml`. It uses `UpdateCheckMode: Tags ^v[0-9.]+$`, which skips prerelease tags like `v1.0.0-rc1`, and `AutoUpdateMode: Version`, so F-Droid picks up new release tags automatically. Check the metadata with `fdroid lint` and `fdroid rewritemeta` from fdroidserver.
+
+The owner submits it:
+
+1. Fork fdroiddata on GitLab, add the metadata file, and open a merge request.
+2. Answer review comments and fix any failures in the merge request's build pipeline.
+
+The F-Droid listing text and images come from `fastlane/metadata/android/en-US/`.
 
 ## Sideloading And Direct Distribution
 
