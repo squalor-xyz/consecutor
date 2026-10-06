@@ -16,6 +16,7 @@ Initial release. Set the release date when the `v1.0.0` tag is created.
 - Add, edit, and delete entries, with optional notes.
 - Archive, restore, and permanently delete trackers.
 - Local reminders with a time and selected days of the week.
+- Mark a yes/no tracker done, or add 1 to a count, from its reminder notification.
 - Save or share a CSV export, and save or share a full JSON backup.
 - Backup import with a preview and a safety copy of your previous data in the app's private storage.
 - Light and dark themes, accessibility and large-text layouts, and a Settings screen with version, licence, source link, and open-source notices.

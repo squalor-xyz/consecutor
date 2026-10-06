@@ -9,7 +9,7 @@ Set daily or weekly targets for habits and counts. Log from the dashboard and se
 
 Explore recent trends in charts and a calendar. Add, edit or delete entries in your history, attach notes and archive trackers you no longer need.
 
-Set local reminders with a time and selected days of the week. Reminders work on your device and require notification permission.
+Set local reminders with a time and selected days of the week. Mark a yes/no done or add 1 to a count straight from the reminder. Reminders work on your device and require notification permission.
 
 Save or share a spreadsheet-friendly CSV export, or export a full JSON backup. Preview a backup before importing it; importing replaces your current data. Exports are unencrypted, so keep them somewhere private.
 

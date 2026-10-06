@@ -1,6 +1,7 @@
 package com.squalor.consecutor
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.time.Instant
@@ -95,5 +96,20 @@ class ReminderSchedulerTest {
         val trigger = nextReminderTrigger(reminder(9, 0), ZonedDateTime.of(2026, 4, 21, 8, 0, 0, 0, tokyo))
 
         assertEquals(millis(ZonedDateTime.of(2026, 4, 21, 9, 0, 0, 0, tokyo)), trigger)
+    }
+
+    @Test
+    fun `yes_no gets mark done`() {
+        assertEquals(ReminderAction.MARK_DONE, reminderAction(TrackerType.YES_NO))
+    }
+
+    @Test
+    fun `count gets plus one`() {
+        assertEquals(ReminderAction.ADD_ONE, reminderAction(TrackerType.COUNT))
+    }
+
+    @Test
+    fun `measure gets no action`() {
+        assertNull(reminderAction(TrackerType.MEASURE))
     }
 }
