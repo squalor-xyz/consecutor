@@ -2323,7 +2323,7 @@
       "id": "S66",
       "title": "Investigate intermittent API 26 typedTrackerNameSurvivesRecreation failure",
       "short_title": "API 26 recreation test flake",
-      "status": "review",
+      "status": "done",
       "has_slice": true,
       "depends_on": [],
       "note_records": [
