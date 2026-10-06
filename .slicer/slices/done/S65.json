@@ -1,0 +1,41 @@
+{
+  "id": "S65",
+  "title": "Investigate API 33 release walkthrough ANR",
+  "lead": [
+    "Investigate the observed API 33 release ANR and establish whether it is an app failure or a test-environment failure. Do not infer a root cause from one run."
+  ],
+  "depends_note": null,
+  "findings_note": "S22 API 33 signed release showed Consecutor is not responding during notification permission walkthrough; ActivityManager recorded input dispatch timeout at 2026-10-05 07:37:34. Root cause unverified; four emulators and concurrent uiautomator commands were active.",
+  "size": "S",
+  "flags": [],
+  "trees_note": "release",
+  "trees_plural": false,
+  "boundary": "**Not in this slice:** speculative fixes, release tagging, or assuming the ANR is an app defect without reproduction and runtime evidence.",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "S22 displayed “Consecutor isn’t responding” during notification permission testing. ActivityManager reported an input dispatch timeout for MainActivity at 2026-10-05 07:37:34 with PID 9948. Four emulators and concurrent uiautomator commands were active. The cause is unverified."
+    },
+    {
+      "heading": "Files",
+      "body": "S22 build/s22-validation/emulator-5560/permission-stopped.png and XML; emulator logcat and a fresh signed-release walkthrough. Application source only if the investigation identifies a defect."
+    },
+    {
+      "heading": "Failing tests",
+      "body": "Observed Android ANR dialog and ActivityManager input timeout, not a failing assertion in the 56 passing API 33 instrumentation tests."
+    },
+    {
+      "heading": "Implement",
+      "body": "1. Reproduce the permission walkthrough on API 33 with one emulator and sequential input.\n2. Capture the ANR report and app/runtime evidence if it recurs. Distinguish driver and emulator delays from an application defect.\n3. Fix only an evidenced application defect; otherwise document the environment cause and a reliable release rerun.\n4. Repeat allow, deny twice, settings, and normal dashboard navigation on the signed release."
+    },
+    {
+      "heading": "Check",
+      "body": "The signed API 33 release completes the permission walkthrough without ANR. Record reproducibility, evidence, and cause or remaining uncertainty; passing debug tests alone do not close this observation."
+    },
+    {
+      "heading": "Git",
+      "body": "Commit only when asked; use the project slice worktree workflow."
+    }
+  ],
+  "notes": []
+}

@@ -1,0 +1,41 @@
+{
+  "id": "S22",
+  "title": "Device validation gate for 1.0",
+  "lead": [
+    "This is the go/no-go gate for publishing 1.0. Afterwards, tag `v1.0.0` on `main` when the owner says so."
+  ],
+  "depends_note": null,
+  "findings_note": "",
+  "size": "M",
+  "flags": [],
+  "trees_note": "release",
+  "trees_plural": false,
+  "boundary": "**Not in this slice:** fixing failures (each becomes its own slice) and tagging `v1.0.0`, which happens only on the owner's instruction.",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "The Manual QA Checklist in DEVELOPERS.md has never been executed, and the rebuild has never run on a device."
+    },
+    {
+      "heading": "Files",
+      "body": "- DEVELOPERS.md (checklist updated for new features)"
+    },
+    {
+      "heading": "Failing tests",
+      "body": "- Any failure found becomes a new slice via `slicer add`."
+    },
+    {
+      "heading": "Implement",
+      "body": "1. Build with `./gradlew testDebugUnitTest lintDebug connectedDebugAndroidTest` on a device or emulator and record the results. Also build the minified release APK (S19) and sign a local copy with a throwaway keystore (S47) for the device walkthrough.\n2. Run the walkthrough on these targets: an API 26 emulator (minSdk), API 30, API 33 (notification permission), the target API level (S48), and one physical device.\n3. Walk through every row of this checklist. It extends the Manual QA list in `DEVELOPERS.md`, which you update to match:\n   - Create a tracker of each type; edit one; the type is locked once it has entries.\n   - YES_NO check toggle with Undo; rapid taps never create two entries for one day.\n   - COUNT `+1`, long-press for a custom amount, and Undo; MEASURE \"Log\".\n   - Dashboard order does not change when logging; a tracker with no target shows no completion bar.\n   - Midnight rollover: set the clock to 23:59 with the app open and the done-today state resets; the same after backgrounding across midnight.\n   - Date picker (no future dates, Today and Yesterday chips) and time picker; inline validation errors; a decimal comma is accepted in a comma locale.\n   - Detail charts and the calendar heatmap, including tap-to-log a past day.\n   - Archive, restore, and permanent delete (the reminder is gone after delete; an exported backup no longer contains the tracker).\n   - Save a backup and a CSV to a file; the CSV opens in a spreadsheet with no formulas running; share still works; no stale files in `cache/exports` after a restart.\n   - Import: preview counts are right, Cancel changes nothing, Replace imports and leaves a `pre-import` safety copy (keeps three), an invalid file shows an error.\n   - Reminders: never early and delivered within one hour while awake, outside Doze, and Battery Saver off; power-saving delays measured separately; record scheduled and actual delivery times; tapping opens that tracker; skipped when already done; still delivered after a reboot; moves with a timezone change; the old reminders do not fire after an import.\n   - Notification permission: allow, deny, deny twice then the \"Open settings\" path (API 33+); notifications turned off in system settings on API 30 shows \"Off\".\n   - Back navigation from Detail, Settings and Archived; rotation in both editor dialogs keeps typed input.\n   - TalkBack through create, log, detail, calendar and settings; font scale 200% on a 360dp screen; light and dark mode with no white flash at cold start.\n   - The release APK requests only the system permissions `POST_NOTIFICATIONS` and `RECEIVE_BOOT_COMPLETED`, plus the app-signature permission `DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION` that androidx.core adds (`protectionLevel=\"signature\"`; it protects non-exported dynamic receivers and stays), and `PRIVACY.md` matches.\n   - Delete an entry with a note, export a backup: the note is not in the file (S56). Process death on the detail screen restores it (S10).\n   - Settings, About: the version matches `versionName`, Source code opens the repository, licences open and scroll (S57).\n   - Tablet emulator and landscape phone: content is centred and at most 640dp wide (S58).\n   - The latest CI run on `main` is green for both the `build` and `instrumented` jobs (S55).\n4. Record each result as pass or fail per target with `slicer note S22`, one table in the note. Any failure becomes a new slice with `slicer add`, and S22 gains a dependency on it."
+    },
+    {
+      "heading": "Check",
+      "body": "- Owner-trimmed matrix (2026-10-05): rows covered by the 56 instrumented tests on API 26, 30, 33 and 36 (2, 3, 8 cascade, 13, 16) count via the suite and earlier walkthrough passes; API-independent rows are walked once on API 36; rows 9, 10 and 11 on API 26 and 36; row 12 on API 33 (permission flow) and API 30 (system Off).\n- Owner decisions: the physical device is waived (recorded in a slicer note); TalkBack is covered by DashboardSemanticsTest on the four APIs; the tablet result from build 96428cdf stands, as no layout code has changed since.\n- Every walked row passes on its listed targets on the final signed release, and the instrumented suite passes on all four APIs.\n- `slicer list` shows no open items in the P0, P1 and P2 groups, and none of S19, S46, S47, S48, S50 or S51. (S20, S21 and S49, the docs, release workflow and store listing, may still be open; they do not change the app.)"
+    },
+    {
+      "heading": "Git",
+      "body": "Commit on `main`, message `S22: <summary>`. Tagging `v1.0.0` happens only on the owner's instruction."
+    }
+  ],
+  "notes": []
+}

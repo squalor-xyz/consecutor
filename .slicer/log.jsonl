@@ -400,3 +400,99 @@
 {"when": "2026-10-05T03:10:53Z", "item": "S45", "action": "handoff", "from": "started", "to": "review", "note": "claim Jon R cleared", "by": "Jon R"}
 {"when": "2026-10-05T03:17:06Z", "item": "S45", "action": "status", "from": "review", "to": "done", "note": "Kept merged spoken dashboard labels, independent 48dp log controls, full-row Switch toggles, wrapping action rows, and a gapless 48dp calendar. S60 EditorDialog and the S57 About card stay, with 48dp Save, Cancel, About, and Close actions. NavigationTest now expects settings_privacy_line. testDebugUnitTest 134/0. connectedDebugAndroidTest 56/0 on s48_pixel6_api36 (ranchu, font_scale 1.0) after that fix. The implementer 200% and TalkBack notes were recorded on the pre-S60/S57 tree and were not re-run.", "by": "Jon R"}
 {"when": "2026-10-05T12:56:41Z", "item": "S20", "action": "status", "from": "parked", "to": "started", "note": "", "by": "Jon R"}
+{"when": "2026-10-05T03:19:46Z", "item": "S22", "action": "status", "from": "open", "to": "started", "note": "", "by": "Jon R"}
+{"when": "2026-10-05T03:20:09Z", "item": "S22", "action": "release", "from": "Jon R", "to": "", "note": "", "by": "Jon R"}
+{"when": "2026-10-05T03:20:09Z", "item": "S22", "action": "claim", "from": "", "to": "wt:S22", "note": "", "by": "wt:S22"}
+{"when": "2026-10-05T03:21:08Z", "item": "S22", "action": "note", "from": "", "to": "", "note": "Started from main 816a80f in .worktrees/S22 on slice/S22, cl"}
+{"when": "2026-10-05T09:47:44Z", "item": "S62", "action": "add", "from": "", "to": "open", "note": "Resolve release permission gate for AndroidX signature permission"}
+{"when": "2026-10-05T09:47:44Z", "item": "S63", "action": "add", "from": "", "to": "open", "note": "Verify current main instrumented CI after S45 merge"}
+{"when": "2026-10-05T09:54:57Z", "item": "S62", "action": "promote", "from": "", "to": "", "note": ""}
+{"when": "2026-10-05T09:54:57Z", "item": "S63", "action": "promote", "from": "", "to": "", "note": ""}
+{"when": "2026-10-05T09:55:30Z", "item": "S62", "action": "edit", "from": "", "to": "", "note": "Why"}
+{"when": "2026-10-05T09:55:30Z", "item": "S62", "action": "edit", "from": "", "to": "", "note": "Files"}
+{"when": "2026-10-05T09:55:30Z", "item": "S62", "action": "edit", "from": "", "to": "", "note": "Failing tests"}
+{"when": "2026-10-05T09:55:31Z", "item": "S62", "action": "edit", "from": "", "to": "", "note": "Implement"}
+{"when": "2026-10-05T09:55:31Z", "item": "S62", "action": "edit", "from": "", "to": "", "note": "Check"}
+{"when": "2026-10-05T09:55:31Z", "item": "S62", "action": "edit", "from": "", "to": "", "note": "Git"}
+{"when": "2026-10-05T09:55:32Z", "item": "S63", "action": "edit", "from": "", "to": "", "note": "Why"}
+{"when": "2026-10-05T09:55:32Z", "item": "S63", "action": "edit", "from": "", "to": "", "note": "Files"}
+{"when": "2026-10-05T09:55:32Z", "item": "S63", "action": "edit", "from": "", "to": "", "note": "Failing tests"}
+{"when": "2026-10-05T09:55:33Z", "item": "S63", "action": "edit", "from": "", "to": "", "note": "Implement"}
+{"when": "2026-10-05T09:55:33Z", "item": "S63", "action": "edit", "from": "", "to": "", "note": "Check"}
+{"when": "2026-10-05T09:55:33Z", "item": "S63", "action": "edit", "from": "", "to": "", "note": "Git"}
+{"when": "2026-10-05T09:55:34Z", "item": "S22", "action": "set", "from": "", "to": "", "note": "depends_on S09,S19,S36,S45,S47,S48,S50,S51,S12,S55,S56,S57,S58→S09,S19,S36,S45,S47,S48,S50,S51,S12,S55,S56,S57,S58,S62,S63"}
+{"when": "2026-10-05T10:55:49Z", "item": "S64", "action": "add", "from": "", "to": "open", "note": "Refresh today and midnight timer after device clock changes"}
+{"when": "2026-10-05T10:57:27Z", "item": "S64", "action": "promote", "from": "", "to": "", "note": ""}
+{"when": "2026-10-05T10:57:57Z", "item": "S64", "action": "edit", "from": "", "to": "", "note": "Why"}
+{"when": "2026-10-05T10:57:58Z", "item": "S64", "action": "edit", "from": "", "to": "", "note": "Files"}
+{"when": "2026-10-05T10:57:59Z", "item": "S64", "action": "edit", "from": "", "to": "", "note": "Failing tests"}
+{"when": "2026-10-05T10:58:00Z", "item": "S64", "action": "edit", "from": "", "to": "", "note": "Implement"}
+{"when": "2026-10-05T10:58:02Z", "item": "S64", "action": "edit", "from": "", "to": "", "note": "Check"}
+{"when": "2026-10-05T10:58:03Z", "item": "S64", "action": "edit", "from": "", "to": "", "note": "Git"}
+{"when": "2026-10-05T10:58:04Z", "item": "S22", "action": "set", "from": "", "to": "", "note": "depends_on S09,S19,S36,S45,S47,S48,S50,S51,S12,S55,S56,S57,S58,S62,S63→S09,S19,S36,S45,S47,S48,S50,S51,S12,S55,S56,S57,S58,S62,S63,S64"}
+{"when": "2026-10-05T11:04:20Z", "item": "S62", "action": "set", "from": "", "to": "", "note": "group -→P3 Release"}
+{"when": "2026-10-05T11:04:20Z", "item": "S63", "action": "set", "from": "", "to": "", "note": "group -→P3 Release"}
+{"when": "2026-10-05T11:04:22Z", "item": "S64", "action": "set", "from": "", "to": "", "note": "group -→P2 MVP UX"}
+{"when": "2026-10-05T11:04:22Z", "item": "S64", "action": "note", "from": "", "to": "", "note": "S22 reproduced the same foreground clock-change midnight fai"}
+{"when": "2026-10-05T11:36:09Z", "item": "S22", "action": "edit", "from": "", "to": "", "note": "Implement"}
+{"when": "2026-10-05T11:46:46Z", "item": "S65", "action": "add", "from": "", "to": "open", "note": "Investigate API 33 release walkthrough ANR"}
+{"when": "2026-10-05T11:47:45Z", "item": "S65", "action": "set", "from": "", "to": "", "note": "pass_key P3 Release→-; group -→P3 Release"}
+{"when": "2026-10-05T11:47:46Z", "item": "S22", "action": "set", "from": "", "to": "", "note": "depends_on S09,S19,S36,S45,S47,S48,S50,S51,S12,S55,S56,S57,S58,S62,S63,S64→S09,S19,S36,S45,S47,S48,S50,S51,S12,S55,S56,S57,S58,S62,S63,S64,S65"}
+{"when": "2026-10-05T11:48:15Z", "item": "S65", "action": "promote", "from": "", "to": "", "note": ""}
+{"when": "2026-10-05T11:49:24Z", "item": "S65", "action": "edit", "from": "", "to": "", "note": "boundary"}
+{"when": "2026-10-05T12:12:40Z", "item": "S65", "action": "note", "from": "", "to": "", "note": "Score 3/3/2: an observed release ANR prevents a trustworthy "}
+{"when": "2026-10-05T12:12:59Z", "item": "S62", "action": "note", "from": "", "to": "", "note": "Score 3/3/1: the literal release-permission gate fails on th"}
+{"when": "2026-10-05T12:13:00Z", "item": "S63", "action": "note", "from": "", "to": "", "note": "Score 3/3/2: latest published main instrumented CI is red, s"}
+{"when": "2026-10-05T12:31:37Z", "item": "S65", "action": "note", "from": "", "to": "", "note": "Additional environment observation: the separately launched "}
+{"when": "2026-10-05T12:34:34Z", "item": "S22", "action": "note", "from": "", "to": "", "note": "S22 release gate result: NO-GO. This supersedes the initial "}
+{"when": "2026-10-05T12:40:42Z", "item": "S22", "action": "note", "from": "", "to": "", "note": "S22 release gate result: NO-GO. This supersedes the initial "}
+{"when": "2026-10-05T13:35:59Z", "item": "S65", "action": "status", "from": "open", "to": "started", "note": "", "by": "Jon R"}
+{"when": "2026-10-05T13:36:00Z", "item": "S65", "action": "note", "from": "", "to": "", "note": "Not reproduced; no app change. Run 2026-10-05 ~09:33-09:36 E"}
+{"when": "2026-10-05T13:36:00Z", "item": "S65", "action": "handoff", "from": "started", "to": "review", "note": "ANR not reproduced single-emulator sequential; no code change; claim Jon R cleared", "by": "Jon R"}
+{"when": "2026-10-05T13:16:41Z", "item": "S64", "action": "status", "from": "open", "to": "started", "note": "", "by": "Jon R"}
+{"when": "2026-10-05T13:32:53Z", "item": "S64", "action": "note", "from": "", "to": "", "note": "Fixed; uncommitted in the S64 worktree. TrackerViewModel now"}
+{"when": "2026-10-05T13:32:53Z", "item": "S64", "action": "handoff", "from": "started", "to": "review", "note": "Clock-change refresh; API 34 foreground rollover verified; claim Jon R cleared", "by": "Jon R"}
+{"when": "2026-10-05T13:16:40Z", "item": "S62", "action": "status", "from": "open", "to": "started", "note": "", "by": "Jon R"}
+{"when": "2026-10-05T13:17:07Z", "item": "S22", "action": "edit", "from": "", "to": "", "note": "Implement"}
+{"when": "2026-10-05T13:17:39Z", "item": "S62", "action": "note", "from": "", "to": "", "note": "Resolved by relaxing the gate (owner decision). Merged relea"}
+{"when": "2026-10-05T13:17:40Z", "item": "S62", "action": "handoff", "from": "started", "to": "review", "note": "Gate relaxed; manifest unchanged; aapt re-verified; claim Jon R cleared", "by": "Jon R"}
+{"when": "2026-10-05T16:02:01Z", "item": "S63", "action": "status", "from": "open", "to": "started", "note": "", "by": "Jon R"}
+{"when": "2026-10-05T16:14:02Z", "item": "S63", "action": "note", "from": "", "to": "", "note": "Resolved; no code or workflow change. Published main 939d9b5"}
+{"when": "2026-10-05T16:14:03Z", "item": "S63", "action": "handoff", "from": "started", "to": "review", "note": "Published main 939d9b5: build and instrumented green; claim Jon R cleared", "by": "Jon R"}
+{"when": "2026-10-05T16:28:28Z", "item": "S63", "action": "status", "from": "review", "to": "done", "note": "", "by": "Jon R"}
+{"when": "2026-10-05T16:33:03Z", "item": "S62", "action": "status", "from": "review", "to": "done", "note": "", "by": "Jon R"}
+{"when": "2026-10-05T16:38:17Z", "item": "S64", "action": "status", "from": "review", "to": "done", "note": "", "by": "Jon R"}
+{"when": "2026-10-05T16:43:27Z", "item": "S65", "action": "status", "from": "review", "to": "done", "note": "", "by": "Jon R"}
+{"when": "2026-10-05T17:10:48Z", "item": "S22", "action": "note", "from": "", "to": "", "note": "**2026-10-05 (re-run after S62-S65)** — S22 release gate: ST"}
+{"when": "2026-10-05T17:17:42Z", "item": "S22", "action": "note", "from": "", "to": "", "note": "**2026-10-05 (follow-up, same build)** — S22 still NO-GO. Mo"}
+{"when": "2026-10-05T20:10:36Z", "item": "S66", "action": "add", "from": "", "to": "open", "note": "Investigate intermittent API 26 typedTrackerNameSurvivesRecreation failure"}
+{"when": "2026-10-05T20:10:36Z", "item": "S67", "action": "add", "from": "", "to": "open", "note": "Editor dialog title wraps to two lines at large font"}
+{"when": "2026-10-05T20:10:42Z", "item": "S22", "action": "set", "from": "", "to": "", "note": "depends_on S09,S19,S36,S45,S47,S48,S50,S51,S12,S55,S56,S57,S58,S62,S63,S64,S65→S09,S19,S36,S45,S47,S48,S50,S51,S12,S55,S56,S57,S58,S62,S63,S64,S65,S66,S67"}
+{"when": "2026-10-05T20:10:57Z", "item": "S66", "action": "promote", "from": "", "to": "", "note": ""}
+{"when": "2026-10-05T20:10:57Z", "item": "S66", "action": "edit", "from": "", "to": "", "note": "Why"}
+{"when": "2026-10-05T20:10:57Z", "item": "S66", "action": "edit", "from": "", "to": "", "note": "Files"}
+{"when": "2026-10-05T20:10:58Z", "item": "S66", "action": "edit", "from": "", "to": "", "note": "Failing tests"}
+{"when": "2026-10-05T20:10:58Z", "item": "S66", "action": "edit", "from": "", "to": "", "note": "Implement"}
+{"when": "2026-10-05T20:10:58Z", "item": "S66", "action": "edit", "from": "", "to": "", "note": "Check"}
+{"when": "2026-10-05T20:10:58Z", "item": "S66", "action": "edit", "from": "", "to": "", "note": "Git"}
+{"when": "2026-10-05T20:10:58Z", "item": "S67", "action": "promote", "from": "", "to": "", "note": ""}
+{"when": "2026-10-05T20:10:58Z", "item": "S67", "action": "edit", "from": "", "to": "", "note": "Why"}
+{"when": "2026-10-05T20:10:58Z", "item": "S67", "action": "edit", "from": "", "to": "", "note": "Files"}
+{"when": "2026-10-05T20:10:58Z", "item": "S67", "action": "edit", "from": "", "to": "", "note": "Failing tests"}
+{"when": "2026-10-05T20:10:58Z", "item": "S67", "action": "edit", "from": "", "to": "", "note": "Implement"}
+{"when": "2026-10-05T20:10:58Z", "item": "S67", "action": "edit", "from": "", "to": "", "note": "Check"}
+{"when": "2026-10-05T20:10:59Z", "item": "S67", "action": "edit", "from": "", "to": "", "note": "Git"}
+{"when": "2026-10-05T20:11:05Z", "item": "S22", "action": "edit", "from": "", "to": "", "note": "Check"}
+{"when": "2026-10-05T20:11:50Z", "item": "S22", "action": "note", "from": "", "to": "", "note": "**2026-10-05 (trimmed-matrix run)**: S22 is still NO-GO and "}
+{"when": "2026-10-05T20:24:15Z", "item": "S67", "action": "status", "from": "open", "to": "started", "note": "", "by": "Jon R"}
+{"when": "2026-10-05T20:41:27Z", "item": "S67", "action": "note", "from": "", "to": "", "note": "Changed the EditorDialog title to maxLines = 2; the ellipsis"}
+{"when": "2026-10-05T20:41:27Z", "item": "S67", "action": "handoff", "from": "started", "to": "review", "note": "claim Jon R cleared", "by": "Jon R"}
+{"when": "2026-10-05T20:11:57Z", "item": "S66", "action": "status", "from": "open", "to": "started", "note": "", "by": "Jon R"}
+{"when": "2026-10-05T20:41:27Z", "item": "S66", "action": "note", "from": "", "to": "", "note": "Investigated the app first, as the owner asked. On API 26 (s"}
+{"when": "2026-10-05T20:41:27Z", "item": "S66", "action": "handoff", "from": "started", "to": "review", "note": "claim Jon R cleared", "by": "Jon R"}
+{"when": "2026-10-06T12:04:39Z", "item": "S66", "action": "status", "from": "review", "to": "done", "note": "", "by": "Jon R"}
+{"when": "2026-10-06T12:05:12Z", "item": "S67", "action": "status", "from": "review", "to": "done", "note": "", "by": "Jon R"}
+{"when": "2026-10-06T12:05:23Z", "item": "S22", "action": "note", "from": "", "to": "", "note": "**Owner waiver (2026-10-06):** the physical-device column is"}
+{"when": "2026-10-06T12:24:14Z", "item": "S22", "action": "note", "from": "", "to": "", "note": "**2026-10-06: final gate result: GO, ready for review.** Thi"}
+{"when": "2026-10-06T12:24:14Z", "item": "S22", "action": "handoff", "from": "started", "to": "review", "note": "claim wt:S22 cleared", "by": "Jon R"}
+{"when": "2026-10-06T12:52:02Z", "item": "S22", "action": "status", "from": "review", "to": "done", "note": "", "by": "Jon R"}
