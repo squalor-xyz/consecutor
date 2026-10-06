@@ -4,15 +4,18 @@ Consecutor is a local-first Android tracker for habits, recurring actions, and t
 
 Created by Squalor, LLC.
 
-## MVP Focus
+## Features
 
 - Tracker-based model for habits, events, and measurements
+- Today-first dashboard with one-tap logging and Undo
 - Editable history instead of mutable counters as the source of truth
-- Derived streaks for yes/no and count-based trackers
-- Dashboard, tracker detail view, and recent trend view
+- Daily and weekly targets, with streaks derived from history for yes/no and count trackers
+- Trend charts and a monthly calendar on each tracker's detail screen
+- Archive, restore, and permanent delete for trackers
 - Local reminders for scheduled trackers
-- CSV export plus full JSON backup import/export
-- No accounts, no cloud sync, and no analytics SDKs
+- Save CSV and full JSON backup files to a location you choose, or share them
+- Backup import with a preview, and a safety copy of your previous data
+- No accounts, no cloud sync, no ads, and no analytics
 
 ## Tracker Types
 
@@ -31,7 +34,8 @@ Created by Squalor, LLC.
 ## Privacy Model
 
 - Data stays on-device unless the user explicitly exports it
-- Automatic Android backup is disabled in v1
+- The app requests no network permission
+- Automatic Android backup and device transfer are disabled
 - Backup/import is user-driven through files
 - Reminder notifications are local only
 
@@ -45,7 +49,7 @@ See [BUILDING.md](BUILDING.md).
 
 Future work, including iOS support and stronger privacy/security upgrades, lives in [ROADMAP.md](ROADMAP.md).
 
-Current MVP work is tracked with `slicer` (`slicer status`); see [ROADMAP.md](ROADMAP.md).
+Release changes are listed in [CHANGELOG.md](CHANGELOG.md).
 
 ## License
 

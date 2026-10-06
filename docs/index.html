@@ -3,18 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consecutor</title>
+    <title>Consecutor Privacy Policy</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
-        h1 { color: #6200EE; }
-        a { color: #03DAC6; text-decoration: none; }
-        a:hover { text-decoration: underline; }
+        :root { color-scheme: light dark; }
+        body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.55; max-width: 42rem; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+        h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+        h2 { font-size: 1.2rem; margin-top: 2rem; }
+        code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 0.9em; overflow-wrap: anywhere; }
+        .updated { margin-top: 2rem; font-style: italic; }
     </style>
 </head>
 <body>
-<h1>Consecutor</h1>
-<p>Track your streaks, build your habits.</p>
-<p><a href="https://github.com/squalor-xyz/consecutor">Visit the GitHub Repository</a></p>
-<p>Created by Squalor, LLC</p>
+<h1>Consecutor Privacy Policy</h1>
+<p>Consecutor is a local-first Android app. Your data stays on your device unless you choose to export it.</p>
+<p>Consecutor is created by Squalor, LLC. The source code is at <a href="https://github.com/squalor-xyz/consecutor">github.com/squalor-xyz/consecutor</a>.</p>
+
+<h2>What The App Does</h2>
+<ul>
+    <li>Stores your trackers, entries, targets, and reminders on the device</li>
+    <li>Schedules local reminder notifications when you turn them on</li>
+    <li>Lets you export your entries as a CSV file and your full data as a JSON backup file</li>
+    <li>Lets you import a backup file that you choose</li>
+</ul>
+
+<h2>What The App Does Not Do</h2>
+<ul>
+    <li>It requests no network permission, so the app itself cannot connect to the internet</li>
+    <li>It has no accounts, no cloud sync, no analytics, and no ads</li>
+    <li>Automatic Android backup and device-to-device transfer are disabled, so Android does not copy the app's data to Google or to a new device</li>
+</ul>
+
+<h2>Permissions</h2>
+<p>The app requests only these Android system permissions:</p>
+<ul>
+    <li><code>POST_NOTIFICATIONS</code>, to show reminder notifications on Android 13 and later</li>
+    <li><code>RECEIVE_BOOT_COMPLETED</code>, to schedule your reminders again after the device restarts</li>
+</ul>
+<p>An AndroidX library also adds a permission that the app defines for itself (<code>com.squalor.consecutor.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION</code>). It is not an Android system permission.</p>
+
+<h2>Reminders</h2>
+<ul>
+    <li>Reminders are local notifications scheduled on your device. Nothing is sent to a server.</li>
+    <li>Reminders are not exact. Android may deliver one later than the time you set, especially when the device is idle.</li>
+</ul>
+
+<h2>Exports And Backups</h2>
+<ul>
+    <li>Exported files are not encrypted and contain your full history. Keep them somewhere private.</li>
+    <li>When you save an export, the system file picker lets you choose where the file is written. The app does not keep track of exported files.</li>
+    <li>When you share an export, the app writes a temporary copy to its cache and hands it to the app you pick. The app deletes that copy the next time you share an export or open the app.</li>
+    <li>Importing a backup replaces your current data with the contents of the backup file. If you already have trackers, the app first saves a copy of your previous data to its private storage and keeps the last three such copies there.</li>
+    <li>The app has no screen for opening those saved copies, and uninstalling the app removes them.</li>
+</ul>
+
+<h2>Deleting Data</h2>
+<ul>
+    <li>Deleting a tracker permanently removes it, its entries, and its reminder.</li>
+    <li>Deleting an entry keeps it for 24 hours so that you can undo the deletion. It is then removed the next time the app starts. Deleted entries are never written to exports.</li>
+    <li>Uninstalling the app removes all data it stores on the device. Files that you exported or shared are separate copies that you control.</li>
+</ul>
+
+<h2>Links</h2>
+<p>The Settings screen has a link to the source code. When you tap it, your device opens the link in another app, such as a browser, and that app makes the network connection.</p>
+
+<h2>Security Notes</h2>
+<ul>
+    <li>The app database is not additionally encrypted. It is protected by the Android app sandbox.</li>
+    <li>Exported files are not encrypted or password-protected.</li>
+</ul>
+<p>If encryption or password-protected backup files are added later, this policy will be updated to describe the exact behavior.</p>
+
+<p class="updated">Last updated: October 2026</p>
 </body>
 </html>
