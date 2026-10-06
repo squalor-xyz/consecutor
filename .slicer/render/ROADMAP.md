@@ -20,13 +20,13 @@
 - Advanced analytics suite.
 - Squalor brand marks in the APK (brand marks are all-rights-reserved; the app icon is app-specific and MPL-2.0).
 
-67 items · — 1 · done 54 · later 11 · started 1
+67 items · — 1 · done 54 · later 11 · review 1
 
 | # | Slice | Title | Size | Effort | Trees | Findings | Status |
 |---|---|---|---|---|---|---|---|
 | P3 Release | | | | | | | |
 | 1 | [S20](slices/S20.md) | Docs refresh: PRIVACY, README, DEVELOPERS, Play data-safety draft, docs/ site | M | 2 | docs | PRIVACY.md; DEVELOPERS.md; docs/index.html | — |
-| 2 | [S22](slices/S22.md) | Device validation gate for 1.0 | M | 2 | release |  | started |
+| 2 | [S22](slices/S22.md) | Device validation gate for 1.0 | M | 2 | release |  | review |
 | Later | | | | | | | |
 | 3 | S23 | Notification "Mark done" action |  | 1 | reminders |  | later |
 | 4 | S24 | Manual tracker reordering |  | 2 | ui |  | later |
