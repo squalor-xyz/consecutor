@@ -893,10 +893,18 @@
       "id": "S23",
       "title": "Notification \"Mark done\" action",
       "short_title": "Notification \"Mark done\" action",
-      "status": "open",
+      "status": "review",
       "has_slice": true,
       "depends_on": [],
-      "note_records": [],
+      "note_records": [
+        {
+          "id": "d22b6fa7-c332-40d9-8c21-b4921b87f964",
+          "kind": "",
+          "text": "**2026-10-06** — Ready for review: yes/no reminders get a Mark done action and count reminders a +1 action (ReminderActionReceiver logs today via repository.addEntry, then cancels the notification without opening the app); measurement reminders have no action. Verified: testDebugUnitTest (142, incl. 3 reminderAction tests) and lintDebug pass; connectedDebugAndroidTest 58/58 on s08_api34 (API 34), incl. new countActionAddsOneEntryAndDismissesNotification and markDoneTwiceLogsYesNoOnce. Manual on API 34: 10:55 reminders arrived for yes/no (Mark done), count (+1) and measure (no action); Mark done and +1 dismissed their notifications with the launcher still on top; dashboard showed Done today and 1 today; tapping the measure notification body opened its detail. Not verified: TalkBack reading of the +1 label; S22 reminder rows on the signed release APK (owner).",
+          "created_at": "2026-10-06T14:58:21Z",
+          "attempt": 1
+        }
+      ],
       "claim": null,
       "fields": {
         "size": "S",
@@ -914,7 +922,7 @@
         "importance": 2,
         "urgency": 3,
         "effort": 1,
-        "attempts": 0
+        "attempts": 1
       }
     },
     {

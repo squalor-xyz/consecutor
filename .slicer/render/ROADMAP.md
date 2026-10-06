@@ -20,12 +20,12 @@
 - Advanced analytics suite.
 - Squalor brand marks in the APK (brand marks are all-rights-reserved; the app icon is app-specific and MPL-2.0).
 
-67 items · — 1 · done 56 · later 10
+67 items · done 56 · later 10 · review 1
 
 | # | Slice | Title | Size | Effort | Trees | Findings | Status |
 |---|---|---|---|---|---|---|---|
 | v1.0.0 | | | | | | | |
-| 1 | [S23](slices/S23.md) | Notification "Mark done" action | S | 1 | reminders | ReminderScheduler.kt:62-86 (notification has a content intent only, no actions) | — |
+| 1 | [S23](slices/S23.md) | Notification "Mark done" action | S | 1 | reminders | ReminderScheduler.kt:62-86 (notification has a content intent only, no actions) | review |
 | Later | | | | | | | |
 | 2 | S24 | Manual tracker reordering |  | 2 | ui |  | later |
 | 3 | S25 | Password-protected backup export |  | 2 | data |  | later |
