@@ -84,6 +84,7 @@ class NavigationTest {
     fun typedTrackerNameSurvivesRecreation() {
         composeRule.onNodeWithContentDescription("Add tracker").performClick()
         composeRule.onNodeWithText("Name").performTextInput("Unfinished tracker")
+        composeRule.onNodeWithText("Name").assertTextContains("Unfinished tracker")
         composeRule.activityRule.scenario.recreate()
         waitForNode(hasText("Name"))
         composeRule.onNodeWithText("Name").assertTextContains("Unfinished tracker")

@@ -2323,10 +2323,18 @@
       "id": "S66",
       "title": "Investigate intermittent API 26 typedTrackerNameSurvivesRecreation failure",
       "short_title": "API 26 recreation test flake",
-      "status": "open",
+      "status": "done",
       "has_slice": true,
       "depends_on": [],
-      "note_records": [],
+      "note_records": [
+        {
+          "id": "ed1d31f4-71ff-4751-ad4c-409f8c4a1127",
+          "kind": "",
+          "text": "**2026-10-05** — Investigated the app first, as the owner asked. On API 26 (s08_api26, debug build of main 9b1f320, idle host) I typed into the create dialog's Name field, recreated the activity and read the field back:\n- 10 recreations by rotation and 10 by font-scale configuration change, each after the typed text was read back: Name kept 'Unfinished' 20/20.\n- The same 20 again with no wait between typing and recreation: 20/20 kept.\n\nNo lost input was reproduced in 40 tries. Limit: adb adds latency, so this cannot match the test's in-process timing exactly, and a very narrow race is not ruled out.\n\nChange (test only): typedTrackerNameSurvivesRecreation now asserts the typed text before recreate(), like editingTrackerNameSurvivesRecreation.\n\nResults:\n- API 26: 10 consecutive full-suite runs via am instrument, all OK (56 tests). Before the fix the rate was 2 failures in 10 runs, so 10 clean runs would happen about 11% of the time with no improvement. This is strong but not conclusive.\n- API 36: OK (56 tests).\n- testDebugUnitTest: 139 passed.\n- lintDebug: 0 errors.\n\nThe app data on s08_api26 was cleared by the runs. Evidence: build/s66-evidence.",
+          "created_at": "2026-10-05T20:41:27Z",
+          "attempt": 1
+        }
+      ],
       "claim": null,
       "fields": {
         "size": "S",
@@ -2343,7 +2351,7 @@
         "importance": 3,
         "urgency": 3,
         "effort": 1,
-        "attempts": 0
+        "attempts": 1
       }
     },
     {
