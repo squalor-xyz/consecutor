@@ -703,7 +703,7 @@
       "id": "S20",
       "title": "Docs refresh: PRIVACY, README, DEVELOPERS, Play data-safety draft, docs/ site",
       "short_title": "Docs refresh: PRIVACY, README, DEVELOPERS, Play data-safety draft, docs/ site",
-      "status": "review",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S19",
