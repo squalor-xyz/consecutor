@@ -20,7 +20,7 @@
 - Advanced analytics suite.
 - Squalor brand marks in the APK (brand marks are all-rights-reserved; the app icon is app-specific and MPL-2.0).
 
-69 items · — 2 · done 57 · later 10
+69 items · — 1 · done 57 · later 10 · started 1
 
 | # | Slice | Title | Size | Effort | Trees | Findings | Status |
 |---|---|---|---|---|---|---|---|
@@ -36,7 +36,7 @@
 | 9 | S52 | Dashboard performance with years of history |  | 3 | data |  | later |
 | 10 | S59 | Optional scheduled backup to a user-chosen folder |  | 2 | data |  | later |
 | 11 | [S68](slices/S68.md) | Publish 1.0 on Google Play | M | 2 | release, docs |  | — |
-| 12 | [S69](slices/S69.md) | Publish 1.0 on F-Droid | M | 3 | release, docs |  | — |
+| 12 | [S69](slices/S69.md) | Publish 1.0 on F-Droid | M | 3 | release, docs |  | started |
 
 ---
 

@@ -2761,11 +2761,26 @@
       "id": "S69",
       "title": "Publish 1.0 on F-Droid",
       "short_title": "Publish 1.0 on F-Droid",
-      "status": "open",
+      "status": "started",
       "has_slice": true,
       "depends_on": [],
-      "note_records": [],
-      "claim": null,
+      "note_records": [
+        {
+          "id": "224ba378-0105-45a5-9ff6-b2daa0aef1db",
+          "kind": "",
+          "text": "**2026-10-06** — Reproducibility: v1.0.0 passes. GitHub consecutor-1.0.0.apk (sha256 -c OK; cert SHA-256 ffaaa1ce30a4467892245bbfa0c89375e2927bac322f872177b8407f28ceec49) vs unsigned assembleRelease from a fresh clone of the tag on macOS with Homebrew OpenJDK 17: apksigcopier compare exit 0. Forced rebuild (--no-build-cache --rerun-tasks) byte-identical (unsigned sha256 a7976d003c47d03e...), compare exit 0. No build change or 1.0.1 needed. fdroidserver 2.4.5: fdroid lint exit 0 (against the category names in fdroiddata config/categories.yml), fdroid rewritemeta made no changes. Local fdroid build not run (arm64 host; the merge request's CI does the real x86_64 build). DEVELOPERS.md F-Droid section updated. Pending owner: open the fdroiddata merge request with this metadata/com.squalor.consecutor.yml:\n\nCategories:\n  - Habit Tracker\n  - Sports & Health\nLicense: MPL-2.0\nSourceCode: https://github.com/squalor-xyz/consecutor\nIssueTracker: https://github.com/squalor-xyz/consecutor/issues\nChangelog: https://github.com/squalor-xyz/consecutor/blob/HEAD/CHANGELOG.md\n\nRepoType: git\nRepo: https://github.com/squalor-xyz/consecutor.git\nBinaries: https://github.com/squalor-xyz/consecutor/releases/download/v%v/consecutor-%v.apk\n\nBuilds:\n  - versionName: 1.0.0\n    versionCode: 10000\n    commit: v1.0.0\n    subdir: app\n    gradle:\n      - yes\n\nAllowedAPKSigningKeys: ffaaa1ce30a4467892245bbfa0c89375e2927bac322f872177b8407f28ceec49\n\nAutoUpdateMode: Version\nUpdateCheckMode: Tags ^v[0-9.]+$\nCurrentVersion: 1.0.0\nCurrentVersionCode: 10000",
+          "created_at": "2026-10-06T20:23:50Z",
+          "attempt": 1,
+          "by": "Jon R",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
+        }
+      ],
+      "claim": {
+        "owner": "Jon R",
+        "at": "2026-10-06T20:19:27Z"
+      },
       "fields": {
         "size": "M",
         "flags": [],
@@ -2783,7 +2798,7 @@
         "importance": 3,
         "urgency": 2,
         "effort": 3,
-        "attempts": 0
+        "attempts": 1
       }
     }
   ],
