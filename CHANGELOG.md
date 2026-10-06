@@ -3,9 +3,9 @@
 All notable changes to Consecutor are listed here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [Semantic Versioning](https://semver.org/).
 
-## [1.0.0] - Unreleased
+## [1.0.0] - 2026-10-06
 
-Initial release. Set the release date when the `v1.0.0` tag is created.
+Initial release.
 
 ### Added
 
