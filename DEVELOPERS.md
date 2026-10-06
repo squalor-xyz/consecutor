@@ -225,6 +225,13 @@ slice; fixes and release tagging are separate work. Confirm no open P0, P1, or
 P2 items remain, nor open S19, S46, S47, S48, S50, or S51. S20, S21, and S49 may
 remain open for docs, release workflow, and store listing work.
 
+For 1.0 the owner narrowed this gate. Rows the instrumented suite covers on all
+four APIs (2, 3, 8, 13, 16) counted through the suite. Rows that do not depend on
+the API level were walked once on API 36. Rows 9 to 11 were walked on API 26 and
+36, and row 12 on API 33 and 30. TalkBack was covered by `DashboardSemanticsTest`,
+the tablet result carried over from an earlier build, and the physical device was
+waived. The S22 slice notes record the decisions and results.
+
 ### Physical device check (owner)
 
 Emulators cannot show real hardware behaviour. Before 1.0, the owner runs this short check on any Android phone (their own or borrowed; Android 8.0 or newer). It takes about 10 minutes plus one overnight observation. Use the signed release APK (`consecutor-<versionName>.apk`) rather than a debug build, and note the phone model, Android version, and the APK's SHA-256.
