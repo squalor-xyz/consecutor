@@ -342,24 +342,27 @@ For Google Play, upload the signed `.aab` built by `bundleRelease`.
 
 Google Play will generate device-specific APKs from the app bundle. Official Android docs describe `.aab` as the publishing format for Google Play and explain that Play generates APKs for delivery.
 
+### Account and signing decisions
+
+The owner decided both of these for 1.0 (S68):
+
+- Account: a Play organization developer account under the owner's LLC. Registering one needs the LLC's D-U-N-S number, and the legal name and address must match the D-U-N-S record. Organization accounts do not have to run the closed test required of new personal accounts.
+- Signing: Play App Signing with the existing release key, the one that signs the GitHub release APKs. Play and GitHub installs then share a signature and can update each other. Uploads are signed with a separate upload key registered in Play Console. Once Play has the release key, keep it offline and backed up. If the upload key is lost, Google can reset it, but the release key cannot be replaced.
+
+The agent never creates, handles, or uploads keys, and never uses Play Console.
+
 ### First Release Flow
 
-1. Create a Google Play developer account.
-2. Create a new app in Play Console.
-3. Opt in to Play App Signing.
-4. Upload the signed `.aab`.
-5. Complete store listing fields.
-6. Complete app content, privacy, and policy declarations.
-7. Create a testing track or production release.
-8. Roll out the release.
+The owner runs these steps:
 
-### Play App Signing Notes
-
-Per Android’s official documentation:
-
-- sign the uploaded bundle with your upload key
-- Play App Signing manages the app signing key used for distribution
-- if you want the same signing key across multiple stores, provide your own signing key when setting up Play App Signing
+1. Request a free D-U-N-S number for the LLC from Dun & Bradstreet.
+2. Turn on GitHub Pages for `/docs` (see Privacy policy page below) and note the URL.
+3. Register the organization developer account and complete verification.
+4. Create the app. Under Play App Signing, choose to use your own key, and upload the existing release key with the encrypted export that Play Console offers. Register a separate upload key.
+5. Build the bundle signed with the upload key: point `keystore.properties` at the upload keystore and run `./gradlew bundleRelease`.
+6. Fill in the store listing from `fastlane/metadata/android/en-US/` (title, descriptions, icon, screenshots, `images/featureGraphic.png`) and the privacy policy URL. Complete content rating, target audience, ads (none), and data safety (see the draft below).
+7. Upload to internal testing and install it on a device, then promote to production and roll out.
+8. Check that the app signing key certificate SHA-256 under App integrity matches `apksigner verify --print-certs consecutor-<versionName>.apk` for the GitHub release APK.
 
 Official reference:
 
@@ -396,6 +399,18 @@ Expect to prepare:
 - data safety form
 
 The exact Play Console forms can change, so verify against the current console before submitting.
+
+### Feature graphic
+
+`fastlane/metadata/android/en-US/images/featureGraphic.png` is the 1024×500 Play feature graphic. Its source is `art/feature-graphic.svg`: the launcher mark from `ic_launcher_foreground.xml`, with text set in Fira Code (OFL-1.1). Fira Code must be installed to regenerate it. Play requires a 24-bit PNG with no alpha. Export with Inkscape:
+
+```sh
+inkscape art/feature-graphic.svg --export-type=png --export-png-color-mode=RGB_8 \
+  --export-background='#0f1419' --export-background-opacity=1 \
+  --export-filename=fastlane/metadata/android/en-US/images/featureGraphic.png
+```
+
+`file` on the result should show `1024 x 500, 8-bit/color RGB`.
 
 ## F-Droid Deployment
 
