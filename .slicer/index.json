@@ -780,7 +780,7 @@
       "id": "S22",
       "title": "Device validation gate for 1.0",
       "short_title": "Device validation gate for 1.0",
-      "status": "review",
+      "status": "done",
       "has_slice": true,
       "depends_on": [
         "S09",
