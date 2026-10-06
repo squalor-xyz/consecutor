@@ -496,3 +496,6 @@
 {"when": "2026-10-06T12:24:14Z", "item": "S22", "action": "note", "from": "", "to": "", "note": "**2026-10-06: final gate result: GO, ready for review.** Thi"}
 {"when": "2026-10-06T12:24:14Z", "item": "S22", "action": "handoff", "from": "started", "to": "review", "note": "claim wt:S22 cleared", "by": "Jon R"}
 {"when": "2026-10-06T12:52:02Z", "item": "S22", "action": "status", "from": "review", "to": "done", "note": "", "by": "Jon R"}
+{"when": "2026-10-06T12:52:37Z", "item": "S20", "action": "status", "from": "open", "to": "started", "note": "", "by": "Jon R"}
+{"when": "2026-10-06T12:53:49Z", "item": "S20", "action": "note", "from": "", "to": "", "note": "**2026-10-06 review after S22**"}
+{"when": "2026-10-06T12:53:49Z", "item": "S20", "action": "handoff", "from": "started", "to": "review", "note": "claim Jon R cleared", "by": "Jon R"}

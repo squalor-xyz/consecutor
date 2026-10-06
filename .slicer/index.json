@@ -703,7 +703,7 @@
       "id": "S20",
       "title": "Docs refresh: PRIVACY, README, DEVELOPERS, Play data-safety draft, docs/ site",
       "short_title": "Docs refresh: PRIVACY, README, DEVELOPERS, Play data-safety draft, docs/ site",
-      "status": "open",
+      "status": "review",
       "has_slice": true,
       "depends_on": [
         "S19",
@@ -716,7 +716,15 @@
         "S22",
         "S45"
       ],
-      "note_records": [],
+      "note_records": [
+        {
+          "id": "70befe6b-b2cc-43b2-843c-655213188992",
+          "kind": "",
+          "text": "**2026-10-06** — **2026-10-06 review after S22**\n\nMain 1eed055 (S22 done) was merged into slice/S20. Conflict resolution:\n- DEVELOPERS.md Manual QA: kept S22's 19-row checklist, its narrowed-gate paragraph and the physical-device section. S20's two older checklist edits are already covered by rows 9 and 10.\n- In the merge I also fixed 'see Privacy policy page below' to 'above'.\n- .slicer/index.json: took main's version, then re-ran slicer start S20.\n\nChecks against the merged tree:\n- **Permissions.** aapt2 on the S22 signed release (s22c, same app code) lists POST_NOTIFICATIONS, RECEIVE_BOOT_COMPLETED and com.squalor.consecutor.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION. That matches PRIVACY.md and DEVELOPERS.md.\n- **PRIVACY.md claims** checked against the code:\n  - The manifest has only those two uses-permission entries.\n  - allowBackup=false, with backup and data-extraction rules excluding every domain for both cloud backup and device transfer.\n  - There are no analytics or network libraries.\n  - Tracker delete cancels its reminder alarm (TrackerViewModel), and the database cascades to entries.\n  - CsvExport filters out deleted entries.\n  - The safety copy is skipped when there are no trackers, and the newest three are kept (BackupFiles.prune).\n  - ExportCache clears on share and at start. This was also observed on API 36 in S22.\n- **Links.** Every relative link in README, BUILDING, DEVELOPERS, PRIVACY and CHANGELOG resolves.\n- **docs/index.html** has no scripts, no external resource loads and no external fonts. Its only https URL is the source-code link. Its text matches PRIVACY.md word for word, apart from the heading 'Consecutor Privacy Policy' and a publisher line ('Squalor, LLC', the same as README). I inspected the page; I did not open it in a browser offline.\n- BUILDING.md SDK numbers match app/build.gradle: compile 36.1, target 36, min 26.\n- testDebugUnitTest: 139 passed. lintDebug: 0 errors. git diff --check is clean.\n- CHANGELOG 1.0.0 stays 'Unreleased' until the tag exists.\n- GitHub Pages is not enabled; that is an owner action.",
+          "created_at": "2026-10-06T12:53:49Z",
+          "attempt": 1
+        }
+      ],
       "claim": null,
       "fields": {
         "size": "M",
@@ -734,7 +742,7 @@
         "importance": 2,
         "urgency": 1,
         "effort": 2,
-        "attempts": 0
+        "attempts": 1
       }
     },
     {
