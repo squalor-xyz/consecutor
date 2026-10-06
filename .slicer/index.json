@@ -2732,11 +2732,26 @@
       "id": "S68",
       "title": "Publish 1.0 on Google Play",
       "short_title": "Publish 1.0 on Google Play",
-      "status": "open",
+      "status": "started",
       "has_slice": true,
       "depends_on": [],
-      "note_records": [],
-      "claim": null,
+      "note_records": [
+        {
+          "id": "76b46d8d-3c2a-417c-8ca8-b18c5dba7ab3",
+          "kind": "",
+          "text": "**2026-10-06** — Agent part done on slice/S68 (uncommitted): art/feature-graphic.svg; featureGraphic.png exported with the command in DEVELOPERS.md (file: 1024 x 500, 8-bit/color RGB, 29048 bytes; output of that command byte-for-byte); DEVELOPERS.md Google Play section records the LLC org account and own-key + upload-key decisions and the owner flow. git diff --check and slicer check pass. Owner steps 1-7 and the signing-cert and over-install checks are pending.",
+          "created_at": "2026-10-06T19:21:51Z",
+          "attempt": 1,
+          "by": "Jon R",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
+        }
+      ],
+      "claim": {
+        "owner": "Jon R",
+        "at": "2026-10-06T19:20:19Z"
+      },
       "fields": {
         "size": "M",
         "flags": [],
@@ -2754,7 +2769,7 @@
         "importance": 3,
         "urgency": 2,
         "effort": 2,
-        "attempts": 0
+        "attempts": 1
       }
     },
     {

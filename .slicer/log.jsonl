@@ -510,3 +510,7 @@
 {"when": "2026-10-06T15:05:00Z", "item": "S23", "action": "status", "from": "review", "to": "done", "note": "", "by": "Jon R"}
 {"when": "2026-10-06T18:56:47Z", "item": "S68", "action": "add", "from": "", "to": "open", "note": "Publish 1.0 on Google Play"}
 {"when": "2026-10-06T18:56:47Z", "item": "S69", "action": "add", "from": "", "to": "open", "note": "Publish 1.0 on F-Droid"}
+{"when": "2026-10-06T19:20:19Z", "item": "S68", "action": "status", "from": "open", "to": "started", "note": "", "by": "Jon R"}
+{"when": "2026-10-06T19:21:37Z", "item": "S68", "action": "edit", "from": "", "to": "", "note": "Implement"}
+{"when": "2026-10-06T19:21:46Z", "item": "S68", "action": "edit", "from": "", "to": "", "note": "Implement"}
+{"when": "2026-10-06T19:21:51Z", "item": "S68", "action": "note", "from": "", "to": "", "note": "Agent part done on slice/S68 (uncommitted): art/feature-grap", "by": "Jon R"}
