@@ -488,3 +488,4 @@
 {"when": "2026-10-05T20:41:27Z", "item": "S66", "action": "handoff", "from": "started", "to": "review", "note": "claim Jon R cleared", "by": "Jon R"}
 {"when": "2026-10-06T12:04:39Z", "item": "S66", "action": "status", "from": "review", "to": "done", "note": "", "by": "Jon R"}
 {"when": "2026-10-06T12:05:12Z", "item": "S67", "action": "status", "from": "review", "to": "done", "note": "", "by": "Jon R"}
+{"when": "2026-10-06T12:05:23Z", "item": "S22", "action": "note", "from": "", "to": "", "note": "**Owner waiver (2026-10-06):** the physical-device column is"}
