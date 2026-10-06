@@ -1,0 +1,41 @@
+{
+  "id": "S68",
+  "title": "Publish 1.0 on Google Play",
+  "lead": [
+    "Get Consecutor 1.0.0 live on Google Play under the owner's LLC, signed with the same key as the GitHub release APKs."
+  ],
+  "depends_note": null,
+  "findings_note": "",
+  "size": "M",
+  "flags": [],
+  "trees_note": "release, docs",
+  "trees_plural": true,
+  "boundary": "**Not in this slice:** F-Droid (S69), changes to the GitHub release workflow, Play Console automation (fastlane supply or API uploads), and any work in the app itself. The agent never creates, handles or uploads keys, and never touches the Play Console.",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "Google Play is one of the three channels in the project goals. `v1.0.0` is tagged and published on GitHub, and the store text, icon and screenshots are in `fastlane/metadata/android/en-US/` (S49). Play also requires a 1024×500 feature graphic, which S49 left out.\n\nOwner decisions (2026-10-06):\n- Account: an organization developer account under the owner's LLC. This needs a D-U-N-S number for the LLC, and the legal name and address must match the D-U-N-S record. An organization account skips the closed test that new personal accounts must run.\n- Signing: Play App Signing with the owner's existing release key, the one that signs the GitHub APKs, so Play and GitHub installs can update each other. Uploads are signed with a separate upload key that is registered in Play Console. The release key stays offline once Play has it."
+    },
+    {
+      "heading": "Files",
+      "body": "- `art/feature-graphic.svg` (new; source)\n- `fastlane/metadata/android/en-US/images/featureGraphic.png` (new)\n- `DEVELOPERS.md` (Google Play Deployment section)"
+    },
+    {
+      "heading": "Failing tests",
+      "body": "- None. Image checks are listed under Check."
+    },
+    {
+      "heading": "Implement",
+      "body": "Agent:\n1. Draw `art/feature-graphic.svg` at 1024×500 from the launcher icon (`#0f1419` background, the three `#6ee7d2` rounded squares from `ic_launcher_foreground.xml`), with the app name and the short description. Convert text to paths so the rendering does not depend on installed fonts. Do not use Squalor brand marks.\n2. Export it with Inkscape to `featureGraphic.png` as a 24-bit PNG (no alpha), 1024×500. Document the export command in `DEVELOPERS.md`.\n3. Update `DEVELOPERS.md` \"Google Play Deployment\" to record the account and signing decisions and the owner steps below, replacing the generic \"First Release Flow\" where they differ.\n\nOwner, in order:\n1. Request a free D-U-N-S number for the LLC from Dun & Bradstreet.\n2. Turn on GitHub Pages for `/docs` (see \"Privacy policy page\") and note the URL.\n3. Register a Play organization developer account with the D-U-N-S number, and complete verification.\n4. Create the app. In Play App Signing, choose to provide your own key and upload the existing release key using the encrypted export Play Console offers. Register a separate upload key.\n5. Build the AAB signed with the upload key: `keystore.properties` points at the upload keystore, then `./gradlew bundleRelease`.\n6. Fill in the store listing from `fastlane/metadata/android/en-US/` (title, descriptions, icon, screenshots, feature graphic) and the privacy policy URL. Complete the content rating, target audience, ads (none), and data safety (from the draft in `DEVELOPERS.md`).\n7. Upload to internal testing and install it on a device, then promote to production and roll out."
+    },
+    {
+      "heading": "Check",
+      "body": "- `file` shows `featureGraphic.png` as 1024 x 500, 8-bit/color RGB (no alpha), and it is under 1 MB. The image shows no personal data and makes no feature claims that the app does not support.\n- Play Console accepts the listing assets without errors.\n- The signing certificate SHA-256 shown in Play Console (App integrity > App signing key) matches `apksigner verify --print-certs consecutor-1.0.0.apk` for the GitHub release APK.\n- After installing the GitHub APK on a device, the Play Store build installs over it as an update without an uninstall.\n- Record the store URL and production rollout date with `slicer note S68`."
+    },
+    {
+      "heading": "Git",
+      "body": "Commit on the slice branch, message `S68: <summary>`."
+    }
+  ],
+  "notes": []
+}

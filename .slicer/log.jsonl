@@ -508,3 +508,5 @@
 {"when": "2026-10-06T14:58:21Z", "item": "S23", "action": "note", "from": "", "to": "", "note": "Ready for review: yes/no reminders get a Mark done action an"}
 {"when": "2026-10-06T14:58:22Z", "item": "S23", "action": "handoff", "from": "started", "to": "review", "note": "claim Jon R cleared", "by": "Jon R"}
 {"when": "2026-10-06T15:05:00Z", "item": "S23", "action": "status", "from": "review", "to": "done", "note": "", "by": "Jon R"}
+{"when": "2026-10-06T18:56:47Z", "item": "S68", "action": "add", "from": "", "to": "open", "note": "Publish 1.0 on Google Play"}
+{"when": "2026-10-06T18:56:47Z", "item": "S69", "action": "add", "from": "", "to": "open", "note": "Publish 1.0 on F-Droid"}

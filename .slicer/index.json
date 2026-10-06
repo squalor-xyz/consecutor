@@ -1,8 +1,8 @@
 {
-  "version": 6,
+  "version": 7,
   "id_prefix": "S",
   "id_width": 2,
-  "next_id": 68,
+  "next_id": 70,
   "preamble": "",
   "passes": [],
   "items": [
@@ -19,7 +19,11 @@
           "kind": "",
           "text": "**2026-10-02** — AGP 8.13.2 + Gradle 8.13 + Kotlin 1.9.20 + Compose compiler 1.5.4 build fine with JDK 17 (Homebrew openjdk@17); no version change needed. Compile fixes: elvis precedence at TrackerAnalytics.kt:80 (confirmed error: 'floating-point literal does not conform to expected type Nothing') and missing @OptIn(ExperimentalLayoutApi) on TrackerEditorDialog (FlowRow).",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         }
       ],
       "claim": null,
@@ -117,7 +121,11 @@
           "kind": "",
           "text": "**2026-10-02** — Ready for review: workflow triggers on push+pull_request, checkout@v4, setup-java@v4 (temurin 17), gradle/actions/setup-gradle@v4, single step testDebugUnitTest lintDebug assembleDebug, uploads reports on failure. Same command passes locally from clean (lint: 0 errors, 52 version/catalog warnings left for S19; no baseline needed). Not yet verified on GitHub: needs owner to push first. Mark done after the first green run.",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         }
       ],
       "claim": null,
@@ -217,21 +225,33 @@
           "kind": "",
           "text": "**2026-10-03** — Implementation complete in .worktrees/S07 on s07-detail-rollover. Added shared detail state, midnight/resume date refresh, date-aware repository flows and quick logging, and four regression tests. git diff --check and slicer check pass. testDebugUnitTest lintDebug assembleDebug could not start: shell cannot locate Java. JDK 17 path and authorization for external SDK/Gradle cache access requested; awaiting response. Device checks not run. Slice remains started pending build and device validation.",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         },
         {
           "id": "S07:legacy:1",
           "kind": "",
           "text": "**2026-10-03** — Build blocker resolved: Homebrew JDK 17 is /opt/homebrew/opt/openjdk@17. Offline testDebugUnitTest lintDebug assembleDebug passed. LocalLifecycleOwner resolves with existing dependencies. Device checks for detail rotation, midnight rollover and background/resume remain unperformed.",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         },
         {
           "id": "S07:legacy:2",
           "kind": "",
           "text": "**2026-10-03** — Reviewed and merged onto first: testDebugUnitTest lintDebug assembleDebug pass on the merged tree. Device checks (rotation, midnight rollover, background/resume) still not performed; no emulator image is installed on this machine.",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         }
       ],
       "claim": null,
@@ -270,7 +290,11 @@
           "kind": "",
           "text": "**2026-10-03** — Delivery window, alarm set ~12h ahead (dumpsys alarm, inexact setAndAllowWhileIdle, arm64 google_apis emulators, 2026-10-03). API 34: whenElapsed +12h6m14s, maxWhenElapsed +13h6m14s -> window 1h0m0s (not more than 1h). API 26: whenElapsed +12h0m48s, window +9h0m42s (API 26 dumpsys prints window, not maxWhenElapsed; max = whenElapsed + window, ~+21h) -> window is MORE than one hour; scheduling left as is, strategy change is an owner decision. Also verified on API 34: 2 min reminder delivered; after backup import only the imported tracker's alarm remained (stale alarms for old ids gone, no stale notification fired).",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         }
       ],
       "claim": null,
@@ -340,7 +364,11 @@
           "kind": "",
           "text": "**2026-10-03** — Implemented system and toolbar back navigation, saveable dialog state, and SavedStateHandle tracker selection. Verification: 40 unit tests passed, lintDebug passed with one worker after compilation, assembleDebug and assembleDebugAndroidTest passed offline. Added six emulator-only navigation/recreation tests and five saver unit tests. Renamed existing TrackerDaoTest methods to remove spaces because D8 rejected them when packaging the instrumented test APK. No connected emulator: connected UI tests, predictive-back preview, and actual process-death checks remain unverified.",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         }
       ],
       "claim": null,
@@ -379,21 +407,33 @@
           "kind": "",
           "text": "**2026-10-04** — Light tertiary adjusted from #b45309 to #a14808: original contrast is 4.381:1 on surfaceContainer #f3efe8 and 3.828:1 on surfaceContainerHighest #e6e0d7. The new color gives 4.646:1 on the latter. Added contrast checks for actual streak card surfaces and all fixed-role text pairs. Explicitly supplied all 48 Material3 1.4 color roles; the role table outline values take precedence over the earlier light outline prose.",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         },
         {
           "id": "S11:legacy:1",
           "kind": "",
           "text": "**2026-10-04** — Implemented in .worktrees/S11 on slice/S11, based on main 8707560. Offline testDebugUnitTest lintDebug assembleDebug pass with JDK 17: 43 tests, zero failures/errors/skips; lint has 10 warnings and zero errors. Both schemes supply all 48 Material3 1.4 roles. Added dashboard title tracking, streak-only tertiary highlights, platform NoActionBar light/dark window backgrounds, enableEdgeToEdge, and Scaffold padding for empty states. No dependencies changed. Connected emulator-5554 is available, but installation/theme changes/temporary tracker creation require the requested device permission; screenshots and the dark cold-start visual check have not been performed. Handed off for review with those visual checks pending.",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         },
         {
           "id": "S11:legacy:2",
           "kind": "",
           "text": "**2026-10-04** — Device verification was subsequently authorized, but emulator-5554 disconnected before the first UI-mode query. The verification script failed with device not found; a subsequent adb devices returned an empty list. No APK installation, theme change, or tracker creation occurred. Screenshots and dark cold-start visual verification remain incomplete because no device is connected.",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         }
       ],
       "claim": null,
@@ -429,7 +469,11 @@
           "kind": "",
           "text": "**2026-10-03** — Owner approved the preview: a horizontal chain of three overlapping rounded-square rings, teal #6ee7d2 on #0f1419. Each link is a ring so the three marks stay distinct. The notification glyph is the same chain in white on a 24dp canvas. No Squalor marks.",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         }
       ],
       "claim": null,
@@ -535,7 +579,11 @@
           "kind": "",
           "text": "**2026-10-04** — Implemented archive Undo, reminder-preserving restore, archived dashboard entry/list, and permanent deletion with active-entry confirmation and cascades. Validation passed offline: 116 unit tests and 38 instrumented tests on API 34 (emulator-5554, headless read-only with host graphics). NavigationTest now uses the existing Compose v2 API to avoid reentrant layout failures; corrected existing recreation tests to replace and assert complete field values and select one of the duplicate title/card name nodes. No dependencies or schema changes.",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         }
       ],
       "claim": null,
@@ -676,7 +724,11 @@
           "kind": "",
           "text": "**2026-10-04** — Release APK before minification: versionCode 1, 12929555 bytes (unsigned, minify off, earlier assembleRelease on main). After R8 and shrinkResources: versionCode 10000, versionName 1.0.0, 1466054 bytes. bundleRelease AAB is 3712283 bytes. assembleRelease and bundleRelease succeeded with no new ProGuard keep rules. aapt dump permissions lists POST_NOTIFICATIONS, RECEIVE_BOOT_COMPLETED, and the pre-existing AndroidX DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION. A throwaway keystore signed a local copy; apksigner verified v2 and v3; the keystore and signed copy were deleted. No device was attached, so the install smoke test and logcat pass were not run.",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         }
       ],
       "claim": null,
@@ -722,7 +774,11 @@
           "kind": "",
           "text": "**2026-10-06** — **2026-10-06 review after S22**\n\nMain 1eed055 (S22 done) was merged into slice/S20. Conflict resolution:\n- DEVELOPERS.md Manual QA: kept S22's 19-row checklist, its narrowed-gate paragraph and the physical-device section. S20's two older checklist edits are already covered by rows 9 and 10.\n- In the merge I also fixed 'see Privacy policy page below' to 'above'.\n- .slicer/index.json: took main's version, then re-ran slicer start S20.\n\nChecks against the merged tree:\n- **Permissions.** aapt2 on the S22 signed release (s22c, same app code) lists POST_NOTIFICATIONS, RECEIVE_BOOT_COMPLETED and com.squalor.consecutor.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION. That matches PRIVACY.md and DEVELOPERS.md.\n- **PRIVACY.md claims** checked against the code:\n  - The manifest has only those two uses-permission entries.\n  - allowBackup=false, with backup and data-extraction rules excluding every domain for both cloud backup and device transfer.\n  - There are no analytics or network libraries.\n  - Tracker delete cancels its reminder alarm (TrackerViewModel), and the database cascades to entries.\n  - CsvExport filters out deleted entries.\n  - The safety copy is skipped when there are no trackers, and the newest three are kept (BackupFiles.prune).\n  - ExportCache clears on share and at start. This was also observed on API 36 in S22.\n- **Links.** Every relative link in README, BUILDING, DEVELOPERS, PRIVACY and CHANGELOG resolves.\n- **docs/index.html** has no scripts, no external resource loads and no external fonts. Its only https URL is the source-code link. Its text matches PRIVACY.md word for word, apart from the heading 'Consecutor Privacy Policy' and a publisher line ('Squalor, LLC', the same as README). I inspected the page; I did not open it in a browser offline.\n- BUILDING.md SDK numbers match app/build.gradle: compile 36.1, target 36, min 26.\n- testDebugUnitTest: 139 passed. lintDebug: 0 errors. git diff --check is clean.\n- CHANGELOG 1.0.0 stays 'Unreleased' until the tag exists.\n- GitHub Pages is not enabled; that is an owner action.",
           "created_at": "2026-10-06T12:53:49Z",
-          "attempt": 1
+          "attempt": 1,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         }
       ],
       "claim": null,
@@ -761,7 +817,11 @@
           "kind": "",
           "text": "**2026-10-05** — Ready for review: release.yml added; DEVELOPERS.md release checklist documents secrets. Owner test on a fork with secrets still pending.",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         }
       ],
       "claim": null,
@@ -817,56 +877,88 @@
           "kind": "",
           "text": "**2026-10-05** — Started from main 816a80f in .worktrees/S22 on slice/S22, claimed by wt:S22. Updated DEVELOPERS.md Manual QA Checklist to cover S22. git diff --check and slicer check passed. No build or device walkthrough has run yet: awaiting case-specific permission for JDK, SDK, Gradle/emulator cache access outside the workspace and identification of a physical test device. Results below are unexecuted, not passes or product failures. CI status has not been queried.\n\n| Check | API 26 | API 30 | API 33 | API 36 | Physical device |\n| --- | --- | --- | --- | --- | --- |\n| 1. Create/edit/type lock | Pending | Pending | Pending | Pending | Pending |\n| 2. YES_NO toggle/Undo/rapid taps | Pending | Pending | Pending | Pending | Pending |\n| 3. COUNT and MEASURE logging | Pending | Pending | Pending | Pending | Pending |\n| 4. Dashboard order/no-target bar | Pending | Pending | Pending | Pending | Pending |\n| 5. Midnight rollover foreground/background | Pending | Pending | Pending | Pending | Pending |\n| 6. Date/time validation and comma locale | Pending | Pending | Pending | Pending | Pending |\n| 7. Charts/calendar/history mutations | Pending | Pending | Pending | Pending | Pending |\n| 8. Archive/restore/delete/reminder removal | Pending | Pending | Pending | Pending | Pending |\n| 9. Backup/CSV/save/share/export cache | Pending | Pending | Pending | Pending | Pending |\n| 10. Import preview/cancel/replace/safety copies/error | Pending | Pending | Pending | Pending | Pending |\n| 11. Reminders/tap/done/reboot/timezone/import | Pending | Pending | Pending | Pending | Pending |\n| 12. Notification permission/settings | Pending | Pending | Pending | Pending | Pending |\n| 13. Back navigation/editor rotation | Pending | Pending | Pending | Pending | Pending |\n| 14. TalkBack/200% font/theme cold start | Pending | Pending | Pending | Pending | Pending |\n| 15. Release permissions/privacy | Pending | Pending | Pending | Pending | Pending |\n| 16. Deleted note export/process restoration | Pending | Pending | Pending | Pending | Pending |\n| 17. About/version/source/licences | Pending | Pending | Pending | Pending | Pending |\n| 18. Tablet/landscape width | Pending | Pending | Pending | Pending | Pending |\n| 19. Latest main CI build/instrumented | Pending | Pending | Pending | Pending | Pending |",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         },
         {
           "id": "S22:legacy:1",
           "kind": "",
           "text": "**2026-10-05** — S22 release gate result: NO-GO. This supersedes the initial all-pending note; S22 is not ready for handoff. Worktree slice/S22 was built from main 816a80f. No commits, pushes, merges, or tags were performed.\n\nBuild verification: testDebugUnitTest, lintDebug, assembleRelease, and assembleDebugAndroidTest succeeded offline with the approved JDK 17 and Android SDK. 134 JVM tests passed, zero failures/errors/skips. Lint has zero errors/fatal issues and 14 warnings. The full 56-test instrumented suite passed on EACH of API 26, 30, 33, and 36. Lower-API runs used the installed debug test APK and am instrument; API 36 used connectedDebugAndroidTest. These establish debug test results, not complete signed-release walkthrough passes.\n\nSigned minified release: Consecutor 1.0.0, versionCode 10000; apksigner verification passed. APK SHA256: 96428cdfbd0f999677a37df960f906b188c1f1cbe73e2e40addf7254f6ab5cab. Throwaway signing key and password were removed. APK and evidence are under build/s22-validation in this worktree. Test targets: emulator-5556/API26 Google APIs ARM64, emulator-5558/API30 AOSP ARM64, emulator-5560/API33 AOSP ARM64, emulator-5554/API36 Google APIs ARM64. Owner reports no physical device available.\n\nPass = whole applicable row verified; Partial = specific subchecks verified but the row cannot pass; Pending = unexecuted or driver interrupted; Fail = observed gate failure. No pending or partial result counts as a pass.\n\n| Checklist row | API 26 | API 30 | API 33 | API 36 | Physical device |\n| --- | --- | --- | --- | --- | --- |\n| 1. Create/edit/type lock | Partial: create/type lock | Partial: create/type lock | Partial: create/type lock | Partial: create/type lock | Pending: unavailable |\n| 2. YES_NO toggle/Undo/rapid taps | Pass: final export one entry | Pass: final export one entry | Partial: toggle/Undo/taps; export pending | Pass: final export one entry | Pending: unavailable |\n| 3. COUNT and MEASURE logging | Pass | Pass | Pass | Pass | Pending: unavailable |\n| 4. Dashboard order/no-target bar | Partial: order | Partial: order | Partial: order | Partial: order | Pending: unavailable |\n| 5. Foreground/background midnight | Pending: cmd alarm unavailable | Fail S64; background pass | Fail S64; background pass | Fail S64; background pass | Pending: unavailable |\n| 6. Date/time/validation/comma locale | Pending | Partial: picker/chips | Partial: picker/chips | Partial: picker/chips | Pending: unavailable |\n| 7. Charts/calendar/past-day logging | Pending | Partial: charts/delete entry | Partial: charts/delete entry | Partial: charts/delete entry | Pending: unavailable |\n| 8. Archive/restore/delete/reminder removal | Partial: archive/restore | Partial: archive/restore | Partial: archive/restore | Partial: delete/export; reminder pending | Pending: unavailable |\n| 9. Backup/CSV/save/share/cache cleanup | Partial: saved JSON/CSV | Partial: saved JSON/CSV | Pending | Partial: save/share/restart | Pending: unavailable |\n| 10. Import preview/cancel/replace/copies/error | Partial: preview/cancel/replace | Pending | Pending | Partial: preview/cancel/replace/error | Pending: unavailable |\n| 11. Reminder delivery/tap/done/reboot/zone/import | Pending | Pending | Pending | Partial: delivery/tap/done passed; reboot/zone/power-saving pending | Pending: unavailable |\n| 12. Notification permission/settings | N/A: row targets API30/33+ | Pass: system Off/restored On | Fail: ANR S65; earlier deny/settings subchecks | Pass: allow/deny twice/settings | Pending: unavailable |\n| 13. Back/editor rotation | Partial: detail/archive Back | Partial: Back; rotation interrupted | Partial: detail/archive Back | Partial: Back/create rotation; entry rotation pending | Pending: unavailable |\n| 14. TalkBack/font200%/theme/cold start | Pending | Partial: 360dp/font2 dashboard | Pending | Partial: 360dp/font2 dashboard | Pending: unavailable |\n| 15. Release permissions/privacy | Fail S62: shared APK | Fail S62: shared APK | Fail S62: shared APK | Fail S62: shared APK | Pending: unavailable |\n| 16. Deleted note export/process restoration | Partial: note absent; am kill retained PID | Pass | Partial: process restoration | Pass | Pending: unavailable |\n| 17. About/version/source/licences | Partial: version | Pass | Pass | Pass | Pending: unavailable |\n| 18. Tablet/landscape centred <=640dp | Pending | Pending | Pending | Pending | Pending: unavailable |\n| 19. Latest main CI build/instrumented | Fail S63: shared CI run | Fail S63: shared CI run | Fail S63: shared CI run | Fail S63: shared CI run | Pending: unavailable |\n\nS64: foreground clock moved to 23:59:40, waited 24 seconds, system date advanced but YES_NO remained Done today on API30/33/36. Background across midnight passed on all three. Clock and auto_time were restored. This reproduces the specified clock-change test; natural uninterrupted midnight was not tested.\n\nS62: aapt2 lists POST_NOTIFICATIONS, RECEIVE_BOOT_COMPLETED, and the AndroidX DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION. The literal two-permission requirement fails; resolving the criterion must preserve signature protection.\n\nS63: latest published main Build run 37258797096, head fcd5106af6a5b1be7199e969929d5f4d49315584, has build success and instrumented failure. URL: https://github.com/squalor-xyz/consecutor/actions/runs/37258797096. It predates the local S45 merge 816a80f; no claim that the latest local revision fails CI. No shared CI actions were taken.\n\nS65: API33 showed an Android ANR dialog during permission testing; ActivityManager reported a MainActivity input-dispatch timeout at 2026-10-05 07:37:34 (PID 9948). Root cause unverified. Concurrent emulators/uiautomator were active. It needs a sequential reproduction and runtime evidence before attributing an app defect.\n\nRemaining verification: saving a tracker edit; no-target bar; API26 clock test; complete date/time, validation and comma locale; calendar past-day interaction; reminder removal, reboot, timezone, import and power-saving delivery; private safety-copy count and export-cache inspection; actual spreadsheet formula test; full TalkBack/theme/cold-start and editor rotation; tablet/landscape width; physical device. Driver timeouts, missing offscreen nodes, and duplicated IME input are recorded as interrupted verification, not invented product failures. API26 am kill retained the PID, so that process-death check was not a pass.\n\nThe owner adopted the timing criterion: never early, within one hour awake/outside Doze/Battery Saver off on every target; power-saving delay recorded separately. DEVELOPERS.md and S22 Implement now contain it.\n\nS22 depends on S62/S63/S64/S65. Scores: S62 3/3/1 (small required permission decision); S63 3/3/2 (required current-main CI investigation); S64 3/3/2 (reproduced gate failure and bounded clock refresh fix); S65 3/3/2 (observed release ANR requiring bounded investigation). The open S64 in P2 also fails S22's no-open-P2 gate. Existing S19/S46/S47/S48/S50/S51 are done. Fixes are outside S22 scope. Keep S22 started; do not handoff or mark done until failures and pending rows are resolved.\n\nAPI36 reminder delivery: scheduled 2026-10-05 08:16:00 EDT, Android mCreationTimeMs=1791202634542, delay 74.542 seconds. Battery Saver was 0, deviceidle mState=ACTIVE and mLightState=ACTIVE; this observed short-horizon delivery meets the approved criterion. Post-delivery alarm dump shows both reminder alarms advanced to 2026-10-06 08:16, while the already-done tracker had no notification. Remaining targets, reboot/timezone and power-saving delivery remain pending.\n\nAPI36 delivered-notification navigation passed (11-notification-opens-tracker PNG/XML). The tablet initially showed a System UI ANR. After dismissing Wait and retrying, its release dashboard tracker bounds were [672,208,1888,424] on 2560x1600 at density320: centred and 608dp wide. Tablet settings screenshot also captured; this does not replace remaining landscape-phone or other-screen checks. The tablet process was stopped. Created API26/30/33 test emulator processes were stopped. Original API36 emulator remains running. Layout overrides and clocks were restored; reminder measurement restored stay-on to its original value.",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         },
         {
           "id": "S22:legacy:2",
           "kind": "",
           "text": "**2026-10-05** — S22 release gate result: NO-GO. This supersedes the initial all-pending note; S22 is not ready for handoff. Worktree slice/S22 was built from main 816a80f. No commits, pushes, merges, or tags were performed.\n\nBuild verification: testDebugUnitTest, lintDebug, assembleRelease, and assembleDebugAndroidTest succeeded offline with the approved JDK 17 and Android SDK. 134 JVM tests passed, zero failures/errors/skips. Lint has zero errors/fatal issues and 14 warnings. The full 56-test instrumented suite passed on EACH of API 26, 30, 33, and 36. Lower-API runs used the installed debug test APK and am instrument; API 36 used connectedDebugAndroidTest. These establish debug test results, not complete signed-release walkthrough passes.\n\nSigned minified release: Consecutor 1.0.0, versionCode 10000; apksigner verification passed. APK SHA256: 96428cdfbd0f999677a37df960f906b188c1f1cbe73e2e40addf7254f6ab5cab. Throwaway signing key and password were removed. APK and evidence are under build/s22-validation in this worktree. Test targets: emulator-5556/API26 Google APIs ARM64, emulator-5558/API30 AOSP ARM64, emulator-5560/API33 AOSP ARM64, emulator-5554/API36 Google APIs ARM64. Owner reports no physical device available.\n\nPass = whole applicable row verified; Partial = specific subchecks verified but the row cannot pass; Pending = unexecuted or driver interrupted; Fail = observed gate failure. No pending or partial result counts as a pass.\n\n| Checklist row | API 26 | API 30 | API 33 | API 36 | Physical device |\n| --- | --- | --- | --- | --- | --- |\n| 1. Create/edit/type lock | Partial: create/type lock | Partial: create/type lock | Partial: create/type lock | Partial: create/type lock | Pending: unavailable |\n| 2. YES_NO toggle/Undo/rapid taps | Pass: final export one entry | Pass: final export one entry | Partial: toggle/Undo/taps; export pending | Pass: final export one entry | Pending: unavailable |\n| 3. COUNT and MEASURE logging | Pass | Pass | Pass | Pass | Pending: unavailable |\n| 4. Dashboard order/no-target bar | Partial: order | Partial: order | Partial: order | Partial: order | Pending: unavailable |\n| 5. Foreground/background midnight | Pending: cmd alarm unavailable | Fail S64; background pass | Fail S64; background pass | Fail S64; background pass | Pending: unavailable |\n| 6. Date/time/validation/comma locale | Pending | Partial: picker/chips | Partial: picker/chips | Partial: picker/chips | Pending: unavailable |\n| 7. Charts/calendar/past-day logging | Pending | Partial: charts/delete entry | Partial: charts/delete entry | Partial: charts/delete entry | Pending: unavailable |\n| 8. Archive/restore/delete/reminder removal | Partial: archive/restore | Partial: archive/restore | Partial: archive/restore | Partial: delete/export; reminder pending | Pending: unavailable |\n| 9. Backup/CSV/save/share/cache cleanup | Partial: saved JSON/CSV | Partial: saved JSON/CSV | Pending | Partial: save/share/restart | Pending: unavailable |\n| 10. Import preview/cancel/replace/copies/error | Partial: preview/cancel/replace | Pending | Pending | Partial: preview/cancel/replace/error | Pending: unavailable |\n| 11. Reminder delivery/tap/done/reboot/zone/import | Pending | Pending | Pending | Partial: delivery/tap/done passed; reboot/zone/power-saving pending | Pending: unavailable |\n| 12. Notification permission/settings | N/A: row targets API30/33+ | Pass: system Off/restored On | Fail: ANR S65; earlier deny/settings subchecks | Pass: allow/deny twice/settings | Pending: unavailable |\n| 13. Back/editor rotation | Partial: detail/archive Back | Partial: Back; rotation interrupted | Partial: detail/archive Back | Partial: Back/create rotation; entry rotation pending | Pending: unavailable |\n| 14. TalkBack/font200%/theme/cold start | Pending | Partial: 360dp/font2 dashboard | Pending | Partial: 360dp/font2 dashboard | Pending: unavailable |\n| 15. Release permissions/privacy | Fail S62: shared APK | Fail S62: shared APK | Fail S62: shared APK | Fail S62: shared APK | Pending: unavailable |\n| 16. Deleted note export/process restoration | Partial: note absent; am kill retained PID | Pass | Partial: process restoration | Pass | Pending: unavailable |\n| 17. About/version/source/licences | Partial: version | Pass | Pass | Pass | Pending: unavailable |\n| 18. Tablet/landscape centred <=640dp | Pending | Pending | Pending | Partial: tablet centred/608dp; landscape width608dp | Pending: unavailable |\n| 19. Latest main CI build/instrumented | Fail S63: shared CI run | Fail S63: shared CI run | Fail S63: shared CI run | Fail S63: shared CI run | Pending: unavailable |\n\nS64: foreground clock moved to 23:59:40, waited 24 seconds, system date advanced but YES_NO remained Done today on API30/33/36. Background across midnight passed on all three. Clock and auto_time were restored. This reproduces the specified clock-change test; natural uninterrupted midnight was not tested.\n\nS62: aapt2 lists POST_NOTIFICATIONS, RECEIVE_BOOT_COMPLETED, and the AndroidX DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION. The literal two-permission requirement fails; resolving the criterion must preserve signature protection.\n\nS63: latest published main Build run 37258797096, head fcd5106af6a5b1be7199e969929d5f4d49315584, has build success and instrumented failure. URL: https://github.com/squalor-xyz/consecutor/actions/runs/37258797096. It predates the local S45 merge 816a80f; no claim that the latest local revision fails CI. No shared CI actions were taken.\n\nS65: API33 showed an Android ANR dialog during permission testing; ActivityManager reported a MainActivity input-dispatch timeout at 2026-10-05 07:37:34 (PID 9948). Root cause unverified. Concurrent emulators/uiautomator were active. It needs a sequential reproduction and runtime evidence before attributing an app defect.\n\nRemaining verification: saving a tracker edit; no-target bar; API26 clock test; complete date/time, validation and comma locale; calendar past-day interaction; reminder removal, reboot, timezone, import and power-saving delivery; private safety-copy count and export-cache inspection; actual spreadsheet formula test; full TalkBack/theme/cold-start and editor rotation; tablet/landscape width; physical device. Driver timeouts, missing offscreen nodes, and duplicated IME input are recorded as interrupted verification, not invented product failures. API26 am kill retained the PID, so that process-death check was not a pass.\n\nThe owner adopted the timing criterion: never early, within one hour awake/outside Doze/Battery Saver off on every target; power-saving delay recorded separately. DEVELOPERS.md and S22 Implement now contain it.\n\nS22 depends on S62/S63/S64/S65. Scores: S62 3/3/1 (small required permission decision); S63 3/3/2 (required current-main CI investigation); S64 3/3/2 (reproduced gate failure and bounded clock refresh fix); S65 3/3/2 (observed release ANR requiring bounded investigation). The open S64 in P2 also fails S22's no-open-P2 gate. Existing S19/S46/S47/S48/S50/S51 are done. Fixes are outside S22 scope. Keep S22 started; do not handoff or mark done until failures and pending rows are resolved.\n\nAPI36 reminder delivery: scheduled 2026-10-05 08:16:00 EDT, Android mCreationTimeMs=1791202634542, delay 74.542 seconds. Battery Saver was 0, deviceidle mState=ACTIVE and mLightState=ACTIVE; this observed short-horizon delivery meets the approved criterion. Post-delivery alarm dump shows both reminder alarms advanced to 2026-10-06 08:16, while the already-done tracker had no notification. Remaining targets, reboot/timezone and power-saving delivery remain pending.\n\nAPI36 delivered-notification navigation passed (11-notification-opens-tracker PNG/XML). The tablet initially showed a System UI ANR. After dismissing Wait and retrying, its release dashboard tracker bounds were [672,208,1888,424] on 2560x1600 at density320: centred and 608dp wide. Tablet settings screenshot also captured; this does not replace remaining landscape-phone or other-screen checks. The tablet process was stopped. Created API26/30/33 test emulator processes were stopped. Original API36 emulator remains running. Layout overrides and clocks were restored; reminder measurement restored stay-on to its original value.\n\nAPI36 import cleanup also passed: restoring the original three-tracker backup removed both pending reminder alarms (11-alarm-after-restore.txt). Notifications were restored to off. This verifies cancellation of the old pending alarms; reboot/timezone/power-saving and lower-API reminder delivery still remain pending.\n\nLandscape API36: screenshot 2400x1080 at density420, tracker [466,589,2062,873] = 608dp wide; containing column [424,231,2104,1017] = 640dp wide. The raw physical-screen centre assertion differed by 64px and did not account for display insets; centring is left partial rather than attributed as a product failure. Rotation was restored in finally.\n\nFinal local checks: git diff --check passed and main remains clean. Slicer 1.2.0 check initially rejected generated-output provenance; slicer render regenerated the S22 worktree outputs and the subsequent slicer check passed with no problems or warnings. This regeneration changes generated slice headers across the worktree; no other slice state was modified by rendering.",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         },
         {
           "id": "S22:legacy:3",
           "kind": "",
           "text": "**2026-10-05** — **2026-10-05 (re-run after S62-S65)** — S22 release gate: STILL NO-GO. S62, S63, S64 and S65 are done and merged; this run re-validates the merged tree. Not ready for handoff, not done. No pushes, merges or tags were made by this run.\n\nBuild under test: slice/S22 60a8052 (main 84fe795 merged in). Signed minified release APK consecutor-1.0.0-s22b.apk, versionName 1.0.0, versionCode 10000, SHA256 a06a8c59c86a6890bfa2d4567769b50ade78ad0b81254be716bb5ec01b0c8952 (apksigner: v2 and v3 verified). Signed with a new throwaway key kept outside the repo; the key and its passwords were deleted. Evidence is under build/s22-validation-2 in this worktree. This supersedes the earlier build 96428cdf (816a80f), which predates S64.\n\nAutomated checks on this build: testDebugUnitTest 139 passed, 0 failed, 0 skipped. lintDebug 0 errors, 14 warnings, 1 hint (unchanged). Instrumented suite (56 tests) with connectedDebugAndroidTest: API 36 56/56; API 30 56/56; API 33 56/56; API 26 one failure in the first full run, NavigationTest.typedTrackerNameSurvivesRecreation (Failed to assert text contains 'Unfinished tracker'), then the isolated test passed 5/5 and two further full runs passed 56/56. That is 1 failure in 8 API 26 runs. It is intermittent and unexplained; no cause is established and nothing was changed. It is not counted as a clean pass for API 26.\n\nPermissions (row 15, as agreed in S62): aapt dump permissions on the signed APK lists POST_NOTIFICATIONS, RECEIVE_BOOT_COMPLETED, and the androidx.core signature permission DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION; no INTERNET. That matches the agreed gate and PRIVACY.md on the S20 branch. All targets use the same APK.\n\nRow 5, midnight rollover on the signed release (clock set with cmd alarm set-time, or date on API 26, to 23:59:40 with the dashboard open; screenshots at 00:00:06-00:00:08): foreground PASS on API 26, 30, 33 and 36 (Done today then Not logged today). Background across midnight PASS on API 36 (logged, Home, clock to 00:05, return: Not logged today). Background on API 26, 30 and 33 was not re-run on this build. An API 30 run in which the tap opened the detail screen instead of logging is not counted; the API 30 result is from the repeat in which Done today was confirmed first. Clocks and auto_time were restored on every emulator.\n\n| Checklist row | API 26 | API 30 | API 33 | API 36 | Physical device |\n| --- | --- | --- | --- | --- | --- |\n| 5. Foreground midnight | Pass | Pass | Pass | Pass | Pending: none available |\n| 5. Background midnight | Pending | Pending | Pending | Pass | Pending: none available |\n| 15. Release permissions | Pass (agreed gate) | Pass | Pass | Pass | Pending: none available |\n| Instrumented suite | Partial: 1 intermittent failure in 8 runs | Pass | Pass | Pass | n/a |\n\nRows 1-4, 6-14 and 16-18 were NOT re-run on this build. Their last results (partial, pending or pass on build 96428cdf) are in the previous note and still apply as recorded; none of them counts as a pass for this build. Still open: save-edit, no-target bar, API 26 clock row beyond foreground, complete date/time and comma-locale checks, calendar past-day logging, reminder delivery on API 26/30/33, reboot, timezone, power-saving delay and import-clears-alarms, safety-copy count, export-cache inspection, the spreadsheet formula test, TalkBack, theme cold start, editor rotation, landscape centring, and everything on a physical device (none available).\n\nRow 19 (latest main CI green): published main 939d9b5 passed both jobs (run 37338219263). Main is now 84fe795, which includes S64 and S65 and has not been pushed, so there is no CI result for it yet.\n\nTo finish S22: a physical device, the remaining rows above on every target, and a pushed main with green build and instrumented jobs. Keep S22 started; do not hand off or mark done until then.",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         },
         {
           "id": "S22:legacy:4",
           "kind": "",
           "text": "**2026-10-05** — **2026-10-05 (follow-up, same build)** — S22 still NO-GO. More rows were walked through on the signed release a06a8c59...8952 on API 36 only (emulator-5554, 1080x2400, sequential adb input and screenshots; uiautomator was not used). Evidence is under build/s22-validation-2/emulator-5554 and in the scratch screenshots. Nothing was committed to main, pushed or tagged.\n\n| Checklist row | API 36 result on this build |\n| --- | --- |\n| 1. Create each type | Pass for create: YES_NO (Roll), COUNT (Cnt), MEASURE (Meas) saved. Edit and the type lock were not re-run: Partial overall. |\n| 2. YES_NO toggle, Undo, rapid taps | Partial: six rapid taps on the checkbox ended in a consistent Done today state with one trend bar and one visible history card; the entry count was not read from an export, and the history list was partly hidden by the snackbar. |\n| 3. COUNT +1, custom amount, Undo; MEASURE Log | Pass on API 36: +1 took 0 to 2 today, a long-press custom amount of 5 gave 7, +1 gave 8 and Undo gave 7; Measure Log with 72.5 saved and the card shows Last: Oct 5, 2026 (the stored value was not read back). |\n| 4. Dashboard order, no completion bar | Pass on API 36: order stayed Roll, Cnt, Meas through every log; none of the three trackers has a target and none shows a completion bar. |\n| 13. Back, editor rotation | Partial: the entry dialog kept the typed 72.5 across portrait, landscape and portrait with Save and Cancel visible. The tracker editor and Back navigation were not re-run on this build. |\n| 18. Tablet and landscape width | Partial: landscape phone dashboard column is 608dp wide (at most 640dp). The content column is not symmetric in raw pixels (466 px left, 338 px right of 2400), which is the same inset question as in the earlier note; no tablet run on this build. |\n\nAn earlier tap on API 36 toggled an already-done tracker to Cleared, so the first background-rollover attempt was repeated from a confirmed Done today state; only the repeat is counted (see the previous note). Rotation and auto_time settings on the emulator were restored to their original values (accelerometer_rotation 1, user_rotation 0).\n\nEverything the previous note listed as not re-run and not listed above is still open: Rows 6, 7, 8, 9, 10, 11, 12 on this build, 14, 16, 17, and every row on a physical device. Row 19 still needs main 84fe795 pushed so CI can run on it. Not ready for handoff.",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         },
         {
           "id": "17243afb-52d3-4c67-ab79-7975c09f264d",
           "kind": "",
           "text": "**2026-10-05** — **2026-10-05 (trimmed-matrix run)**: S22 is still NO-GO and not ready for handoff. It now depends on S66 (new).\n\n**Owner decisions this session:**\n- Trimmed matrix:\n  - Rows covered by the 56 instrumented tests on API 26, 30, 33 and 36 (rows 2, 3, the row 8 cascade, 13 and 16) count via the suite plus the earlier passes.\n  - Rows that don't depend on the API level are walked once on API 36.\n  - Rows 9, 10 and 11 are walked on API 26 and API 36.\n  - Row 12 is walked on API 33 (permission flow) and API 30 (notifications turned off in system settings).\n- The physical device is waived. The owner records the waiver in a separate note.\n- Row 19: owner confirms main 84fe795 is pushed and CI is green on both the `build` and `instrumented` jobs.\n\n**Build under test:** signed release a06a8c59...8952, unchanged from the re-run (the branch only changed DEVELOPERS.md). Private-storage checks used the debug build of the same tree on API 36. Emulators were run one at a time, with adb input and screencap, and uiautomator was used only to read the screen. Evidence is in build/s22-validation-3.\n\n| Row | Result |\n| --- | --- |\n| 1 Create, edit, type lock | Pass on API 36. After an entry, the editor shows \"Type can't change after logging.\" and tapping Count did not change the type. A rename saved. Tracker-edit save also passed on API 26. |\n| 2, 3, 13, 16 | Pass via the instrumented suite on API 26, 30, 33 and 36, plus the earlier walkthrough passes. On API 26 the suite has the S66 flake. |\n| 4 Order, no-target bar | Pass on API 36 (follow-up note on this build). |\n| 5 Midnight | Foreground passes on API 26, 30, 33 and 36. Background passes on API 36 (re-run note). |\n| 6 Date, time, validation, comma locale | Pass on API 36 with the per-app locale de-DE:<ul><li>Empty fields show \"Required.\".</li><li>`7,5,1` shows \"Enter a number.\".</li><li>`72,5` was accepted, and the chart shows \"average 72,5 kg\".</li><li>Yesterday set 04.10.2026.</li><li>The date picker disables 6 Oct and later.</li><li>The reminder time picker works on API 26 and API 36.</li></ul> |\n| 7 Charts, calendar, past day | Pass on API 36. Future calendar cells are not clickable. Tapping 3 Oct opened the editor with 03.10.2026, and saving updated the calendar and chart. |\n| 8 Archive, restore, delete, reminder | Instrumented suite plus earlier passes. The API 36 import removed the old alarms (earlier note). On API 26, replacing via import cancelled the edited 14:15 alarm. |\n| 9 Save, share, CSV, cache | API 26 pass:<ul><li>JSON and CSV were saved through the picker.</li><li>The CSV cell is `'=1+1`, so the formula is neutralised. This was checked in the file; no spreadsheet app was available.</li><li>Share delivered the intent.</li></ul>API 36 pass:<ul><li>`cache/exports` held only the latest shared file and was empty after a restart.</li></ul> |\n| 10 Import | API 26 pass:<ul><li>The preview showed \"2 trackers and 1 entry … your current 3 trackers\".</li><li>Cancel changed nothing.</li><li>Replace restored the backup.</li><li>A malformed file gave \"Not a Consecutor backup file.\".</li></ul>API 36 pass:<ul><li>After five imports, `files/backups` holds exactly 3 `pre-import-*` files, and the oldest was pruned.</li></ul> |\n| 11 Reminders | API 26 pass:<ul><li>Scheduled 14:10:00, delivered by 14:10:36.</li><li>Tapping it opened Walk.</li><li>When already done, the 14:15 reminder was skipped and the alarm moved to the next day.</li></ul>API 36 pass:<ul><li>After a reboot, the 15:05 reminder arrived by 15:06:04 (Battery Saver 0, deviceidle ACTIVE), and tapping it opened Weight.</li><li>Switching the timezone to America/Chicago moved the alarm by exactly +3600000 ms (14:55 local). Restoring New York set it to 2026-10-06 14:55 EDT.</li></ul>Power-saving delay was not measured.<br>Disclosure: an earlier API 36 reboot attempt is not counted. My poll timed out, and my timezone change re-scheduled that inexact alarm before it was delivered. |\n| 12 Notification permission | API 33 pass:<ul><li>The reminder save prompts once. Deny shows the \"Notifications off\" card tag and a snackbar with Open settings.</li><li>The second request comes from Settings (\"Allow notifications\"). After denying that, Settings shows Open settings.</li><li>The system toggle sets granted=true, and the app shows \"Notifications: On\".</li><li>On a fresh install, Allow sets granted=true.</li><li>No am_anr during the run.</li></ul>API 30 pass:<ul><li>Turning notifications off in system settings shows \"Notifications: Off\". Turning them back on shows \"On\".</li></ul> |\n| 14 TalkBack, font, theme | Partial on API 36:<ul><li>TalkBack could not be driven from adb. Injected swipes and Alt+Right did not move focus, so this is not verified.</li><li>At 200% font on 360dp, the dashboard, Settings and the create dialog are usable. The create-dialog title truncates to \"New …\", which needs an owner decision.</li><li>Dark mode cold start: 8 raw frames sampled, all dark (mean luma 23–36 of 255), and the night theme sets a dark windowBackground.</li></ul> |\n| 15 Permissions | Pass (re-run note). |\n| 17 About | Pass on API 30, 33 and 36 (earlier note). |\n| 18 Tablet, landscape | Landscape phone on API 36 passes:<ul><li>The card is [466..2062] px, 608dp wide.</li><li>Its centre is 1264, which is the centre of the safe area after the 128 px left display-cutout inset in landscape. Content is centred.</li></ul>The tablet is not verified on this build:<ul><li>The s48_tablet_api36 AVD showed repeated ANR dialogs.</li><li>am_anr fired for Consecutor at 15:42:31 and 15:51:50, both \"Waited ~5s for FocusEvent\", with guest load 12.2 and 10.0. Host load was about 16–24 while another heavy host process was running.</li><li>The cause is unverified.</li></ul>The earlier tablet measurement (608dp, centred) was on build 96428cdf. No layout code changed since then: only DayClock, the clock receiver and the ViewModel. |\n| 19 CI | Pass (owner-confirmed, 84fe795). |\n| Physical device | Waived by the owner. |\n\n**API 26 instrumented suite:**\n- Run 1: 56/56.\n- Run 2: `NavigationTest.typedTrackerNameSurvivesRecreation` failed. The Name field was empty after recreate().\n- Total: 2 failures in 10 API 26 runs. Filed as S66, and S22 depends on it.\n- The Gradle connectedDebugAndroidTest on API 26 reported 0 tests. The suite was run with am instrument instead, as before.\n\n**ANRs:** an API 36 phone run showed a Consecutor ANR at 14:26:38 during the post-boot storm (load 25.9, on an injected SHIFT key event). It did not recur after a reboot under low load. Low-load runs on API 26, 30 and 33 recorded no Consecutor am_anr.\n\n**Still open:** S66; TalkBack (needs a person or an owner decision); the title truncation at 200% (owner decision); the tablet re-run on an idle host; the owner's waiver note.",
           "created_at": "2026-10-05T20:11:50Z",
-          "attempt": 1
+          "attempt": 1,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         },
         {
           "id": "7b1e5fe4-d053-4d49-b518-d8beb0c5b97f",
           "kind": "",
           "text": "**2026-10-06** — **Owner waiver (2026-10-06):** the physical-device column is waived for 1.0. No physical Android device is available. These remain unverified on real hardware:\n- overnight reminder delivery with the screen off (Doze), and the power-saving delay\n- a real device's system file picker and share targets\n- a real spreadsheet app opening the CSV\n- TalkBack (covered by DashboardSemanticsTest)\n- the largest system font\n- editor rotation on hardware\n\nAll of these were checked on emulators as recorded in the S22 notes.",
           "created_at": "2026-10-06T12:05:23Z",
-          "attempt": 1
+          "attempt": 1,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         },
         {
           "id": "d5d03135-54fe-4509-80aa-61f436477cbd",
           "kind": "",
           "text": "**2026-10-06** — **2026-10-06: final gate result: GO, ready for review.** This note supersedes the earlier S22 result tables.\n\n**Tree under test:** slice/S22 eb2fbfd, which is main ac775b1 (with S66 and S67 merged) plus the S22 roadmap notes.\n\n**Release build:**\n- Signed minified release consecutor-1.0.0-s22c.apk: versionName 1.0.0, versionCode 10000.\n- SHA-256 d6f2f9924e481e045ab5c6799ab2ebbb6f030a5017246131cb0793da3526fab6.\n- apksigner verifies v2 and v3. The throwaway key and its password were deleted.\n- aapt permissions: POST_NOTIFICATIONS, RECEIVE_BOOT_COMPLETED, and the androidx signature permission DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION. No INTERNET.\n- Evidence: build/s22-validation-4.\n\n**Automated checks on this tree:**\n- testDebugUnitTest: 139 passed, 0 failed, 0 skipped.\n- lintDebug: 0 errors, 14 warnings (unchanged).\n- Instrumented suite via am instrument, one emulator at a time, guest load < 3:\n  - API 26: 3/3 runs at 56/56.\n  - API 30: 56/56.\n  - API 33: 56/56.\n  - API 36: 56/56.\n- No am_anr was recorded on any of the four emulators during these runs.\n- Note on the first build: it reported BUILD FAILED, and its error was not captured. A re-run of the same tasks passed. The release APK was then rebuilt from a deleted output and re-signed, and only that rebuilt APK is the one under test.\n\n**Release on API 36:**\n- Smoke test passed: create Smoke, log it (\"Done today\"), open Settings (Notifications: On), About shows \"Consecutor 1.0.0\".\n- At font_scale 2.0 and 360dp (wm density 480), both \"New tracker\" and \"Edit tracker\" titles show in full on two lines (S67), with Cancel and Save visible.\n- Display settings were restored.\n\n| Row | Result |\n| --- | --- |\n| 1 Create, edit, type lock | Pass (API 36; edit save also passes on API 26) |\n| 2, 3, 13, 16 | Pass via the instrumented suite on API 26, 30, 33 and 36, plus earlier walkthrough passes (owner-trimmed matrix) |\n| 4 Order, no-target bar | Pass (API 36) |\n| 5 Midnight | Pass: foreground on API 26, 30, 33 and 36; background on API 36 |\n| 6 Date, time, validation, comma locale | Pass (API 36 with de-DE; time picker on API 26 and 36) |\n| 7 Charts, calendar, past day | Pass (API 36) |\n| 8 Archive, restore, delete, reminder | Pass (instrumented cascade tests; old alarms cleared on import on API 26 and 36) |\n| 9 Save, share, CSV, cache | Pass (API 26 and 36; formula cell neutralised; cache/exports empty after restart) |\n| 10 Import | Pass (API 26 and 36; exactly 3 safety copies kept) |\n| 11 Reminders | Pass: delivery, tap and done-skip on API 26; reboot and timezone on API 36. Power-saving delay was not measured; see the waiver. |\n| 12 Notification permission | Pass (API 33 allow/deny/deny-twice/settings; API 30 system Off) |\n| 14 TalkBack, font, theme | Font: Pass on this release (S67). Theme cold start: Pass. TalkBack: owner decision, covered by DashboardSemanticsTest. |\n| 15 Permissions | Pass (this APK) |\n| 17 About | Pass (this APK shows 1.0.0) |\n| 18 Tablet, landscape | Landscape: Pass (centred in the safe area, 608dp). Tablet: owner decision, carried over from build 96428cdf with no layout change since. |\n| 19 CI | Pass (owner-confirmed green on 84fe795). Main now has S66 and S67 merged and is not pushed, so CI has not run on it. |\n| Physical device | Waived by the owner (see the waiver note) |\n\nS66 and S67 are done. `slicer list` shows no open P0–P2 items.",
           "created_at": "2026-10-06T12:24:14Z",
-          "attempt": 1
+          "attempt": 1,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         }
       ],
       "claim": null,
@@ -902,7 +994,11 @@
           "kind": "",
           "text": "**2026-10-06** — Ready for review: yes/no reminders get a Mark done action and count reminders a +1 action (ReminderActionReceiver logs today via repository.addEntry, then cancels the notification without opening the app); measurement reminders have no action. Verified: testDebugUnitTest (142, incl. 3 reminderAction tests) and lintDebug pass; connectedDebugAndroidTest 58/58 on s08_api34 (API 34), incl. new countActionAddsOneEntryAndDismissesNotification and markDoneTwiceLogsYesNoOnce. Manual on API 34: 10:55 reminders arrived for yes/no (Mark done), count (+1) and measure (no action); Mark done and +1 dismissed their notifications with the launcher still on top; dashboard showed Done today and 1 today; tapping the measure notification body opened its detail. Not verified: TalkBack reading of the +1 label; S22 reminder rows on the signed release APK (owner).",
           "created_at": "2026-10-06T14:58:21Z",
-          "attempt": 1
+          "attempt": 1,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         }
       ],
       "claim": null,
@@ -1167,7 +1263,11 @@
           "kind": "",
           "text": "**2026-10-03** — Verification: 35 unit tests, lintDebug, and assembleDebug passed offline. All 15 top-level declaration blocks match the original after normalizing moved visibility. Device smoke test not run: adb devices reported no connected device or emulator.",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         }
       ],
       "claim": null,
@@ -1206,7 +1306,11 @@
           "kind": "",
           "text": "**2026-10-04** — Step 0 confirmed: BackupCodec.encode with an entry value of Double.POSITIVE_INFINITY throws org.json.JSONException ('JSON does not allow non-finite numbers.') on the JVM org.json used by unit tests (testImplementation libs.org.json); kept as test 'encode fails loudly on non-finite values'. Not checked against android.jar's org.json at runtime. Also switched TrackerAnalytics' private formatNumber (same 3.0E9/roundToInt overflow) to NumberRules.formatNumber (owner approved). Left alone: formatNumber(-0.001) gives '-0' (standard NumberFormat behavior), not in spec.",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         }
       ],
       "claim": null,
@@ -1245,14 +1349,22 @@
           "kind": "",
           "text": "**2026-10-04** — Implemented in .worktrees/S34 on slice/S34 from main e761522. YES_NO aggregation and totals count distinct active dates regardless of stored value; all analytics exclude future entries while detail history retains them. toSummary/toDetail accept WeekFields with the device-locale default and pass it through weekly streak grouping and current-period selection. COUNT/MEASURE sums and their existing null handling are preserved. Added Streak rules documentation and checked it against the implementation. Six regressions failed before the fix; focused analytics tests now pass (16 tests), with all existing test bodies unchanged. Full offline testDebugUnitTest passes; final suite count is recorded in the verification note below. No dependencies, schema, repository caller, or UI changes. Instrumented tests and device checks were not run; no merge is performed.",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         },
         {
           "id": "S34:legacy:1",
           "kind": "",
           "text": "**2026-10-04** — Final verification: 61 JVM tests passed, zero failures/errors/skips, including 16 analytics tests (nine additions). git diff --check passed. Existing analytics test bodies are unchanged. Handing off for review; instrumented/device checks remain unrun and are required by DEVELOPERS.md before merging data-layer changes.",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         }
       ],
       "claim": null,
@@ -1291,14 +1403,22 @@
           "kind": "",
           "text": "**2026-10-04** — Implemented in .worktrees/S35 on slice/S35; code commit 84307c3. addEntry returns Long, looks up an active YES_NO entry by tracker/date inside the existing Room transaction, and returns immediately without changing the entry or tracker timestamp when found. Other types still insert. Six in-memory Room instrumentation tests cover duplicate preservation, COUNT/MEASURE repeated additions, soft-delete replacement, independent dates/trackers, and concurrent YES_NO additions. No schema or UI changes. git diff --check passed. testDebugUnitTest, assembleDebugAndroidTest, and connectedDebugAndroidTest have not run: task-specific permission to use the external JDK, Gradle cache, Android SDK, and test device is pending. Review handoff includes this verification limitation.",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         },
         {
           "id": "S35:legacy:1",
           "kind": "",
           "text": "**2026-10-04** — Final verification supersedes the earlier pending-access note. With approved JDK 17/Gradle cache/SDK access, ./gradlew --offline testDebugUnitTest assembleDebugAndroidTest passed: 83 unit tests, zero failures/errors/skips, and instrumentation APK compiled. On headless read-only s08_api34 (confirmed API 34), direct AndroidJUnitRunner via ADB passed TrackerDaoTest: OK (12 tests), including all six S35 tests. Full instrumentation run: 19 tests, 4 navigation timeouts at NavigationTest.openTracker; unchanged baseline 77de0ee reproduced the same four failures (editingTrackerNameSurvivesRecreation, selectedTrackerSurvivesRecreation, entryFieldsSurviveRecreation, backFromDetailReturnsToDashboard). Gradle connectedDebugAndroidTest could not resolve uncached com.android.tools.utp:android-test-plugin-host-additional-test-output:31.13.2 in offline mode; no dependencies downloaded or added. Raw logs retained in ignored build/s35/{checks.txt,connected.txt,instrumentation.txt,dao-tests.txt,baseline-checks.txt,baseline-navigation.txt}. git diff --check and slicer check passed. Ready for review, claim cleared; code commit 84307c3.",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         }
       ],
       "claim": null,
@@ -1370,7 +1490,11 @@
           "kind": "",
           "text": "**2026-10-04** — Ready for review: reminder notifications carry immutable activity intents keyed by tracker id; singleTop MainActivity handles initial and new intents, and saved ViewModel selection drives detail navigation. Verified 118 unit tests, all 16 existing NavigationTest cases, and all 6 NotificationNavigationTest cases on the API 34 emulator. Manual two-minute reminder checks passed from the background and while another tracker was open: correct detail, one MainActivity, Back to dashboard. adb am start with tracker_id 1 opened tracker 1. The first new-test run exposed a duplicate-text assertion in the test helper; corrected and all six S37 tests passed on rerun. No ViewModel change or new dependencies.",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         }
       ],
       "claim": null,
@@ -1634,14 +1758,22 @@
           "kind": "",
           "text": "**2026-10-05** — 200% font-scale validation: emulator-5554 (s48_pixel6_api36, Android 16), wm size 720x1280 and density 320 (360dp wide), font_scale 2.0. All 8 DashboardSemanticsTest cases passed, including real 48dp calendar bounds, 48dp reminder-day chip bounds, label-side touches toggling each whole Switch row exactly once, independent named logging actions, settings reachability, and create/save. Inspected screenshots of create, log/edit entry, dashboard, detail, calendar, and settings: text wraps, action rows wrap, content remains reachable by scrolling, and inspected controls do not overlap. Calendar uses 12dp outer margins and no horizontal grid gaps, yielding seven 48dp columns. Material text buttons needed explicit 48dp layout heights. Evidence is in worktree build/s45-validation/large-*.png and .xml (local build artifacts). TalkBack focus/activation walkthrough completed on the same emulator with the installed TalkBack service bound and touch exploration active. Hardware touch swipes and double taps traversed the merged dashboard card, its independent Add 1 action (one activation added exactly one), new-tracker creation/save, detail, calendar-day entry editing/cancel, and settings actions through Notifications. Focus captures are build/s45-validation/talkback-real-*.png; accessible labels are captured in matching XML. Speech audio was not evaluated. Ordinary adb input injections were unsuitable for gesture validation; emulator hardware events were used with native-panel letterbox coordinates. No app defects were found in that walkthrough. Display size/density overrides were reset, font_scale restored to 1.0, and accessibility restored to its original disabled state. Keyboard positioning remains S60 scope.",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         },
         {
           "id": "S45:legacy:1",
           "kind": "",
           "text": "**2026-10-05** — Ready for review: implemented merged resource-based dashboard descriptions with independent named logging controls; full-row Switch toggles; real 48dp buttons, chips and calendar targets; wrapping action rows and scrollable entry-editor content. Final checks passed: testDebugUnitTest (134 tests), connectedDebugAndroidTest (56 tests), DashboardSemanticsTest at 360dp/200% (8 tests), git diff --check, and slicer check. The 200% and TalkBack walkthrough evidence and limitations are in the preceding note. No new dependencies. Code committed separately from slicer state on slice/S45; no merge or push.",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         }
       ],
       "claim": null,
@@ -1680,7 +1812,11 @@
           "kind": "",
           "text": "**2026-10-03** — S04's review note says lintDebug reports 52 version/catalog warnings (0 errors), left for S19. After the roadmap split those belong here: run ./gradlew lintDebug before and after this slice, and record the warning count in the closing note (use the lint report under app/build/reports/ to see which are outdated-dependency warnings).",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         }
       ],
       "claim": null,
@@ -1751,14 +1887,22 @@
           "kind": "",
           "text": "**2026-10-04** — Play requirement checked 2026-10-04 at https://developer.android.com/google/play/requirements/target-sdk: since 2026-08-31, new apps and app updates must target API 36 (Android 16); existing apps must target 35+ to stay available to new users on newer devices. Target set to 36.",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         },
         {
           "id": "S48:legacy:1",
           "kind": "",
           "text": "**2026-10-04** — Walkthrough 2026-10-04, debug build targetSdk=36 (dumpsys confirmed), AVDs s48_pixel6_api36 and s48_tablet_api36 (system-images;android-36;google_apis;arm64-v8a), driven via adb + uiautomator. Passed: edge-to-edge (top bar below status bar, FAB above gesture bar on dashboard, settings, detail); notification permission dialog -> POST_NOTIFICATIONS granted; reminder set 10:46 fired, notification posted on channel tracker_reminders by 10:47:41; back gesture settings->dashboard, detail->dashboard, dashboard->launcher; backup Save to file (valid JSON) and Import with preview + Replace, reminder alarm kept after import; Pixel Tablet landscape, portrait and split screen with Settings, same process, no crash. Not verified: the predictive back animation visually (adb swipes only); Archived screen (S15 not merged). Pre-existing, not caused by the bump (same on a targetSdk 34 build): with the keyboard open the tracker dialog's Save row sits partly behind the IME; Settings still shows 'Allow notifications' after granting (S09). gradlew testDebugUnitTest lintDebug assembleDebug assembleRelease: exit 0; lint at target 36 only drops OldTargetApi vs target 34, no new issues; tools:targetApi left unchanged.",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         }
       ],
       "claim": null,
@@ -1829,7 +1973,11 @@
           "kind": "",
           "text": "**2026-10-03** — Ready for review on s50-remove-ai-output in .worktrees/S50; merge target main. Removed ai-output/chatgpt-output.md. Reference search found no matches, specs-and-reqs.md is unchanged, git diff --check passed, and offline assembleDebug passed with Homebrew JDK 17. No application code or dependency changes.",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         }
       ],
       "claim": null,
@@ -1923,21 +2071,33 @@
           "kind": "",
           "text": "**2026-10-03** — Versions chosen (looked up 2026-10-03). Kotlin 2.4.20 (kotlinlang.org/docs/releases.html; kotlinlang.org/docs/gradle-configure-project.html table lists AGP 8.5.2-9.3.1 for 2.4.20, so AGP 8.13.2 is in range). Compose BOM 2026.09.00: ui/foundation/runtime 1.12.1, material3 1.4.0, material-icons-extended 1.7.8 (developer.android.com/develop/ui/compose/bom/bom-mapping). Lifecycle 2.11.0 for runtime-ktx, runtime-compose, viewmodel-compose (developer.android.com/jetpack/androidx/releases/lifecycle). activity-compose 1.13.0 (developer.android.com/jetpack/androidx/releases/activity). AGP stays 8.13.2: max API 36.1 (developer.android.com/build/releases/past-releases/agp-8-13-0-release-notes). Room stays 2.6.0 unless Kotlin forces it. Open risk: Compose release notes mention compileSdk 37.1 from the 1.13 line; AGP 8.13 supports only up to 36.1, so fall back to an older BOM if checkDebugAarMetadata fails (an AGP bump is out of scope). Baseline: debug APK 19103397 bytes; releaseRuntimeClasspath tree 658 dependency lines; kotlinx-coroutines resolves to 1.7.3 at runtime.",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         },
         {
           "id": "S53:legacy:1",
           "kind": "",
           "text": "**2026-10-03** — Deviations found while building. (1) Compose BOM 2026.09.00 (Compose 1.12.1) needs compileSdk 37, but AGP 8.13.2 supports at most 36.1, so BOM 2026.06.01 (Compose 1.11.4, material3 1.4.0; needs compileSdk 35) is used instead. (2) Lifecycle 2.11.0 needs compileSdk 37 and AGP 9.1.0+ (docs: AGP 9.2.0 for Compose compileSdk), so lifecycle 2.10.0 is used (developer.android.com/jetpack/androidx/releases/lifecycle). (3) activity-compose 1.13.0 and core-ktx 1.18.0 (transitive) need compileSdk 36. Platform android-36 is not installed but android-36.1 is, so app/build.gradle uses compileSdkVersion 'android-36.1' instead of installing a platform. (4) Room 2.6.0 kapt fails under Kotlin 2.4.20 with 'Unable to read Kotlin metadata due to unsupported metadata kind', so Room is raised to 2.8.5 (developer.android.com/jetpack/androidx/releases/room), still on kapt.",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         },
         {
           "id": "S53:legacy:2",
           "kind": "",
           "text": "**2026-10-03** — Final: Kotlin 2.3.21 (2.4.20 emits metadata 2.4.0 that Room 2.8.5 kapt cannot read: 'Provided Metadata instance has version 2.4.0, while maximum supported version is 2.3.0'), Compose BOM 2026.06.01, lifecycle 2.10.0 incl. runtime-compose, activity-compose 1.13.0, Room 2.8.5 on kapt, compileSdk android-36.1 (targetSdk stays 34), kotlinx-coroutines-test 1.9.0 (runtime resolves 1.9.0). Dependency lines in releaseRuntimeClasspath: 658 -> 856. Debug APK: 19103397 -> 23387446 bytes. Remaining deprecation warnings left alone: AppDatabase.kt:29 fallbackToDestructiveMigration(), MainScreen.kt:90 LocalLifecycleOwner (moved to androidx.lifecycle.compose; S07/S09). Checks run: testDebugUnitTest lintDebug assembleDebug assembleRelease pass with JDK 17. Not run: device smoke test (no adb on PATH), CI after push. Gradle 8.13 is deprecated for Kotlin 2.5 (needs 8.14.4+), outside this slice.",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         }
       ],
       "claim": null,
@@ -2012,14 +2172,22 @@
           "kind": "",
           "text": "**2026-10-04** — Local run: ./gradlew pixel6api34DebugAndroidTest on aosp-atd (arm64 image installed locally) ran 29 tests with 5 failures, all in NavigationTest (editingTrackerNameSurvivesRecreation, entryFieldsSurviveRecreation, selectedTrackerSurvivesRecreation, backFromDetailReturnsToDashboard, backFromSettingsReturnsToDashboard). aosp-atd stays because the API 34 image exists. Owner split the failures into S61. The GitHub run is not recorded yet; the local check is red, so this slice has not been handed off.",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         },
         {
           "id": "S55:legacy:1",
           "kind": "",
           "text": "**2026-10-04** — Correction: handed off for review on 2026-10-04 with the local check still red, by owner decision. The 5 NavigationTest failures are tracked in S61 (depends on S55). Code commit 4567cba.",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         }
       ],
       "claim": null,
@@ -2059,7 +2227,11 @@
           "kind": "",
           "text": "**2026-10-04** — Implemented JSON export filtering, legacy import filtering, 24-hour DAO/repository purge at startup, and Persistence Notes documentation. Verified: 118 JVM tests passed; Android test APK assembled; emulator API 34 suite ran 33 tests with 30 passing, including all S56 DAO/codec tests and editorDeletionUndoRestoresValueAndNote. Three failures in unchanged NavigationTest: editingTrackerNameSurvivesRecreation, selectedTrackerSurvivesRecreation, entryFieldsSurviveRecreation. Main advanced after this branch was created from 0bf6c6b and now contains edits to these navigation tests. Manual file export was not performed. Changes remain uncommitted.",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         }
       ],
       "claim": null,
@@ -2221,14 +2393,22 @@
           "kind": "",
           "text": "**2026-10-04** — Baseline on current main (aosp-atd): 38 tests, 3 failures, all Espresso.pressBack RootViewWithoutFocusException (backFromDetail, backFromSettings, backFromArchived); S15 text fixes held. A temporary dumpsys diagnostic in backFromSettings showed the focused window was \"Application Not Responding: system\" with MainActivity top-resumed; which process the ANR is for was not found. Fix (9bb1380): NavigationTest pressBack() helper uses onBackPressedDispatcher.onBackPressed() instead of Espresso.pressBack. Local ./gradlew pixel6api34DebugAndroidTest: 38 tests, 0 failures (6m20s). Not yet checked: GitHub instrumented job. DEVELOPERS.md still says the job stays red until S61; not changed here.",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         },
         {
           "id": "S61:legacy:1",
           "kind": "",
           "text": "**2026-10-04** — Correction: DEVELOPERS.md was changed after the note above. Commit e3b77a9 removes the sentence \"The job stays red until S61.\" from the Local Test Runs section. The GitHub instrumented job is still not checked.",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         }
       ],
       "claim": null,
@@ -2264,14 +2444,22 @@
           "kind": "",
           "text": "**2026-10-05** — Score 3/3/1: the literal release-permission gate fails on the signed APK; resolving the AndroidX signature-protection requirement versus the accepted gate is a small, required release decision.",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         },
         {
           "id": "S62:legacy:1",
           "kind": "",
           "text": "**2026-10-05** — Resolved by relaxing the gate (owner decision). Merged release manifest: androidx.core 1.18.0 declares DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION with protectionLevel=signature and requests it (manifest-merger-release-report). No manifest change, so receiver protection is unchanged. S22's permission criterion and a new DEVELOPERS.md 'Release permission check' now expect POST_NOTIFICATIONS and RECEIVE_BOOT_COMPLETED plus that signature permission. aapt dump permissions on the signed S22 release APK (sha256 96428cdf...5ab, built from 816a80f) lists exactly those three uses-permission entries and the app-defined permission. PRIVACY.md on main predates this; the S20 branch PRIVACY.md already states it. S22's uncommitted DEVELOPERS.md checklist row 15 still says only two permissions and needs the same wording. Uncommitted in the S62 worktree. No build was run (docs and slicer state only).",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         }
       ],
       "claim": null,
@@ -2307,14 +2495,22 @@
           "kind": "",
           "text": "**2026-10-05** — Score 3/3/2: latest published main instrumented CI is red, so a required release gate fails; verifying the newer local S45 revision and diagnosing any remaining failure requires a bounded CI investigation.",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         },
         {
           "id": "S63:legacy:1",
           "kind": "",
           "text": "**2026-10-05** — Resolved; no code or workflow change. Published main 939d9b5 (pushed by the owner's instruction on 2026-10-05): Build run 37338219263, https://github.com/squalor-xyz/consecutor/actions/runs/37338219263, conclusion success. build job success (completed 16:09:51Z) and instrumented job success (16:13:44Z). Earlier failing run 37258797096 at fcd5106: build success, instrumented failed in the 'Instrumented tests on a managed device' step after about 6 minutes (exit code 1); the instrumented-reports artifact (11323373426) exists but needs authentication to download, so the exact failing test was not read. Likely cause, from source (not from the log): at fcd5106 NavigationTest.backFromSettingsReturnsToDashboard still asserted 'Privacy-first defaults' (NavigationTest.kt:78), but S57 (ca36f0a, an ancestor of fcd5106) had replaced that Settings header with settings_privacy_line; S45's 92589b6 updated the test, and that string no longer appears in app/src on main. Local reproducer on 939d9b5: ./gradlew pixel6api34DebugAndroidTest (the CI managed device) ran 56 tests, 0 failed, 0 skipped, BUILD SUCCESSFUL in 4m24s. Data was read with unauthenticated GETs to the public GitHub REST API; gh is not installed. The push printed a remote notice that changes must go through a pull request, and went through (bypass).",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         }
       ],
       "claim": null,
@@ -2352,14 +2548,22 @@
           "kind": "",
           "text": "**2026-10-05** — S22 reproduced the same foreground clock-change midnight failure on API 30, API 33 and API 36. Background rollover passed on all three. Each script restored auto_time and the original clock plus elapsed time. Evidence: build/s22-validation/emulator-5558, emulator-5560 and emulator-5554 system-results.json and 05-foreground-midnight screenshots/XML. Score 3/3/2: required release gate fails; bounded day-refresh/timer fix with lifecycle coverage.",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         },
         {
           "id": "S64:legacy:1",
           "kind": "",
           "text": "**2026-10-05** — Fixed; uncommitted in the S64 worktree. TrackerViewModel now runs refreshAtDayBoundaries (DayClock.kt): it waits for the next midnight (+1 s) or a clock-change signal, then refreshes today and re-computes the wait. MainScreen registers a plain BroadcastReceiver for ACTION_TIME_CHANGED, ACTION_DATE_CHANGED and ACTION_TIMEZONE_CHANGED on the application context (DisposableEffect, unregistered on dispose) and calls viewModel.onClockChanged(). It deliberately avoids ContextCompat.registerReceiver with RECEIVER_NOT_EXPORTED, which on API < 33 would drop system broadcasts. DayClockTest gained 5 virtual-time tests (wait ends just after midnight, a signal ends it early, a signal sent before the wait is not lost, natural midnight refresh, a clock jump to 23:59:40 refreshes and re-arms the wait to 21 s). testDebugUnitTest 139 passed, 0 failures (134 before); lintDebug 0 errors, 14 warnings (unchanged); assembleDebug passed. Device check on s08_api34 (API 34 Google APIs, debug build): YES_NO Gamma logged, auto_time off, clock set with cmd alarm set-time to 23:59:40 while the dashboard stayed in the foreground; screenshot at 00:00:06 the next day shows Gamma back to Not logged today. Clock and auto_time restored, emulator stopped. NOT re-run: API 26, 30, 33 and 36, whose emulators hold the S22 release-signed app (installing a debug build would need an uninstall). Caveat: uiautomator dump timed out and left a stale ui.xml on this emulator, giving false Done today readings; use screencap. Background rollover on resume is unchanged and was not re-tested here.",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         }
       ],
       "claim": null,
@@ -2395,21 +2599,33 @@
           "kind": "",
           "text": "**2026-10-05** — Score 3/3/2: an observed release ANR prevents a trustworthy API 33 gate pass; reproducing and diagnosing it is bounded but its cause is unknown. Evidence is the S22 Android dialog screenshot/XML and ActivityManager input-dispatch timeout; no app root cause is asserted.",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         },
         {
           "id": "S65:legacy:1",
           "kind": "",
           "text": "**2026-10-05** — Additional environment observation: the separately launched s48_tablet_api36 test AVD showed System UI is not responding before the S22 dashboard check (build/s22-validation/emulator-5562/tablet-current.png/XML). Tablet AndroidRuntime error log was empty, and am start -W reported MainActivity already topmost. This supports investigating emulator/system responsiveness; it does not establish the cause of the earlier API33 app ANR.",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         },
         {
           "id": "S65:legacy:2",
           "kind": "",
           "text": "**2026-10-05** — Not reproduced; no app change. Run 2026-10-05 ~09:33-09:36 EDT on s22_api33_aosp (API 33 AOSP arm64, 2 GB), the only test emulator running; the original API 36 emulator (emulator-5554) was still running but idle. The installed app is S22's signed minified release (versionCode 10000, not debuggable; sha256 of base.apk on the device = 96428cdf...5ab, matching S22). Input was sequential adb input taps with screencap; uiautomator was not used. Run A (pm clear, then create tracker with reminder): save shows the system notification prompt; Don't allow -> 'Notifications are off. Reminders cannot be shown.' snackbar with Open settings and 'Notifications off' on the card; Open settings -> system app notification page; toggled on, Back -> app, 'Notifications off' cleared; three rounds of open detail, Back, Settings, Back; MainActivity stayed focused. Run B (pm clear, new tracker with reminder): Allow -> POST_NOTIFICATIONS granted=true, dashboard normal. logcat -c before each run; afterwards no 'ANR in', 'not responding', 'Input dispatching timed out', am_anr or FATAL lines. The only ActivityManager error in the log was a system 'Sending non-protected broadcast' stack from com.android.bluetooth, unrelated. Cause remains unverified: the original ANR happened with four emulators and concurrent uiautomator commands running, and during this session uiautomator dump on another emulator (API 34) hung and returned a stale ui.xml, which supports a driver/emulator-load explanation but does not prove it. Reliable rerun: one emulator, adb input + screencap, clear data first. Not covered: the second system 'deny twice' dialog (the Open settings path after the first deny was covered), physical device, API 26/30. App data on s22_api33_aosp was cleared by this run.",
           "created_at": "",
-          "attempt": null
+          "attempt": null,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         }
       ],
       "claim": null,
@@ -2445,7 +2661,11 @@
           "kind": "",
           "text": "**2026-10-05** — Investigated the app first, as the owner asked. On API 26 (s08_api26, debug build of main 9b1f320, idle host) I typed into the create dialog's Name field, recreated the activity and read the field back:\n- 10 recreations by rotation and 10 by font-scale configuration change, each after the typed text was read back: Name kept 'Unfinished' 20/20.\n- The same 20 again with no wait between typing and recreation: 20/20 kept.\n\nNo lost input was reproduced in 40 tries. Limit: adb adds latency, so this cannot match the test's in-process timing exactly, and a very narrow race is not ruled out.\n\nChange (test only): typedTrackerNameSurvivesRecreation now asserts the typed text before recreate(), like editingTrackerNameSurvivesRecreation.\n\nResults:\n- API 26: 10 consecutive full-suite runs via am instrument, all OK (56 tests). Before the fix the rate was 2 failures in 10 runs, so 10 clean runs would happen about 11% of the time with no improvement. This is strong but not conclusive.\n- API 36: OK (56 tests).\n- testDebugUnitTest: 139 passed.\n- lintDebug: 0 errors.\n\nThe app data on s08_api26 was cleared by the runs. Evidence: build/s66-evidence.",
           "created_at": "2026-10-05T20:41:27Z",
-          "attempt": 1
+          "attempt": 1,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         }
       ],
       "claim": null,
@@ -2481,7 +2701,11 @@
           "kind": "",
           "text": "**2026-10-05** — Changed the EditorDialog title to maxLines = 2; the ellipsis and pinned header are unchanged.\n\nChecked on API 36 (s48_pixel6_api36) at wm density 480 (360dp) and font_scale 2.0:\n- New tracker and Edit tracker titles show in full on two lines.\n- Portrait with the keyboard open: Cancel and Save are visible.\n- Landscape with the keyboard open: Cancel and Save are visible.\n\nObservation: in landscape at 200% with the keyboard open, the 2-line header leaves no visible room for the fields. On main the 1-line header leaves only the top edge of the Name field visible, so the field is effectively hidden there too.\n\nResults: testDebugUnitTest 139 passed, lintDebug 0 errors, API 36 instrumented OK (56 tests). Display settings were restored. Evidence: build/s67-evidence.",
           "created_at": "2026-10-05T20:41:27Z",
-          "attempt": 1
+          "attempt": 1,
+          "by": "",
+          "verified_by": "",
+          "verified_at": "",
+          "stale_after": ""
         }
       ],
       "claim": null,
@@ -2502,6 +2726,64 @@
         "urgency": 3,
         "effort": 1,
         "attempts": 1
+      }
+    },
+    {
+      "id": "S68",
+      "title": "Publish 1.0 on Google Play",
+      "short_title": "Publish 1.0 on Google Play",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [],
+      "note_records": [],
+      "claim": null,
+      "fields": {
+        "size": "M",
+        "flags": [],
+        "trees": [
+          "release",
+          "docs"
+        ],
+        "trees_literal": false,
+        "findings": "",
+        "discovered_from": "",
+        "key": "",
+        "pass": "",
+        "group": "",
+        "reason": "",
+        "importance": 3,
+        "urgency": 2,
+        "effort": 2,
+        "attempts": 0
+      }
+    },
+    {
+      "id": "S69",
+      "title": "Publish 1.0 on F-Droid",
+      "short_title": "Publish 1.0 on F-Droid",
+      "status": "open",
+      "has_slice": true,
+      "depends_on": [],
+      "note_records": [],
+      "claim": null,
+      "fields": {
+        "size": "M",
+        "flags": [],
+        "trees": [
+          "release",
+          "docs"
+        ],
+        "trees_literal": false,
+        "findings": "",
+        "discovered_from": "",
+        "key": "",
+        "pass": "",
+        "group": "",
+        "reason": "",
+        "importance": 3,
+        "urgency": 2,
+        "effort": 3,
+        "attempts": 0
       }
     }
   ],

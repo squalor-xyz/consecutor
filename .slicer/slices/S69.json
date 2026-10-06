@@ -1,0 +1,41 @@
+{
+  "id": "S69",
+  "title": "Publish 1.0 on F-Droid",
+  "lead": [
+    "Get Consecutor into the main F-Droid repository, preferably as a reproducible build that ships the owner's signature."
+  ],
+  "depends_note": null,
+  "findings_note": "",
+  "size": "M",
+  "flags": [],
+  "trees_note": "release, docs",
+  "trees_plural": true,
+  "boundary": "**Not in this slice:** Google Play (S68), changes to how the GitHub release is signed, and new app features. The agent does not open the fdroiddata merge request or post to F-Droid's GitLab; the owner does.",
+  "sections": [
+    {
+      "heading": "Why",
+      "body": "F-Droid is one of the three channels in the project goals. The app is MPL-2.0 with no proprietary dependencies, an unsigned `assembleRelease` succeeds without secrets, and the listing metadata is already in `fastlane/`.\n\nOwner decision (2026-10-06): use reproducible builds. F-Droid builds the app from the tag, checks that the result matches the owner-signed GitHub APK, and publishes the owner's APK, so all three channels share one signature. If reproducibility cannot be reached with reasonable effort, fall back to F-Droid signing with its own key, but only with the owner's sign-off, recorded in a slice note before the first submission. Switching after the first F-Droid release would break updates for its users."
+    },
+    {
+      "heading": "Files",
+      "body": "- `DEVELOPERS.md` (F-Droid Deployment section)\n- `app/build.gradle` and `.github/workflows/release.yml`, only if a reproducibility fix requires it\n- The fdroiddata `metadata/com.squalor.consecutor.yml`, drafted for the owner's merge request (not committed here)"
+    },
+    {
+      "heading": "Failing tests",
+      "body": "- Reproducibility: an unsigned release APK built from the tag in a clean environment must match the published `consecutor-<version>.apk` apart from its signature."
+    },
+    {
+      "heading": "Implement",
+      "body": "1. Before installing any tool (for example `apksigcopier`, `diffoscope`, `fdroidserver`, or a container runtime), name it, its licence and why it is needed, and get the owner's approval.\n2. Build an unsigned `assembleRelease` from `v1.0.0` in a clean checkout, using the JDK the release workflow uses (Temurin 17), and compare it with the GitHub APK (`apksigcopier compare`, or copy the signature and compare bytes). Run the comparison twice to catch nondeterminism. A known suspect is the baseline profile written next to the APK.\n3. If they differ, find the cause with `diffoscope` and make the smallest build change that fixes it. A fix means a new patch release (`1.0.1`) through the normal release checklist, because the `v1.0.0` tag is already published. Ask the owner before tagging.\n4. Draft the fdroiddata metadata: categories, `License: MPL-2.0`, source, issue tracker and changelog URLs, a `Builds` entry for the release tag (`subdir: app`, `gradle: yes`), `Binaries:` pointing at the GitHub release APK URL pattern, `AllowedAPKSigningKeys:` set to the release certificate SHA-256, `AutoUpdateMode: Version`, and `UpdateCheckMode: Tags`. Use `fdroid lint`, and `fdroid build` if available, to validate it.\n5. Update `DEVELOPERS.md` \"F-Droid Deployment\" with the decision, the reproducibility check, and how future releases stay reproducible.\n\nOwner:\n1. Fork fdroiddata on GitLab, add the metadata, and open the merge request. Respond to review and build-server feedback."
+    },
+    {
+      "heading": "Check",
+      "body": "- The reproducibility comparison passes on the tag being submitted. If it does not, a slice note records the owner's sign-off on falling back to F-Droid signing.\n- `fdroid lint` reports no errors for the metadata.\n- Record the merge request URL and the F-Droid listing URL with `slicer note S69`."
+    },
+    {
+      "heading": "Git",
+      "body": "Commit on the slice branch, message `S69: <summary>`."
+    }
+  ],
+  "notes": []
+}
